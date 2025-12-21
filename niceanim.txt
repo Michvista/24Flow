@@ -1,0 +1,94 @@
+  function menuClick() {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    if (!isOpen) {
+      gsap.to(menuOverlay, {
+        duration: 0.5,
+        clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+        ease: 'power3.out',
+      });
+
+      gsap.to(menuContent, {
+        duration: 0.5,
+        x: 0,
+        y: 0,
+        scale: 1,
+        rotation: 0,
+        ease: 'power3.out',
+        onComplete: () => {
+          isAnimating = false;
+          isOpen = true;
+        }
+      });
+    } else {
+      gsap.to(menuOverlay, {
+        duration: 0.5,
+        clipPath: 'polygon(0% 0%, 100% 0%, 0% 0%)',
+        ease: 'power3.in',
+      });
+
+      gsap.to(menuContent, {
+        duration: 0.5,
+        x: -100,
+        y: -100,
+        scale: 1.5,
+        rotation: -15,
+        ease: 'power3.in',
+        onComplete: () => {
+          isAnimating = false;
+          isOpen = false;
+        }
+      });
+    }
+  } 
+
+
+
+  function openMenu() {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    gsap.to(menuOverlay, {
+        duration: 0.5,
+        clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+        ease: 'power3.out',
+    });
+
+    gsap.to(menuContent, {
+        duration: 0.5,
+        x: 0,
+        y: 0,
+        scale: 1,
+        rotation: 0,
+        ease: 'power3.out',
+        onComplete: () => {
+            isAnimating = false;
+            isOpen = true;
+        }
+    });
+}
+
+function closeMenu() {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    gsap.to(menuOverlay, {
+        duration: 0.5,
+        clipPath: 'polygon(0% 0%, 100% 0%, 0% 0%)',
+        ease: 'power3.in',
+    });
+
+    gsap.to(menuContent, {
+        duration: 0.5,
+        x: -100,
+        y: -100,
+        scale: 1.5,
+        rotation: -15,
+        ease: 'power3.in',
+        onComplete: () => {
+            isAnimating = false;
+            isOpen = false;
+        }
+    });
+}
