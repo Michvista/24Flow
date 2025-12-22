@@ -41,7 +41,8 @@
 				width: targetWidth, 
 				height: 'auto', 
 				duration: 0.7, 
-				ease: "expo.out" 
+				ease: "expo.out" ,
+                clearProps: "width"
 			}
 		);
 
@@ -62,16 +63,21 @@
       ease: "sine.inOut",
       stagger: 0.2
     });
-
-      gsap.to(".spin", {
-      rotation: "random(-10,10)",
-      duration: 3,
-      yoyo: true,
-      repeat: -1,
-      ease: "sine.inOut",
-      stagger: 0.2
-    });
   });
+function spinAction(node: HTMLElement) {
+    gsap.to(node, {
+        rotation: 360,
+        duration: 4,
+        repeat: -1,
+        ease: "none"
+    });
+    
+    return {
+        destroy() {
+            gsap.killTweensOf(node);
+        }
+    };
+}
 
     import { Toaster, toast } from 'svelte-sonner';
     import SonnerToast from '../../components/SonnerToast.svelte';
@@ -218,8 +224,10 @@ function notifyError() {
 						<div class="flex flex-col lg:flex-row w-full h-full">
 							<div class="relative flex w-full flex-col justify-between bg-[#1973f0] p-8 lg:w-5/12 lg:p-12 overflow-hidden">
 								<div class="relative z-10">
-									<div class="mb-6  h-12 w-12 flex items-center justify-center border-2 border-white bg-black text-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)]">
-										<RefreshCw size={24} class="spin" />
+									<div  class="mb-6  h-12 w-12 flex items-center justify-center border-2 border-white bg-black text-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)]">
+                                        <div use:spinAction>
+                                            <RefreshCw size={24} />
+                                        </div>
 									</div>
 									<h2 class="text-4xl font-bold leading-tight tracking-tight text-white mb-4 uppercase">Sync your<br/>life today.</h2>
 									<p class="text-blue-100 font-medium text-lg max-w-xs">Join thousands who mastered time with 24FLOW.</p>
