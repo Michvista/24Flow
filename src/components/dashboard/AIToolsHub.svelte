@@ -120,10 +120,10 @@ disabled: false
               {tool.desc}
             </p>
           </div>
-        <a 
+ <a 
   href={tool.disabled ? null : tool.link} 
   class="block {tool.disabled ? 'opacity-50 cursor-not-allowed' : ''}"
-  on:click|preventDefault={(e) => tool.disabled && e.preventDefault()}
+  on:click={(e) => { if (tool.disabled) e.preventDefault(); }}
 >
   <button 
     disabled={tool.disabled}
