@@ -5,9 +5,7 @@
 
 	const navLinks = [
 		{ name: 'Dashboard', href: '/dashboard' },
-		{ name: 'Calendar', href: '/calendar' },
-		{ name: 'Teams', href: '/teams' },
-		{ name: 'Settings', href: '/settings' }
+		{ name: 'Calendar', href: '/dashboard/calendar' },
 	];
 </script>
 
@@ -32,14 +30,16 @@
 				{/each}
 			</nav>
 
-			<div class="flex items-center gap-4">
-				<button class="hidden md:flex items-center justify-center h-10 px-6 bg-[#1973f0] text-white text-sm font-bold border-2 border-white shadow-[4px_4px_0px_0px_#fff] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all">
-					LOGIN
+			<!-- <div class="flex items-center gap-4">
+				<button class="hidden md:flex items-center justify-center h-10 px-6 bg-[#1973f0] hover:opacity-35 hover:cursor-pointer text-white text-sm font-bold border-2 border-white shadow-[4px_4px_0px_0px_#fff] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all">
+					<a href="/login">
+                        LOGIN
+                    </a>
 				</button>
 				<button class="md:hidden p-2">
 					<span class="material-symbols-outlined">menu</span>
 				</button>
-			</div>
+			</div> -->
 		</div>
 	</header>
 
@@ -115,8 +115,8 @@
 		<div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
 			<div class="flex flex-col md:flex-row gap-6 md:gap-12 text-center md:text-left">
 				<span class="text-slate-400 font-mono text-sm uppercase tracking-wide">System Status: <span class="text-green-500">Online</span></span>
-				<a class="text-slate-400 hover:text-white font-bold text-sm uppercase" href="/docs">Documentation</a>
-				<a class="text-slate-400 hover:text-white font-bold text-sm uppercase" href="/privacy">Privacy Policy</a>
+				<a class="text-slate-400 hover:text-white font-bold text-sm uppercase" href="/dashboard">Dashboard</a>
+				<a class="text-slate-400 hover:text-white font-bold text-sm uppercase" href="/">Home</a>
 			</div>
 			<div class="flex items-center gap-2">
 				<div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
