@@ -108,6 +108,33 @@ function notifyError() {
     });
 }
 
+function glitchText(element: HTMLElement | null) {
+    if (!element) return;
+
+    const tl = gsap.timeline({
+        repeat: -1, 
+        repeatDelay: 2 + Math.random() * 1.5
+    });
+
+    tl.to(element, { duration: 0.1, skewX: 20, ease: "power4.inOut" })
+      .to(element, { duration: 0.1, skewX: -20, ease: "power4.inOut" })
+      .to(element, { duration: 0.05, opacity: 0.5, scaleY: 0.9 })
+      .to(element, { duration: 0.05, opacity: 1, scaleY: 1 })
+      .to(element, { duration: 0.1, x: -2, color: "#1973f0" }) 
+      .to(element, { duration: 0.1, x: 2, color: "#ffffff" })
+      .to(element, { duration: 0.1, x: 0, skewX: 0 });
+}
+
+function glitchAction(node: HTMLElement) {
+    glitchText(node);
+    return {
+        destroy() {
+            gsap.killTweensOf(node);
+        }
+    };
+}
+
+
 </script>
 
 <svelte:head>
@@ -151,7 +178,7 @@ function notifyError() {
 					{#if isLogin}
 						<div class="p-8 md:p-10 flex flex-col gap-6 pt-12">
 							<div class="flex flex-col gap-2 pb-4 border-b-2 border-[#324867] border-dashed">
-								<h1 class="text-white tracking-tight text-4xl font-bold leading-none uppercase">System<br/><span class="text-[#1973f0]">Login</span></h1>
+								<h1 class="text-white tracking-tight text-4xl font-bold leading-none uppercase" use:glitchAction>System<br/><span class="text-[#1973f0]">Login</span></h1>
 								<p class="text-gray-400 text-sm font-mono tracking-wide uppercase">Enter credentials to proceed.</p>
 							</div>
 
