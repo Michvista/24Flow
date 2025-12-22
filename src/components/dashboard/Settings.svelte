@@ -132,7 +132,7 @@
           <h1 class="text-white text-4xl md:text-5xl font-black tracking-tighter uppercase drop-shadow-[2px_2px_0_#1973f0]">Global Settings</h1>
           <p class="text-[#91a9ca] text-lg font-medium max-w-xl">Configure your workspace preferences and operational parameters.</p>
         </div>
-        <button class="neo-btn-primary px-6 py-3 text-white font-bold flex items-center gap-2">
+        <button class="neo-btn-primary px-6 py-3 text-white font-bold flex items-center gap-2 hover:opacity-45 hover:cursor-pointer">
           <Save size={20} /> SAVE CHANGES
         </button>
       </div>

@@ -1,6 +1,9 @@
 <script>
     import { onMount } from "svelte";
+    import { scrollToId } from '$lib/scrollToId'
     import gsap from "gsap";
+
+  const NAV_HEIGHT = 72 
 
     onMount(() => {
         gsap.from(".footer-logo", {
@@ -19,6 +22,10 @@
             ease: "sine.inOut"
         });
     });
+
+     const handleNavClick = (id) => {
+    scrollToId(id, NAV_HEIGHT);
+  }
 </script>
 
 <footer id="footer" class="w-full bg-[#09090f] font-montserrat text-white rounded-3xl px-10 py-20 relative overflow-hidden">
@@ -53,10 +60,10 @@
         </div>
 
         <div class="flex flex-col gap-3 text-right pt-10 md:pt-0">
-            <a class="hover:text-gray-300 transition cursor-pointer">Home</a>
-            <a class="hover:text-gray-300 transition cursor-pointer">Get Started</a>
-            <a class="hover:text-gray-300 transition cursor-pointer">Features</a>
-            <a class="hover:text-gray-300 transition cursor-pointer">Contact</a>
+            <a class="hover:text-gray-300 transition cursor-pointer" on:click={()=> handleNavClick('home')}>Home</a>
+            <a class="hover:text-gray-300 transition cursor-pointer" href="/dashboard">Get Started</a>
+            <a class="hover:text-gray-300 transition cursor-pointer" on:click={()=> handleNavClick('features')}>Features</a>
+            <a class="hover:text-gray-300 transition cursor-pointer" on:click={()=> handleNavClick('footer')}>Contact</a>
         </div>
     </div>
 
