@@ -1,7 +1,7 @@
 <script lang="ts">
 	// State for any dynamic error information
 	let serverId = $state("US-EAST-1A // v2.4.0");
-	let path = $state("/var/www/html/scheduler/schedule_id_null");
+	let path = $state("/var/www/html/PAGEr/PAGE_id_null");
 
 	const navLinks = [
 		{ name: 'Dashboard', href: '/dashboard' },
@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-	<title>404 Page Not Found - Scheduler</title>
+	<title>404 Page Not Found - 24FLOW</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com"  />
 	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -23,10 +23,7 @@
 	<header class="border-b-2 border-slate-700 bg-[#111822] px-6 py-4 sticky top-0 z-50">
 		<div class="max-w-7xl mx-auto flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<div class="w-8 h-8 flex items-center justify-center bg-[#1973f0] border-2 border-white shadow-[3px_3px_0px_0px_rgba(255,255,255,0.2)] text-white">
-					<span class="material-symbols-outlined text-xl">schedule</span>
-				</div>
-				<h2 class="text-xl font-bold tracking-tighter uppercase">SCHEDULER //</h2>
+				<h2 class="text-xl font-bold tracking-tighter uppercase font-monoton">24FLOW //</h2>
 			</div>
 			
 			<nav class="hidden md:flex items-center gap-8">
@@ -49,7 +46,7 @@
 	<div class="border-b-2 border-slate-700 bg-yellow-400 text-slate-900 overflow-hidden py-2 select-none">
 		<div class="marquee-container">
 			<div class="marquee-content font-bold text-sm tracking-widest uppercase">
-				ERROR // 404 // MISSING SCHEDULE // SYSTEM MALFUNCTION // TIME NOT FOUND // ERROR // 404 // MISSING SCHEDULE // SYSTEM MALFUNCTION // TIME NOT FOUND // ERROR // 404 // MISSING SCHEDULE // SYSTEM MALFUNCTION // TIME NOT FOUND //
+				ERROR // 404 // MISSING PAGE // SYSTEM MALFUNCTION // TIME NOT FOUND // ERROR // 404 // MISSING PAGE // SYSTEM MALFUNCTION // TIME NOT FOUND // ERROR // 404 // MISSING PAGE // SYSTEM MALFUNCTION // TIME NOT FOUND //
 			</div>
 		</div>
 	</div>
@@ -89,7 +86,7 @@
 							</h1>
 							<div class="space-y-4 border-l-4 border-[#1973f0] pl-6">
 								<h2 class="text-2xl md:text-3xl font-bold uppercase leading-tight text-white">
-									System Error: <br/> Schedule Not Found.
+									System Error: <br/> PAGE Not Found.
 								</h2>
 								<p class="text-slate-400 text-sm md:text-base font-mono leading-relaxed max-w-md">
 									The timeline you are trying to access does not exist in our database. The page has been moved, deleted, or was never part of the plan.
