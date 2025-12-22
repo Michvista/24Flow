@@ -192,7 +192,7 @@ onMount(() => {
 <div id="features" class="cont bg-white py-20 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center font-montserrat">
 
     <div class="max-w-7xl mx-auto w-[75%] text-center mb-16">
-        <p class="text-6xl font-semibold text-gray-800">
+        <p class="text-3xl md:text-5xl lg:text-6xl font-semibold text-gray-800">
             Take Time Management to the Next Level
         </p>
     </div>

@@ -21,7 +21,6 @@
     });
 </script>
 
-<!-- MAIN FOOTER CONTAINER -->
 <footer id="footer" class="w-full bg-[#09090f] font-montserrat text-white rounded-3xl px-10 py-20 relative overflow-hidden">
 
 <div class="absolute inset-0 z-10 pointer-events-none">
@@ -37,10 +36,8 @@
 
 
 
-    <!-- TOP: TITLE + CONTACT + NAV -->
     <div class="flex flex-col md:flex-row justify-between w-full">
 
-        <!-- LEFT TEXT -->
         <div class="max-w-xl">
             <p class="text-lg text-brand-accent-two mb-4">✦ Contact Us</p>
 
@@ -55,7 +52,6 @@
             </a>
         </div>
 
-        <!-- RIGHT NAV -->
         <div class="flex flex-col gap-3 text-right pt-10 md:pt-0">
             <a class="hover:text-gray-300 transition cursor-pointer">Home</a>
             <a class="hover:text-gray-300 transition cursor-pointer">Get Started</a>
@@ -64,14 +60,12 @@
         </div>
     </div>
 
-    <!-- BIG LOGO -->
     <div class="w-full flex justify-center mt-24 mb-14">
-        <h1 class="footer-logo text-[95px] md:text-[150px] font-monoton tracking-tight text-white/90 select-none">
+        <h1 class="footer-logo text-[65px] md:text-[150px] font-monoton tracking-tight text-white/90 select-none">
             24Flow
         </h1>
     </div>
 
-    <!-- BOTTOM ROW -->
     <div class="flex flex-col md:flex-row justify-between items-center text-sm text-[#8b8b9c]">
 
         <p>© 2025 24Flow. All rights reserved.</p>

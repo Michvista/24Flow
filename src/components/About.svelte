@@ -10,7 +10,7 @@
 
   const floatingImgs = [calendarImg, checklist2, checklist36, reminderNote, time57];
 
-  // Orbit radius (adjust to fit inside viewport)
+  // Orbit radius 
   const orbitRadius = 350;
 
   // Precompute positions around the text
@@ -70,7 +70,6 @@
 
 <div class="w-full h-screen relative mt-32 flex items-center justify-center  bg-[url('/blob.svg')] bg-center bg-cover">
 
-  <!-- ORBIT WRAPPER: images rotate around the center (text) -->
   <div class="orbit-wrapper absolute w-full h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
     {#each floatingImgs as img, i}
       <img 
@@ -82,16 +81,15 @@
     {/each}
   </div>
 
-  <!-- TEXT: outside orbit wrapper so it doesn't rotate -->
   <div class="relative z-10 max-w-4xl text-center px-6">
-    <h1 class="headline text-5xl md:text-7xl font-extrabold mb-6 leading-tight drop-shadow-[3px_3px_0_#78c2Ed]" 
+    <h1 class="headline text-3xl md:text-7xl font-extrabold mb-6 leading-tight drop-shadow-[3px_3px_0_#78c2Ed]" 
         style="color:#154e94cf; font-family:'Monoton', cursive;">
       {#each Array.from("Own Your 24h") as letter}
         <span>{letter}</span>
       {/each}
     </h1>
 
-    <p class="subtext text-lg md:text-xl font-semibold max-w-2xl mx-auto text-brand-accent-two font-montserrat">
+    <p class="subtext text-sm md:text-xl font-semibold max-w-2xl mx-auto text-brand-accent-two font-montserrat">
       Plan, track, and master every hour of your day. Schedule tasks, classes, and activities from 12AM to 12AM without the headache of Excel spreadsheets. See your entire day clearly and take control.
     </p>
   </div>
