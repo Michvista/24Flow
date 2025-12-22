@@ -81,17 +81,22 @@ function spinAction(node: HTMLElement) {
 
     import { Toaster, toast } from 'svelte-sonner';
     import SonnerToast from '../../components/SonnerToast.svelte';
-	function notifySuccess() {
-		toast.custom((t) => ({
-			component: SonnerToast,
-			props: {
-				title: "System Access",
+	
+
+    function notifySuccess() {
+    const id = Math.random().toString(36).substring(2, 9);
+
+    toast.custom(SonnerToast, {
+        id, 
+        componentProps: {
+            toastId: id,
+           title: "System Access",
 				message: "Authentication successful. Welcome back.",
 				type: "success",
-				toastId: t
-			}
-		}), { duration: 4000 });
-	}
+        },
+        duration: 5000
+    });
+}
 
 function notifyError() {
     const id = Math.random().toString(36).substring(2, 9);
@@ -134,6 +139,10 @@ function glitchAction(node: HTMLElement) {
     };
 }
 
+function handleAuthenticate() {
+            notifySuccess();
+
+}
 
 </script>
 
@@ -205,7 +214,7 @@ function glitchAction(node: HTMLElement) {
 								</label>
 
 								<div class="pt-4">
-									<button class="w-full hover:cursor-pointer bg-[#1973f0] h-14 border-2 border-transparent text-black font-bold uppercase tracking-widest shadow-[4px_4px_0px_0px_#ffffff] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all flex items-center justify-center gap-3">
+									<button onclick={handleAuthenticate} class="w-full hover:cursor-pointer bg-[#1973f0] h-14 border-2 border-transparent text-black font-bold uppercase tracking-widest shadow-[4px_4px_0px_0px_#ffffff] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all flex items-center justify-center gap-3">
 										Authenticate <ArrowRight size={20} />
 									</button>
 								</div>
@@ -351,6 +360,23 @@ function glitchAction(node: HTMLElement) {
 						  linear-gradient(to bottom, #1e293b 1px, transparent 1px);
 		background-size: 40px 40px;
 	}
+
+    .bg-grid-pattern::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(25, 115, 240, 0.47);
+    animation: scan 4s linear infinite;
+    z-index: 1;
+}
+
+@keyframes scan {
+    0% { top: 0%; }
+    100% { top: 100%; }
+}
 
 	:global(body) {
 		margin: 0;
