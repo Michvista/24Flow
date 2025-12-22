@@ -6,13 +6,11 @@ export default {
 		extend: {
 			/* Fonts */
 			fontFamily: {
-				// Existing fonts
 				robson: ['Robson', 'sans-serif'],
 				poppins: ['Poppins', 'sans-serif'],
 				montserrat: ['Montserrat', 'sans-serif'],
-				display: ['Space Grotesk', 'sans-serif'], // Adjusted to your existing 'display'
-
-				// Added 'display-mono' for the retro scheduler font
+				display: ['Space Grotesk', 'sans-serif'], 
+				monoton: ['Monoton', 'sans-serif'],
 				'display-mono': ['IBM Plex Mono', 'monospace']
 			},
 

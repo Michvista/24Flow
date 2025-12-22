@@ -27,14 +27,16 @@
       desc: "Generates a balanced study plan for exams, ensuring proper breaks and topic rotation.",
       icon: GraduationCap,
       color: "primary",
-      link: "/dashboard/AITools/StudyTimetable"
+      link: "/dashboard/AITools/StudyTimetable",
+      disabled :true
     },
     {
       title: "Hour Block Optimizer",
       desc: "Re-organizes fragmented meetings into solid deep work hour blocks for maximum focus.",
       icon: Hourglass,
       color: "primary",
-      link: "/dashboard/AITools/Optimizer"
+      link: "/dashboard/AITools/Optimizer",
+      disabled :true
     },
     {
       title: "Smart Overlap Fixer",
@@ -115,19 +117,27 @@
               {tool.desc}
             </p>
           </div>
-          <a href={tool.link}>
-            <button class="mt-auto flex w-full items-center justify-center gap-2 border-2 bg-transparent py-3 text-sm font-bold uppercase tracking-wider transition-all
-              {tool.color === 'yellow'
-                ? 'border-accent-yellow text-accent-yellow group-hover:bg-accent-yellow group-hover:text-black'
-                : 'border-slate-600 text-slate-300 group-hover:border-primary group-hover:bg-primary group-hover:text-white'}">
-              <span>{tool.new ? 'Try Now' : 'Launch Tool'}</span>
-              {#if tool.new}
-                <Rocket size={18} strokeWidth={3} />
-              {:else}
-                <ArrowRight size={18} strokeWidth={3} />
-              {/if}
-            </button>
-          </a>
+        <a 
+  href={tool.disabled ? null : tool.link} 
+  class="block {tool.disabled ? 'opacity-50 cursor-not-allowed' : ''}"
+  on:click|preventDefault={(e) => tool.disabled && e.preventDefault()}
+>
+  <button 
+    disabled={tool.disabled}
+    class="mt-auto flex w-full items-center justify-center gap-2 border-2 bg-transparent py-3 text-sm font-bold uppercase tracking-wider transition-all
+    {tool.disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
+    {tool.color === 'yellow'
+      ? 'border-accent-yellow text-accent-yellow group-hover:bg-accent-yellow group-hover:text-black'
+      : 'border-slate-600 text-slate-300 group-hover:border-primary group-hover:bg-primary group-hover:text-white'}"
+  >
+    <span>{tool.new ? 'Try Now' : 'Launch Tool'}</span>
+    {#if tool.new}
+      <Rocket size={18} strokeWidth={3} />
+    {:else}
+      <ArrowRight size={18} strokeWidth={3} />
+    {/if}
+  </button>
+</a>
         </div>
       {/each}
     </div>
