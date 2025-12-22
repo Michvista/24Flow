@@ -1,6 +1,5 @@
 <script lang="ts">
-	// You can add logic for the "Try Again" or "Copy Log" buttons here
-	let errorCode = "SCHED_500_INTERNAL_SERVER_ERROR";
+	let errorCode = "ERR_500_INTERNAL_SERVER_ERROR";
 	let errorId = "#8392-FKA";
 	let timestamp = new Date().toISOString();
 
@@ -97,6 +96,18 @@
 			</div>
 		</div>
 	</main>
+    <footer class="w-full border-t-2 border-[#1973f0] px-6 py-4 lg:px-12 sticky top-0 z-50">
+		<div class="max-w-[1440px] mx-auto flex items-center justify-between">
+            <a href="/" class="text-white text-2xl font-bold font-monoton tracking-tight">24Flow</a>
+			<nav class="flex-col md:flex-row md:flex items-center gap-8">
+				<a class="text-gray-300 hover:text-white hover:underline decoration-2 underline-offset-4 text-sm font-medium transition-colors" href="/">Go Back Home</a>
+				<div class="flex items-center gap-2 px-3 py-1 bg-red-500/10 border border-red-500/50 rounded text-red-400 text-xs font-bold uppercase tracking-wider">
+					<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+					System Offline
+				</div>
+			</nav>
+		</div>
+	</footer>
 </div>
 
 <style>
