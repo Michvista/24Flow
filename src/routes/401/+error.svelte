@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import gsap from 'gsap';
 
     // State for dynamic metadata
     let timestamp = $state('2025-01-01 00:00:00 UTC');
@@ -8,7 +9,20 @@
     onMount(() => {
         const now = new Date();
         timestamp = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+
+          gsap.to(".tilt", {
+      y: "random(-25,25)", 
+      x: "random(-25,25)",
+      rotation: "random(-10,10)",
+      duration: 3,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut",
+      stagger: 0.2
     });
+    });
+
+    
 
     const navItems = [
         { label: 'Login', href: '/auth' },
@@ -48,14 +62,14 @@
 
     <main class="flex-grow flex items-center justify-center relative w-full p-6 bg-grid-pattern">
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute top-20 left-20 text-[#233248] opacity-50 select-none">
+            <div class="absolute tilt top-20 left-20 text-[#233248] opacity-50 select-none">
                 <span class="material-symbols-outlined text-9xl">lock</span>
             </div>
-            <div class="absolute bottom-20 right-20 text-[#233248] opacity-50 select-none">
+            <div class="absolute tilt bottom-20 right-20 text-[#233248] opacity-50 select-none">
                 <span class="material-symbols-outlined text-9xl">block</span>
             </div>
-            <div class="absolute top-1/2 left-10 w-4 h-4 bg-[#1973f0]"></div>
-            <div class="absolute bottom-1/3 right-1/4 w-4 h-4 bg-white"></div>
+            <div class="absolute tilt top-1/2 left-10 w-4 h-4 bg-[#1973f0]"></div>
+            <div class="absolute tilt bottom-1/3 right-1/4 w-4 h-4 bg-white"></div>
         </div>
 
         <div class="relative z-10 w-full max-w-4xl bg-[#101822] border-2 border-[#2a3b55] shadow-[6px_6px_0px_0px_#1973f0] p-8 md:p-12 lg:flex lg:gap-12 lg:items-center">

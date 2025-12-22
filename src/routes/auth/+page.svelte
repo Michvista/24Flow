@@ -50,6 +50,58 @@
 			{ opacity: 1, y: 0, duration: 0.4, delay: 0.3, ease: "power2.out" }
 		);
 	}
+
+      onMount(() => {
+    gsap.to(".tilt", {
+      y: "random(-25,25)", 
+      x: "random(-25,25)",
+      rotation: "random(-10,10)",
+      duration: 3,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut",
+      stagger: 0.2
+    });
+
+      gsap.to(".spin", {
+      rotation: "random(-10,10)",
+      duration: 3,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut",
+      stagger: 0.2
+    });
+  });
+
+    import { Toaster, toast } from 'svelte-sonner';
+    import SonnerToast from '../../components/SonnerToast.svelte';
+	function notifySuccess() {
+		toast.custom((t) => ({
+			component: SonnerToast,
+			props: {
+				title: "System Access",
+				message: "Authentication successful. Welcome back.",
+				type: "success",
+				toastId: t
+			}
+		}), { duration: 4000 });
+	}
+
+function notifyError() {
+    const id = Math.random().toString(36).substring(2, 9);
+
+    toast.custom(SonnerToast, {
+        id, 
+        componentProps: {
+            toastId: id,
+            title: "Access Denied",
+            message: "Invalid credentials. Check your key.",
+            type: "error"
+        },
+        duration: 5000
+    });
+}
+
 </script>
 
 <svelte:head>
@@ -63,16 +115,19 @@
 			<div class="flex items-center gap-3 select-none">
 				<h1 class="text-2xl font-bold tracking-tighter uppercase font-monoton">24FLOW<span class="text-[#1973f0]">.</span></h1>
 			</div>
-			<button class="hidden sm:flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors">
-				<MoveLeft size={20} /> <a href="/">Back to Home</a>
+			<button class="group sm:flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors">
+				<div class="group-hover:-translate-x-1 transition-transform flex items-center gap-2">
+                    <MoveLeft size={20} />
+                </div> 
+                <a href="/">Back to Home</a>
 			</button>
 		</div>
 	</nav>
 
 	<main class="relative flex-grow flex items-center justify-center p-4 lg:p-8">
 		<div class="absolute inset-0 bg-grid-pattern opacity-40 z-0 pointer-events-none"></div>
-		<div class="absolute top-20 left-10 w-32 h-32 border-2 border-[#1973f0] opacity-20 hidden md:block rotate-12"></div>
-		<div class="absolute bottom-20 right-10 w-48 h-48 border-2 border-[#324867] opacity-30 hidden md:block -rotate-6"></div>
+		<div class="absolute tilt top-20 left-10 w-32 h-32 border-2 border-[#1973f0] opacity-20 hidden md:block rotate-12"></div>
+		<div class="absolute tilt bottom-20 right-10 w-48 h-48 border-2 border-[#324867] opacity-30 hidden md:block -rotate-6"></div>
 
 		<div class="relative z-10 w-full flex justify-center">
 			<div 
@@ -163,8 +218,8 @@
 						<div class="flex flex-col lg:flex-row w-full h-full">
 							<div class="relative flex w-full flex-col justify-between bg-[#1973f0] p-8 lg:w-5/12 lg:p-12 overflow-hidden">
 								<div class="relative z-10">
-									<div class="mb-6 h-12 w-12 flex items-center justify-center border-2 border-white bg-black text-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)]">
-										<RefreshCw size={24} />
+									<div class="mb-6  h-12 w-12 flex items-center justify-center border-2 border-white bg-black text-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)]">
+										<RefreshCw size={24} class="spin" />
 									</div>
 									<h2 class="text-4xl font-bold leading-tight tracking-tight text-white mb-4 uppercase">Sync your<br/>life today.</h2>
 									<p class="text-blue-100 font-medium text-lg max-w-xs">Join thousands who mastered time with 24FLOW.</p>
@@ -228,7 +283,7 @@
 										</div>
 									</div>
 
-									<button class="mt-3 hover:cursor-pointer w-full bg-[#1973f0] border-2 border-white p-4 font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#000000] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[2px_2px_0px_0px_#000000] transition-all flex items-center justify-center gap-2">
+									<button onclick={notifyError} class="mt-3 hover:cursor-pointer w-full bg-[#1973f0] border-2 border-white p-4 font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#000000] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[2px_2px_0px_0px_#000000] transition-all flex items-center justify-center gap-2">
 										Sign Up Now <ArrowRight size={20} />
 									</button>
 								</form>
@@ -251,6 +306,9 @@
 		<p>© 2025 24FLOW // SECURE CONNECTION v1.0.5</p>
 	</footer>
 </div>
+
+<Toaster position="bottom-right" expand={false} richColors />
+
 
 <style>
 	.bg-grid-pattern {
