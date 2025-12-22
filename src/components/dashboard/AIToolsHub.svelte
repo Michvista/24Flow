@@ -20,8 +20,8 @@
       icon: WandSparkles,
       popular: true,
       color: "primary",
-      link: "/dashboard/AITools/AutoFill"
-    },
+      link: "/dashboard/AITools/AutoFill",
+disabled: false    },
     {
       title: "Study Timetable Gen",
       desc: "Generates a balanced study plan for exams, ensuring proper breaks and topic rotation.",
@@ -43,14 +43,16 @@
       desc: "Detects and resolves scheduling conflicts instantly by proposing optimal alternatives.",
       icon: Merge,
       color: "primary",
-      link: "/dashboard/AITools/OverlapFixer"
+      link: "/dashboard/AITools/OverlapFixer",
+disabled: false
     },
     {
       title: "Natural Language",
       desc: "'Meeting with Bob next Tuesday at 2pm.' Type your plans in plain English to schedule.",
       icon: MessageSquare,
       color: "primary",
-      link: "/dashboard/AITools/LanguageTranscriber"
+      link: "/dashboard/AITools/LanguageTranscriber",
+disabled: false
     },
     {
       title: "School Timetable Gen",
@@ -58,7 +60,8 @@
       icon: CalendarDays,
       new: true,
       color: "yellow",
-      link: "/dashboard/AITools/SchoolTimetableGen"
+      link: "/dashboard/AITools/SchoolTimetableGen",
+disabled: false
     }
   ];
 </script>
