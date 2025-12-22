@@ -10,7 +10,7 @@
 
 <div class="w-full h-full overflow-hidden">
     <div class="text-center mt-4 flex flex-col items-center justify-center h-3/4">
-    <p class="text-[11vw] lg:text-[11vw] md:text-[8vw] sm:text-[5vw] text-brand-primary font-robson flex items-center gap-4">
+    <p class="text-[4.5vw] lg:text-[11vw] md:text-[8vw] sm:text-[5vw] text-brand-primary font-robson flex items-center gap-4">
       {#each words as word, i}
         <span class="scale-y-180 inline-block">{word}</span>
     
