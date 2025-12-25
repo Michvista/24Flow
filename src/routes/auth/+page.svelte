@@ -33,7 +33,7 @@
 		isLogin = !isLogin;
 		await tick();
 
-		const targetWidth = isLogin ? 480 : 1024;
+		const targetWidth = isLogin ? 550 : 1024;
 
 		gsap.fromTo(containerElement, 
 			{ width: startWidth, height: startHeight },
@@ -42,7 +42,9 @@
 				height: 'auto', 
 				duration: 0.7, 
 				ease: "expo.out" ,
-                clearProps: "width"
+                onComplete: () => {
+            gsap.set(containerElement, { clearProps: "height" });
+        }
 			}
 		);
 
@@ -175,7 +177,7 @@ function handleAuthenticate() {
 			<div 
 				bind:this={containerElement}
 				class="relative bg-[#1a2432] border-2 border-[#334155] shadow-[8px_8px_0px_0px_#000000] overflow-hidden"
-				style="width: {isLogin ? '480px' : '1024px'}"
+				style="width: {isLogin ? '550px' : '1024px'}"
 			>
 				{#if isLogin}
 					<div class="absolute top-0 left-0 bg-[#1973f0] text-black font-bold text-xs py-1 px-4 border-r-2 border-b-2 border-white uppercase tracking-widest z-20">
