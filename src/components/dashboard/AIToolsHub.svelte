@@ -62,7 +62,16 @@ disabled: false
       color: "yellow",
       link: "/dashboard/AITools/SchoolTimetableGen",
 disabled: false
-    }
+    },
+    {
+    title: "OCR Task Digitizer",
+    desc: "Scan handwritten notes or screenshots. AI extracts tasks and syncs them directly to your schedule.",
+    icon: LayoutGrid, // You can use ScanText or LayoutGrid
+    new: true,
+    color: "primary", // Or 'yellow' if you want it to pop
+    link: "/dashboard/AITools/TaskDigitizer",
+    disabled: false
+  },
   ];
 </script>
 

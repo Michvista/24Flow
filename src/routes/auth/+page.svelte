@@ -146,6 +146,7 @@ function handleAuthenticate() {
 
 }
 
+
 </script>
 
 <svelte:head>
