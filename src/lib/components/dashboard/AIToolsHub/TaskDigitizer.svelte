@@ -20,6 +20,8 @@
     { id: 2, text: "Email Sarah about project kickoff", time: "", tag: "", checked: true, lowConfidence: false },
     { id: 3, text: "Buy groceries for weekend", time: "", tag: "", checked: true, lowConfidence: true }
   ]);
+  // --- State Management ---
+let showOverlay = $state(false);
 
   // Handle multiple uploads
   let images = $state<{file: File, url: string, dimensions: string}[]>([]);
@@ -104,25 +106,32 @@
         </div>
         
         <div class="bg-surface-dark border-2 border-border-dark p-1 shadow-neo">
-          <div class="relative w-full aspect-[4/3] bg-black overflow-hidden border border-border-dark group">
-            <div 
-              class="w-full h-full bg-cover bg-center opacity-90 group-hover:opacity-100 transition-opacity" 
-              style="background-image: url({currentFile?.url || 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=1000'});"
-            ></div>
-            
-            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-[2px]">
-              <button onclick={openZoom} class="flex items-center justify-center size-12 bg-white text-black hover:bg-primary hover:text-white border-2 border-black shadow-neo-sm transition-colors cursor-pointer">
-                <ZoomIn size={20}/>
-              </button>
-              {#if images.length > 0}
-                <button onclick={() => removeImage(activeImageIndex)} class="flex items-center justify-center size-12 bg-white text-black hover:bg-red-500 hover:text-white border-2 border-black shadow-neo-sm transition-colors cursor-pointer">
-                  <Trash2 size={20}/>
-                </button>
-              {/if}
-            </div>
-            
-            <div class="absolute top-4 left-4 bg-green-500 text-black text-xs font-bold px-3 py-1 border-2 border-black uppercase shadow-neo-sm">Active</div>
-          </div>
+         <div 
+  class="relative w-full aspect-[4/3] bg-black overflow-hidden border border-border-dark group"
+  onclick={() => showOverlay = !showOverlay}
+>
+  <div 
+    class="w-full h-full bg-cover bg-center transition-opacity 
+    {showOverlay ? 'opacity-100' : 'opacity-90 group-hover:opacity-100'}" 
+    style="background-image: url({currentFile?.url || 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=1000'});"
+  ></div>
+  
+  <div class="absolute inset-0 bg-black/40 flex items-center justify-center gap-4 backdrop-blur-[2px] transition-opacity 
+    {showOverlay ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}">
+    
+    <button onclick={(e) => { e.stopPropagation(); openZoom(); }} class="flex items-center justify-center size-12 bg-white text-black hover:bg-primary hover:text-white border-2 border-black shadow-neo-sm transition-colors cursor-pointer">
+      <ZoomIn size={20}/>
+    </button>
+
+    {#if images.length > 0}
+      <button onclick={(e) => { e.stopPropagation(); removeImage(activeImageIndex); }} class="flex items-center justify-center size-12 bg-white text-black hover:bg-red-500 hover:text-white border-2 border-black shadow-neo-sm transition-colors cursor-pointer">
+        <Trash2 size={20}/>
+      </button>
+    {/if}
+  </div>
+  
+  <div class="absolute top-4 left-4 bg-green-500 text-black text-xs font-bold px-3 py-1 border-2 border-black uppercase shadow-neo-sm">Active</div>
+</div>
 
           <div class="p-4 flex items-center justify-between bg-[#111822] mt-1 border border-border-dark">
             <div class="flex flex-col">
