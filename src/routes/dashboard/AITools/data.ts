@@ -39,5 +39,10 @@ export const posts: Post[] = [
 		slug: 'SchoolTimetableGen',
 		title: 'School Timetable Gen',
 		description: 'Create complex class and activity timetables for students or teachers in seconds.'
+	},
+	{
+		slug: 'TaskDigitizer',
+		title: 'Task Digitizer',
+		description: 'Convert handwritten or image-based task lists into digital, manageable to-dos.'
 	}
 ];

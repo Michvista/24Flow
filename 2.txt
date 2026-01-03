@@ -137,3 +137,8 @@ convert this from html to svelte: <!DOCTYPE html>
         document.getElementById('timestamp').textContent = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
     </script>
 </body></html>
+
+
+npx create-next-app@latest newportfolio --yes
+cd newportfolio
+npm run dev

@@ -6,6 +6,7 @@
     import OverlapFixer from '$lib/components/dashboard/AIToolsHub/OverlapFixer.svelte';
     import LanguageTranscriber from '$lib/components/dashboard/AIToolsHub/LanguageTranscriber.svelte';
     import SchoolTimetableGen from '$lib/components/dashboard/AIToolsHub/SchoolTimetableGen.svelte';
+    import TaskDigitizer from '$lib/components/dashboard/AIToolsHub/TaskDigitizer.svelte';
 
     interface PostData {
         slug: string;
@@ -28,7 +29,8 @@
         Optimizer,
         OverlapFixer,
         LanguageTranscriber,
-        SchoolTimetableGen
+        SchoolTimetableGen,
+        TaskDigitizer
     };
 
     const SelectedComponent = componentMap[data.post.slug];
