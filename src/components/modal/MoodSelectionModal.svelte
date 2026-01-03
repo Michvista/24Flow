@@ -57,18 +57,21 @@
       <div class="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col items-center custom-scrollbar bg-[#0d1219]/50">
         <p class="text-slate-400 text-center mb-8 font-medium text-sm">Select a quadrant to sync your current headspace.</p>
 
-        <div class="relative w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 mb-10 shrink-0">
+        <div class="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 mb-10 shrink-0">
           <div class="w-full h-full rounded-full border-4 border-primary overflow-hidden relative bg-[#0d1219] shadow-[0_0_30px_rgba(25,115,240,0.15)]">
             <div class="w-full h-full grid grid-cols-2 grid-rows-2">
               {#each moods as mood}
                 <button 
                   onclick={() => selectedMood = mood.id}
-                  class="relative group border border-primary/20 transition-all focus:outline-none 
+                  class="relative group border border-primary/20 transition-all focus:outline-none flex items-center justify-center
                   {selectedMood === mood.id ? 'bg-primary text-white' : 'hover:bg-primary/10 text-slate-500 hover:text-white'}"
                 >
-                  <div class="absolute inset-0 flex flex-col items-center justify-center p-2">
-                    <mood.icon class="size-5 md:size-6 mb-1 transition-transform group-hover:scale-110" style="transform: rotate({mood.rotation}deg)" />
-                    <span class="text-[8px] md:text-[9px] font-black tracking-widest uppercase" style="transform: rotate({mood.rotation}deg)">
+                  <div 
+                    class="flex flex-col items-center justify-center transition-transform group-hover:scale-110"
+                    style="transform: rotate({mood.rotation}deg)"
+                  >
+                    <mood.icon class="size-6 md:size-7 mb-1" />
+                    <span class="text-[8px] md:text-[10px] font-black tracking-widest uppercase leading-none">
                       {mood.label}
                     </span>
                   </div>
@@ -77,7 +80,7 @@
             </div>
           </div>
 
-          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 bg-[#111822] rounded-full border-4 border-primary z-10 flex items-center justify-center shadow-[0_0_20px_rgba(25,115,240,0.4)]">
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 bg-[#111822] rounded-full border-4 border-primary z-30 flex items-center justify-center shadow-[0_0_20px_rgba(25,115,240,0.4)]">
             <div class="w-2 h-2 bg-primary rounded-full animate-ping"></div>
           </div>
 
@@ -128,17 +131,9 @@
   .shadow-neo { box-shadow: 8px 8px 0px 0px #1973f0; }
   .shadow-neo-sm { box-shadow: 4px 4px 0px 0px #ffffff; }
 
-  /* Smooth Custom Scrollbar */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: #0d1219;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #1973f0;
-    border-radius: 10px;
-  }
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #0d1219; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #1973f0; border-radius: 10px; }
 
   :global(.dark) .font-display {
     font-family: 'Space Grotesk', sans-serif;
