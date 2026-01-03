@@ -28,7 +28,7 @@ disabled: false    },
       icon: GraduationCap,
       color: "primary",
       link: "/dashboard/AITools/StudyTimetable",
-      disabled :true
+      disabled :false
     },
     {
       title: "Hour Block Optimizer",
