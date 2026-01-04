@@ -18,6 +18,18 @@
     let modalContainer = $state<HTMLElement>();
     let overlay = $state<HTMLElement>();
 
+        function resetForm() {
+        task = {
+            title: '',
+            subject: '',
+            type: 'deep_work',
+            date: '',
+            startTime: '',
+            duration: '60',
+            description: ''
+        };
+    }
+
     // GSAP Animation Logic
     $effect(() => {
         if (show) {
@@ -38,6 +50,7 @@
             duration: 0.2, 
             onComplete: () => {
                 show = false;
+                resetForm();
                 gsap.set(overlay, { display: 'none' });
             } 
         });
