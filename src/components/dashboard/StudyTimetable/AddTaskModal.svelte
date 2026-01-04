@@ -18,7 +18,7 @@
     let modalContainer = $state<HTMLElement>();
     let overlay = $state<HTMLElement>();
 
-        function resetForm() {
+    function resetForm() {
         task = {
             title: '',
             subject: '',
@@ -32,7 +32,7 @@
 
     // GSAP Animation Logic
     $effect(() => {
-        if (show) {
+        if (show && overlay && modalContainer) {
             // Animation when opening
             gsap.set(overlay, { display: 'flex' });
             gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3 });
@@ -44,6 +44,8 @@
     });
 
     function close() {
+        if (!modalContainer || !overlay) return;
+        
         gsap.to(modalContainer, { scale: 0.9, y: 20, opacity: 0, duration: 0.2 });
         gsap.to(overlay, { 
             opacity: 0, 
@@ -51,7 +53,9 @@
             onComplete: () => {
                 show = false;
                 resetForm();
-                gsap.set(overlay, { display: 'none' });
+                if (overlay) {
+                    gsap.set(overlay, { display: 'none' });
+                }
             } 
         });
     }
@@ -62,6 +66,7 @@
     }
 </script>
 
+{#if show}
 <div 
     bind:this={overlay}
     class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 overflow-y-auto"
@@ -99,14 +104,13 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="flex flex-col gap-2">
-                    <!-- <label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Subject</label> -->
-                  <label class="text-[#92a4c9] text-[10px] font-bold uppercase tracking-wider">Subject / Category</label>
-            <input 
-                bind:value={task.subject} 
-                class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none" 
-                placeholder="e.g. Mathematics" 
-                type="text"
-            />
+                    <label class="text-[#92a4c9] text-[10px] font-bold uppercase tracking-wider">Subject / Category</label>
+                    <input 
+                        bind:value={task.subject} 
+                        class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none placeholder-white/10" 
+                        placeholder="e.g. Mathematics" 
+                        type="text"
+                    />
                 </div>
 
                 <div class="flex flex-col gap-2">
@@ -127,11 +131,11 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="flex flex-col gap-2">
                     <label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Date</label>
-                    <input bind:value={task.date} class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none transition-colors shadow-sm [color-scheme:dark]" type="date"/>
+                    <input bind:value={task.date} required class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none transition-colors shadow-sm [color-scheme:dark]" type="date"/>
                 </div>
                 <div class="flex flex-col gap-2">
                     <label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Start Time</label>
-                    <input bind:value={task.startTime} class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none transition-colors shadow-sm [color-scheme:dark]" type="time"/>
+                    <input bind:value={task.startTime} required class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none transition-colors shadow-sm [color-scheme:dark]" type="time"/>
                 </div>
                 <div class="flex flex-col gap-2">
                     <label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Duration</label>
@@ -172,3 +176,10 @@
         </form>
     </div>
 </div>
+{/if}
+
+<style>
+    :global(.shadow-hard) { box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.5); }
+    :global(.shadow-hard-hover) { box-shadow: 6px 6px 0px 0px rgba(0,0,0,0.5); }
+    :global(.shadow-hard-sm) { box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.5); }
+</style>
