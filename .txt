@@ -1,9 +1,0 @@
- <p class="text-base text-gray-600 font-medium  {i === 0 ? 'w-[50%]' : ''} 
-                    {i === features.length - 1 ? 'w-[50%]' : ''}">
-                        {feature.description}
-                    </p>
-
-Add these:
- Sync sidebar calendar ↔ main grid
-
-Add Week / Day / Month logic
