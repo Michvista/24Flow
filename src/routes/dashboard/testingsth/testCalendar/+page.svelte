@@ -162,9 +162,10 @@
                         <p class={isEditMode ? "text-yellow-500 text-xs md:text-sm font-bold uppercase flex items-center gap-2" : "text-[#92a4c9] text-xs md:text-sm font-bold uppercase tracking-wider"}>
                             {#if isEditMode}<Edit3 size={14} /> Editing Schedule{:else}Generated Schedule{/if}
                         </p>
-                        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tight leading-none">
-                            {currentView === 'day' ? "Today's Focus" : `Week ${Math.max(0, weekOffset + 1)}: Exam Prep`}
+                                        <h1 class="text-3xl md:text-5xl font-black uppercase tracking-tight">
+                            {currentView === 'day' ? 'Today' : `Week ${Math.max(0, weekOffset + 1)}: Exam Prep`}
                         </h1>
+
                     </div>
                     <div class="flex gap-2 md:gap-3">
                         {#if isEditMode}
@@ -229,13 +230,15 @@
                     />
                 {:else if currentView === 'daily'}
                     <DayView 
-                        {scheduleData} {weekOffset} {isEditMode} {currentDayIndex}
+                        bind:scheduleData
+                        {weekOffset} {isEditMode} {currentDayIndex}
                         onDelete={handleDelete} {onDrop} {onDragStart}
                         onOpenAdd={() => showDetailedModal = true}
                     />
                 {:else}
                     <ListView 
-                        {scheduleData} {weekOffset} {isEditMode} {getDayDate}
+                        bind:scheduleData
+                        {weekOffset} {isEditMode} {getDayDate}
                         onDelete={handleDelete} {onDrop} {onDragStart}
                         onOpenAdd={() => showDetailedModal = true}
                     />
@@ -243,13 +246,11 @@
             </div>
 
             <button 
-                onclick={() => showDetailedModal = true} 
+                onclick={() => { showDetailedModal = true; console.log('Button clicked, modal should open'); }}
                 class="fixed bottom-6 right-6 md:bottom-10 md:right-10 size-14 md:size-16 bg-white text-primary rounded shadow-hard hover:shadow-hard-hover hover:-translate-y-1 transition-all flex items-center justify-center border-2 border-border-dark z-[100] group"
                 aria-label="Add new task"
             >
-                <div class="pointer-events-none flex items-center justify-center transition-transform duration-300 {isEditMode ? 'group-hover:rotate-90' : ''}">
-                    <Plus size={32} />
-                </div>
+                <Plus size={32} class="transition-transform duration-300 {isEditMode ? 'group-hover:rotate-90' : ''}" />
             </button>
         </main>
 

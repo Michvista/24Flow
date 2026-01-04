@@ -2,7 +2,7 @@
     import { Timer, Calendar, Trash2, GripVertical, Plus } from 'lucide-svelte';
     import type { Task } from '$lib/types';
 
-    let { scheduleData, weekOffset, isEditMode, getDayDate, onDelete, onDrop, onDragStart, onOpenAdd } = $props();
+    let { scheduleData = $bindable(), weekOffset, isEditMode, getDayDate, onDelete, onDrop, onDragStart, onOpenAdd } = $props();
 
     let groupedTasks = $derived.by(() => {
         const groups = [];
@@ -15,27 +15,46 @@
         return groups;
     });
 
-    let draggedTask = $state<{task: Task, groupIndex: number, taskIndex: number} | null>(null);
+    let draggedTask = $state<Task | null>(null);
 
-    function handleDragStart(e: DragEvent, task: Task, groupIndex: number, taskIndex: number) {
+    function handleDragStart(e: DragEvent, task: Task) {
         if (!isEditMode) return;
-        draggedTask = { task, groupIndex, taskIndex };
+        draggedTask = task;
+        if (e.dataTransfer) {
+            e.dataTransfer.effectAllowed = "move";
+        }
         onDragStart(e, task, 'calendar');
     }
 
-    function handleDrop(e: DragEvent, targetGroupIndex: number, targetTaskIndex: number) {
+    function handleDrop(e: DragEvent, targetTask: Task) {
         if (!isEditMode || !draggedTask) return;
         e.preventDefault();
+        e.stopPropagation();
 
-        // Reorder within same day or move to different day
-        const targetDayIndex = groupedTasks[targetGroupIndex].dayIndex;
+        const draggedTaskData = draggedTask;
+        const targetDayIndex = targetTask.day;
+        const targetTime = targetTask.time;
         
-        if (draggedTask.task.day !== targetDayIndex) {
-            // Moving to different day
-            const updatedTask = { ...draggedTask.task, day: targetDayIndex };
-            scheduleData = scheduleData.map(t => 
-                t.id === draggedTask.task.id ? updatedTask : t
-            );
+        // If moving to different day, update day
+        if (draggedTaskData.day !== targetDayIndex) {
+            scheduleData = scheduleData.map(t => {
+                if (t.id === draggedTaskData.id) {
+                    return { ...t, day: targetDayIndex, time: targetTime };
+                }
+                return t;
+            });
+        } else {
+            // Same day - swap times
+            const draggedTime = draggedTaskData.time;
+            scheduleData = scheduleData.map(t => {
+                if (t.id === draggedTaskData.id) {
+                    return { ...t, time: targetTime };
+                }
+                if (t.id === targetTask.id) {
+                    return { ...t, time: draggedTime };
+                }
+                return t;
+            });
         }
         
         draggedTask = null;
@@ -44,6 +63,7 @@
     function handleDragOver(e: DragEvent) {
         if (isEditMode) {
             e.preventDefault();
+            e.stopPropagation();
         }
     }
 
@@ -90,13 +110,13 @@
             </div>
 
             <div class="grid gap-4">
-                {#each group.tasks as task, taskIndex}
+                {#each group.tasks as task}
                     <div 
                         class="flex items-stretch bg-card-dark border-2 border-border-dark rounded-xl overflow-hidden shadow-sm hover:border-primary/30 transition-all group relative {isEditMode ? 'cursor-grab active:cursor-grabbing' : ''}"
                         draggable={isEditMode}
-                        ondragstart={(e) => handleDragStart(e, task, groupIndex, taskIndex)}
+                        ondragstart={(e) => handleDragStart(e, task)}
                         ondragover={handleDragOver}
-                        ondrop={(e) => handleDrop(e, groupIndex, taskIndex)}
+                        ondrop={(e) => handleDrop(e, task)}
                     >
                         {#if isEditMode}
                             <div class="w-10 flex items-center justify-center bg-background-dark/50 border-r border-border-dark cursor-grab active:cursor-grabbing">
