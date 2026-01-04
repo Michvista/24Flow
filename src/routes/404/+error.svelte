@@ -46,7 +46,7 @@
 	<div class="border-b-2 border-slate-700 bg-yellow-400 text-slate-900 overflow-hidden py-2 select-none">
 		<div class="marquee-container">
 			<div class="marquee-content font-bold text-sm tracking-widest uppercase">
-				ERROR // 404 // MISSING PAGE // SYSTEM MALFUNCTION // TIME NOT FOUND // ERROR // 404 // MISSING PAGE // SYSTEM MALFUNCTION // TIME NOT FOUND // ERROR // 404 // MISSING PAGE // SYSTEM MALFUNCTION // TIME NOT FOUND //
+				ERROR // 404 // MISSING PAGE // SYSTEM MALFUNCTION // PAGE NOT FOUND // ERROR // 404 // MISSING PAGE // SYSTEM MALFUNCTION // PAGE NOT FOUND // ERROR // 404 // MISSING PAGE // SYSTEM MALFUNCTION // PAGE NOT FOUND //
 			</div>
 		</div>
 	</div>
