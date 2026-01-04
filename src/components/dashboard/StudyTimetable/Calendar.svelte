@@ -163,6 +163,8 @@
             scheduleData = scheduleData.filter(i => i.id !== draggedItem.id);
         }
         scheduleData = [...scheduleData, { ...draggedItem, id: Math.random(), week: weekOffset, day, time }];
+
+isSidebarOpen = false;        
         draggedItem = null;
     }
 </script>
