@@ -92,7 +92,7 @@
 
 <aside 
     bind:this={sidebarElement}
-    class="fixed bg-background-dark lg:relative inset-y-0 left-0 w-80 bg-card-dark border-r-2 lg:border-r-0 lg:border-l-2 border-border-dark z-50 lg:z-10 flex flex-col shrink-0 -translate-x-full lg:translate-x-0"
+    class="fixed lg:relative inset-y-0 left-0 w-80 bg-card-dark border-r-2 lg:border-r-0 lg:border-l-2 border-border-dark z-50 lg:z-10 flex flex-col shrink-0 -translate-x-full lg:translate-x-0"
 >
     <div class="p-6 border-b-2 border-border-dark bg-background-dark flex justify-between items-center shrink-0 h-[88px]">
         {#if isEditMode}

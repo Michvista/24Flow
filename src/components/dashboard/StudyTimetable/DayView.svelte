@@ -2,7 +2,7 @@
     import { Timer, Play, Coffee, Trash2, GripVertical, Plus } from 'lucide-svelte';
     import type { Task } from '$lib/types';
 
-    let { scheduleData, weekOffset, isEditMode, currentDayIndex, onDelete, onDrop, onDragStart, onOpenAdd } = $props();
+    let { scheduleData = $bindable(), weekOffset, isEditMode, currentDayIndex, onDelete, onDrop, onDragStart, onOpenAdd } = $props();
 
     let daysTasks = $derived(
         scheduleData
@@ -22,38 +22,44 @@
         return `${endH.toString().padStart(2,'0')}:${endM.toString().padStart(2,'0')}`;
     }
 
-    let draggedItemIndex = $state<number | null>(null);
+    let draggedTask = $state<Task | null>(null);
 
-    function handleDragStart(e: DragEvent, task: Task, index: number) {
+    function handleDragStart(e: DragEvent, task: Task) {
         if (!isEditMode) return;
-        draggedItemIndex = index;
+        draggedTask = task;
+        if (e.dataTransfer) {
+            e.dataTransfer.effectAllowed = "move";
+        }
         onDragStart(e, task, 'calendar');
     }
 
-    function handleDrop(e: DragEvent, targetIndex: number) {
-        if (!isEditMode) return;
+    function handleDrop(e: DragEvent, targetTask: Task) {
+        if (!isEditMode || !draggedTask) return;
         e.preventDefault();
+        e.stopPropagation();
         
-        if (draggedItemIndex === null) return;
+        // Swap times between dragged and target task
+        const draggedTime = draggedTask.time;
+        const targetTime = targetTask.time;
         
-        const items = [...daysTasks];
-        const [reorderedItem] = items.splice(draggedItemIndex, 1);
-        items.splice(targetIndex, 0, reorderedItem);
-        
-        // Update times based on new order
-        items.forEach((item, idx) => {
-            const task = scheduleData.find(t => t.id === item.id);
-            if (task && idx > 0) {
-                task.time = items[idx - 1].time; // Simplified - in production, calculate proper time slots
+        // Update the schedule data
+        scheduleData = scheduleData.map(t => {
+            if (t.id === draggedTask.id) {
+                return { ...t, time: targetTime };
             }
+            if (t.id === targetTask.id) {
+                return { ...t, time: draggedTime };
+            }
+            return t;
         });
         
-        draggedItemIndex = null;
+        draggedTask = null;
     }
 
     function handleDragOver(e: DragEvent) {
         if (isEditMode) {
             e.preventDefault();
+            e.stopPropagation();
         }
     }
 </script>
@@ -64,13 +70,13 @@
         <div class="p-4 md:p-6 font-black uppercase text-[10px] md:text-xs text-[#92a4c9] tracking-widest pl-8 md:pl-12">Activity Details</div>
     </div>
 
-    {#each daysTasks as task, index}
+    {#each daysTasks as task}
         <div 
-            class="grid grid-cols-[80px_1fr] md:grid-cols-[120px_1fr] border-b-2 border-border-dark last:border-b-0 min-h-[160px] relative group"
+            class="grid grid-cols-[80px_1fr] md:grid-cols-[120px_1fr] border-b-2 border-border-dark last:border-b-0 min-h-[160px] relative group {isEditMode ? 'cursor-grab active:cursor-grabbing' : ''}"
             draggable={isEditMode}
-            ondragstart={(e) => handleDragStart(e, task, index)}
+            ondragstart={(e) => handleDragStart(e, task)}
             ondragover={handleDragOver}
-            ondrop={(e) => handleDrop(e, index)}
+            ondrop={(e) => handleDrop(e, task)}
         >
             <div class="p-4 md:p-6 border-r-2 border-border-dark flex flex-col items-center md:items-end justify-start pt-8 gap-1">
                 <span class="text-white font-black font-mono text-lg md:text-2xl">{task.time}</span>

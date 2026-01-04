@@ -1,141 +1,185 @@
 <script lang="ts">
-  import { Bolt, CheckCircle, Frown, Moon, X } from 'lucide-svelte';
-  import { fade, scale } from 'svelte/transition';
+    import { X, PlusCircle, ChevronDown, Calendar, Timer, Info, ArrowLeft } from 'lucide-svelte';
+    import { gsap } from 'gsap';
 
-  // Props
-  let { isOpen = $bindable(false), onConfirm } = $props();
+    let { show = $bindable(), onAdd } = $props();
 
-  // State
-  let selectedMood = $state('PRODUCTIVE');
+    // Form State
+    let task = $state({
+        title: '',
+        subject: '',
+        type: 'deep_work',
+        date: '',
+        startTime: '',
+        duration: '60',
+        description: ''
+    });
 
-  const moods = [
-    { id: 'STRESSED', icon: Bolt, rotation: -45, label: 'STRESSED' },
-    { id: 'PRODUCTIVE', icon: CheckCircle, rotation: 45, label: 'PRODUCTIVE' },
-    { id: 'UNMOTIVATED', icon: Frown, rotation: -135, label: 'UNMOTIVATED' },
-    { id: 'TIRED', icon: Moon, rotation: 135, label: 'TIRED' }
-  ];
+    let modalContainer = $state<HTMLElement>();
+    let overlay = $state<HTMLElement>();
 
-  let currentRotation = $derived(moods.find(m => m.id === selectedMood)?.rotation || 0);
+    function resetForm() {
+        task = {
+            title: '',
+            subject: '',
+            type: 'deep_work',
+            date: '',
+            startTime: '',
+            duration: '60',
+            description: ''
+        };
+    }
 
-  function handleConfirm() {
-    onConfirm?.(selectedMood);
-    isOpen = false;
-  }
+    // GSAP Animation Logic
+    $effect(() => {
+        if (show && overlay && modalContainer) {
+            // Animation when opening
+            gsap.set(overlay, { display: 'flex' });
+            gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+            gsap.fromTo(modalContainer, 
+                { scale: 0.9, y: 20, opacity: 0 }, 
+                { scale: 1, y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.7)" }
+            );
+        }
+    });
+
+    function close() {
+        if (!modalContainer || !overlay) return;
+        
+        gsap.to(modalContainer, { scale: 0.9, y: 20, opacity: 0, duration: 0.2 });
+        gsap.to(overlay, { 
+            opacity: 0, 
+            duration: 0.2, 
+            onComplete: () => {
+                show = false;
+                resetForm();
+                if (overlay) {
+                    gsap.set(overlay, { display: 'none' });
+                }
+            } 
+        });
+    }
+
+    function handleSubmit() {
+        onAdd?.({ ...task });
+        close();
+    }
 </script>
 
-{#if isOpen}
-  <div 
-    transition:fade={{ duration: 200 }}
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/70 font-display"
-  >
-    <div class="fixed inset-0 pointer-events-none opacity-10">
-      <div class="absolute inset-0 bg-[radial-gradient(#1973f0_1px,transparent_1px)] [background-size:40px_40px]"></div>
-    </div>
-
+{#if show}
+<div 
+    bind:this={overlay}
+    class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 overflow-y-auto"
+>
     <div 
-      transition:scale={{ start: 0.95, duration: 200 }}
-      class="relative flex flex-col w-full max-w-[500px] max-h-[90vh] bg-[#111822] border-4 border-primary shadow-neo overflow-hidden"
+        bind:this={modalContainer}
+        class="bg-card-dark border-2 border-border-dark w-full max-w-2xl rounded shadow-hard flex flex-col my-auto"
     >
-      <div class="flex items-stretch border-b-4 border-primary bg-[#111822] z-20 shrink-0">
-        <div class="flex-1 p-4 flex flex-col justify-center">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-            <p class="text-primary text-[10px] font-bold font-mono tracking-widest uppercase">
-              {new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit' })} // LOG_SYSTEM
-            </p>
-          </div>
-          <h2 class="text-white text-lg font-bold leading-none uppercase tracking-tighter">Log Your State</h2>
-        </div>
-        <button 
-          onclick={() => isOpen = false}
-          class="w-16 border-l-4 border-primary bg-[#111822] hover:bg-red-500 group transition-all flex items-center justify-center cursor-pointer"
-        >
-          <X class="text-primary group-hover:text-white size-6 stroke-[3]" />
-        </button>
-      </div>
-
-      <div class="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col items-center custom-scrollbar bg-[#0d1219]/50">
-        <p class="text-slate-400 text-center mb-8 font-medium text-sm">Select a quadrant to sync your current headspace.</p>
-
-        <div class="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 mb-10 shrink-0">
-          <div class="w-full h-full rounded-full border-4 border-primary overflow-hidden relative bg-[#0d1219] shadow-[0_0_30px_rgba(25,115,240,0.15)]">
-            <div class="w-full h-full grid grid-cols-2 grid-rows-2">
-              {#each moods as mood}
-                <button 
-                  onclick={() => selectedMood = mood.id}
-                  class="relative group border border-primary/20 transition-all focus:outline-none flex items-center justify-center
-                  {selectedMood === mood.id ? 'bg-primary text-white' : 'hover:bg-primary/10 text-slate-500 hover:text-white'}"
-                >
-                  <div 
-                    class="flex flex-col items-center justify-center transition-transform group-hover:scale-110"
-                    style="transform: rotate({mood.rotation}deg)"
-                  >
-                    <mood.icon class="size-6 md:size-7 mb-1" />
-                    <span class="text-[8px] md:text-[10px] font-black tracking-widest uppercase leading-none">
-                      {mood.label}
-                    </span>
-                  </div>
+        <div class="px-6 py-4 border-b-2 border-border-dark bg-background-dark flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button onclick={close} class="size-10 flex items-center justify-center bg-card-dark border-2 border-border-dark hover:border-white/40 text-white rounded transition-all shadow-hard-sm">
+                    <ArrowLeft size={20} />
                 </button>
-              {/each}
+                <div>
+                    <p class="text-[#92a4c9] text-[10px] font-bold uppercase tracking-wider">New Entry</p>
+                    <h2 class="text-white text-xl font-black uppercase">Add New Task</h2>
+                </div>
             </div>
-          </div>
+            <button onclick={close} class="text-gray-400 hover:text-white transition-colors">
+                <X size={24} />
+            </button>
+        </div>
 
-          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 bg-[#111822] rounded-full border-4 border-primary z-30 flex items-center justify-center shadow-[0_0_20px_rgba(25,115,240,0.4)]">
-            <div class="w-2 h-2 bg-primary rounded-full animate-ping"></div>
-          </div>
-
-          <div 
-            class="absolute top-1/2 left-1/2 w-full h-full pointer-events-none z-20 transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1)" 
-            style="transform: translate(-50%, -50%) rotate({currentRotation}deg);"
-          >
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 -mt-3 md:-mt-4">
-              <div class="w-0 h-0 border-l-[10px] md:border-l-[14px] border-l-transparent border-r-[10px] md:border-r-[14px] border-r-transparent border-b-[18px] md:border-b-[24px] border-b-primary filter drop-shadow-[0_0_8px_rgba(25,115,240,0.8)]"></div>
+        <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="p-6 md:p-8 flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+                <label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Task Title</label>
+                <input 
+                    bind:value={task.title}
+                    required
+                    class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold placeholder-white/10 rounded h-14 px-4 outline-none transition-colors shadow-sm" 
+                    placeholder="e.g. Calculus: Limits Review" 
+                    type="text"
+                />
             </div>
-          </div>
 
-          <div class="absolute -inset-4 border border-dashed border-primary/20 rounded-full pointer-events-none animate-[spin_30s_linear_infinite]"></div>
-        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#92a4c9] text-[10px] font-bold uppercase tracking-wider">Subject / Category</label>
+                    <input 
+                        bind:value={task.subject} 
+                        class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none placeholder-white/10" 
+                        placeholder="e.g. Mathematics" 
+                        type="text"
+                    />
+                </div>
 
-        <div class="w-full mb-8">
-          <div class="bg-[#111822] border-2 border-primary/30 p-4 relative overflow-hidden group">
-            <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-            <span class="text-primary text-[10px] block mb-1 font-mono tracking-[0.3em] font-bold">CURRENT_STATE_READY</span>
-            <h2 class="text-white tracking-tighter text-2xl md:text-3xl font-black leading-tight uppercase italic">
-              {selectedMood}
-            </h2>
-          </div>
-        </div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Type</label>
+                    <div class="relative">
+                        <select bind:value={task.type} class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none appearance-none cursor-pointer transition-colors shadow-sm">
+                            <option value="deep_work">Deep Work</option>
+                            <option value="review">Review Session</option>
+                            <option value="reading">Reading</option>
+                            <option value="lab">Lab Prep</option>
+                            <option value="assignment">Assignment</option>
+                        </select>
+                        <ChevronDown size={18} class="absolute right-4 top-1/2 -translate-y-1/2 text-[#92a4c9] pointer-events-none" />
+                    </div>
+                </div>
+            </div>
 
-        <div class="flex gap-3 w-full mt-auto">
-          <button 
-            onclick={() => isOpen = false}
-            class="flex-1 h-12 bg-transparent border-2 border-slate-700 text-slate-400 text-xs font-bold tracking-widest hover:border-white hover:text-white transition-all cursor-pointer"
-          >
-            DISCARD
-          </button>
-          <button 
-            onclick={handleConfirm}
-            class="flex-[2] h-12 bg-primary border-2 border-primary text-white text-xs font-bold tracking-widest shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo transition-all cursor-pointer"
-          >
-            CONFIRM_ENTRY
-          </button>
-        </div>
-      </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Date</label>
+                    <input bind:value={task.date} required class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none transition-colors shadow-sm [color-scheme:dark]" type="date"/>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Start Time</label>
+                    <input bind:value={task.startTime} required class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none transition-colors shadow-sm [color-scheme:dark]" type="time"/>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Duration</label>
+                    <div class="relative">
+                        <select bind:value={task.duration} class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none appearance-none cursor-pointer transition-colors shadow-sm">
+                            <option value="30">30 min</option>
+                            <option value="45">45 min</option>
+                            <option value="60">1 h</option>
+                            <option value="90">1.5 h</option>
+                            <option value="120">2 h</option>
+                        </select>
+                        <Timer size={18} class="absolute right-4 top-1/2 -translate-y-1/2 text-[#92a4c9] pointer-events-none" />
+                    </div>
+                </div>
+            </div>
 
-      <div class="absolute top-14 left-0 w-full h-px bg-primary/10 pointer-events-none"></div>
+            <div class="flex flex-col gap-2">
+                <label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Description</label>
+                <textarea bind:value={task.description} class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-medium placeholder-white/10 rounded p-4 h-24 outline-none resize-none transition-colors shadow-sm" placeholder="Add goals or materials..."></textarea>
+            </div>
+
+            <div class="flex flex-col-reverse md:flex-row items-center justify-end gap-4 pt-6 border-t-2 border-border-dark">
+                <button 
+                    type="button" 
+                    onclick={close}
+                    class="w-full md:w-auto h-12 px-6 rounded border-2 border-transparent hover:border-border-dark text-[#92a4c9] hover:text-white font-bold uppercase tracking-wide transition-all"
+                >
+                    Cancel
+                </button>
+                <button 
+                    type="submit"
+                    class="w-full md:w-auto group flex items-center justify-center gap-2 h-12 px-8 bg-primary border-2 border-transparent hover:border-white/20 text-white font-bold uppercase tracking-wide rounded transition-all shadow-hard hover:shadow-hard-hover hover:-translate-y-0.5"
+                >
+                    <PlusCircle size={20} />
+                    <span>Add to Timetable</span>
+                </button>
+            </div>
+        </form>
     </div>
-  </div>
+</div>
 {/if}
 
 <style>
-  .shadow-neo { box-shadow: 8px 8px 0px 0px #1973f0; }
-  .shadow-neo-sm { box-shadow: 4px 4px 0px 0px #ffffff; }
-
-  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-  .custom-scrollbar::-webkit-scrollbar-track { background: #0d1219; }
-  .custom-scrollbar::-webkit-scrollbar-thumb { background: #1973f0; border-radius: 10px; }
-
-  :global(.dark) .font-display {
-    font-family: 'Space Grotesk', sans-serif;
-  }
+    :global(.shadow-hard) { box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.5); }
+    :global(.shadow-hard-hover) { box-shadow: 6px 6px 0px 0px rgba(0,0,0,0.5); }
+    :global(.shadow-hard-sm) { box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.5); }
 </style>
