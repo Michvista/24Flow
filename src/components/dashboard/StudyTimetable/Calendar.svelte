@@ -60,7 +60,7 @@
             day: dayIdx, 
             time: formattedTime,
             title: data.title,
-            type: data.subject || data.type, // Uses the custom subject if provided
+            type:  data.type, // Uses the custom subject if provided
             duration: data.duration + 'm',
             color: 'bg-primary', 
             subColor: 'text-blue-200'
