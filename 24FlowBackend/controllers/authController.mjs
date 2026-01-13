@@ -25,9 +25,6 @@ export const register = async (req, res, next) => {
 				name,
 				email,
 				password: hashedPassword,
-				events: [],
-				tasks: [],
-				moods: []
 			}
 		});
 
