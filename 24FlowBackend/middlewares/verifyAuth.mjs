@@ -7,28 +7,30 @@ export const protect = async (req, res, next) => {
 	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
 		try {
 			token = req.headers.authorization.split(' ')[1];
-			const decoded = jwt.verify(token, process.env.JWT_SECRET);
+			const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-			req.user = await prisma.user.findUnique({
-				where: { id: decoded.id },
-				omit: { password: true }
+			// 1. Find the user
+			const user = await prisma.user.findUnique({
+				where: { id: decoded.id }, omit: { password: true }
 			});
 
-			req.user.events = req.user.events ?? [];
-			req.user.tasks = req.user.tasks ?? [];
-			req.user.moods = req.user.moods ?? [];
-
-			if (!req.user) {
+			if (!user) {
 				return res.status(401).json({ message: 'User no longer exists' });
 			}
 
-			next();
+			user.events = user.events ?? [];
+			user.tasks = user.tasks ?? [];
+			user.moods = user.moods ?? [];
+
+			req.user = user;
+			return next(); 
 		} catch (error) {
-			res.status(401).json({ message: 'Not authorized, token failed' });
+			console.error('JWT Verify Error:', error.message);
+			return res.status(401).json({ message: 'Not authorized, token failed' });
 		}
 	}
 
 	if (!token) {
-		res.status(401).json({ message: 'Not authorized, no token' });
+		return res.status(401).json({ message: 'Not authorized, no token' });
 	}
 };
