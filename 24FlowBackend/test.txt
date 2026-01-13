@@ -1,0 +1,2 @@
+clientID = 984791839404-onu53i6583vtj2e32bcb48048tsmkdel.apps.googleusercontent.com
+clientsecret = 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
