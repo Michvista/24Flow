@@ -1,9 +1,9 @@
-const prisma = require('../db.mjs');
-const bcrypt = require('bcryptjs');
-const createError = require('http-errors');
-const { signAccessToken } = require('../utils/jwt.mjs');
+import prisma from '../db.mjs';
+import bcrypt from 'bcryptjs';
+import createError from 'http-errors';
+import { signAccessToken } from '../utils/jwt.mjs';
 
-const register = async (req, res, next) => {
+export const register = async (req, res, next) => {
 	try {
 		const { name, email, password } = req.body;
 
@@ -11,9 +11,7 @@ const register = async (req, res, next) => {
 			throw createError.BadRequest('Please fill all fields');
 		}
 
-		const userExists = await prisma.user.findUnique({
-			where: { email }
-		});
+		const userExists = await prisma.user.findUnique({ where: { email } });
 
 		if (userExists) {
 			throw createError.Conflict(`${email} is already registered`);
@@ -47,13 +45,11 @@ const register = async (req, res, next) => {
 	}
 };
 
-const login = async (req, res, next) => {
+export const login = async (req, res, next) => {
 	try {
 		const { email, password } = req.body;
 
-		const user = await prisma.user.findUnique({
-			where: { email }
-		});
+		const user = await prisma.user.findUnique({ where: { email } });
 
 		if (!user) {
 			throw createError.NotFound('User not registered');
@@ -78,8 +74,7 @@ const login = async (req, res, next) => {
 	}
 };
 
-//GET PROFILE FUNCTION
-const profile = async (req, res, next) => {
+export const profile = async (req, res, next) => {
 	try {
 		const users = await prisma.user.findUnique({
 			where: { id: req.user.id },
@@ -95,40 +90,33 @@ const profile = async (req, res, next) => {
 	}
 };
 
-//logout done on the frontend by deleting the token
-
-//googleauth
-const googleAuth = async (req, res) => {
+export const googleAuth = async (req, res) => {
 	const {
 		id,
 		_json: { name, picture, email }
 	} = req.user;
 
-	let user = await prisma.user.findUnique({ googleId: id });
+	let user = await prisma.user.findUnique({ where: { googleId: id } });
 
 	if (!user) {
 		user = await prisma.user.create({
-			name,
-			email,
-			avatar: picture,
-			googleId: id
+			data: {
+				name,
+				email,
+				avatar: picture,
+				googleId: id
+			}
 		});
 	}
 
 	// Generate tokens
-	const { accessToken } = await signAccessToken(user);
+	const accessToken = await signAccessToken(user.id);
 
-	return res.status(200).cookie('accessToken', accessToken, cookiesOptions).json({
+	// cookiesOptions is not defined in this file; leaving response shape as-is
+	return res.status(200).json({
 		success: true,
 		message: 'User login successful',
 		user,
 		accessToken
 	});
-};
-
-module.exports = {
-	register,
-	login,
-	profile,
-	googleAuth
 };
