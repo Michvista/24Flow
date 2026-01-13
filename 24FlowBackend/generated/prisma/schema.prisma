@@ -15,6 +15,8 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
+  googleId  String?  @unique
+  avatar    String?
   email     String   @unique
   name      String?
   createdAt DateTime @default(now())

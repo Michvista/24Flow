@@ -1,7 +1,6 @@
-
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const dotenv = require('dotenv');
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -13,10 +12,10 @@ passport.use(
 			callbackURL: process.env.GOOGLE_CALLBACK_URL
 		},
 		function (accessToken, refreshToken, profile, done) {
-			// Profile contains the google user info
+			// Return raw profile info
 			return done(null, profile);
 		}
 	)
 );
 
-module.exports = passport; // Use module.exports instead of export default
+export default passport;

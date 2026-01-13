@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken');
-const prisma = require('../db.mjs');
+import jwt from 'jsonwebtoken';
+import prisma from '../db.mjs';
 
-exports.protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
 	let token;
 
 	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {

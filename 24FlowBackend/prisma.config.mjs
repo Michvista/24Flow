@@ -8,6 +8,6 @@ export default defineConfig({
 	},
 	datasource: {
 		// Use the type-safe env() helper provided by Prisma
-		url: env('DIRECT_DATABASE_URL')
+		url: env('DATABASE_URL')
 	}
 });
