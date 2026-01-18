@@ -107,41 +107,44 @@ let dateFormat = $state('MM/DD/YYYY');
 onMount(async () => {
     avatarUrl = generateRandomAvatar();
     
-    // Check if user exists in the data prop
-    if (data?.user) {
-        displayName = data.user.name || '';
-        username = data.user.username || '';
-        email = data.user.email || '';
-        bio = data.user.bio || '';
-        console.log('User loaded from props:', data.user);
-    } else {
-        const formData = {
-        name: displayName,
-        username,
-        email,
-        bio,
-        // Include preferences
-        preferences: {
-            timezone,
-            dateFormat
+    // Helper function to assign user data to state variables
+    const assignUserData = (userData) => {
+        displayName = userData.name || '';
+        username = userData.username || '';
+        email = userData.email || '';
+        bio = userData.bio || '';
+        
+        // Populate preferences if they exist in the record
+        if (userData.preferences) {
+            timezone = userData.preferences.timezone || '(GMT+00:00) UTC';
+            dateFormat = userData.preferences.dateFormat || 'MM/DD/YYYY';
         }
     };
+
+    // 1. Check if user exists in the data prop (Fastest)
+    if (data?.user) {
+        assignUserData(data.user);
+        console.log('User loaded from props:', data.user);
+    } 
+    // 2. Fallback: Manual fetch if props are missing
+    else {
         try {
-            const res = await fetch('http://localhost:3000/auth/profile', { credentials: 'include' });
+            const res = await fetch('http://localhost:3000/auth/profile', { 
+                credentials: 'include' 
+            });
+            
             if (res.ok) {
                 const result = await res.json();
-                const fetchedUser = result.data;
-                displayName = fetchedUser.name || '';
-                username = fetchedUser.username || '';
-                email = fetchedUser.email || '';
-                bio = fetchedUser.bio || '';
+                if (result.data) {
+                    assignUserData(result.data);
+                    console.log('User loaded from fallback fetch:', result.data);
+                }
             }
         } catch (err) {
-            console.error("Could not load user data", err);
+            console.error("Could not load user data via fallback:", err);
         }
     }
 });
-
 	function toggleMobileSidebar() {
 		isSidebarOpen = !isSidebarOpen;
 		if (isSidebarOpen) {
@@ -152,14 +155,19 @@ onMount(async () => {
 	}
 
 const handleUpdate = async () => {
-    if (isUpdating) return; // Prevent double submissions
+    if (isUpdating) return; 
     
     isUpdating = true;
+    
     const formData = {
         name: displayName,
         username: username,
         email: email,
-        bio: bio
+        bio: bio,
+        preferences: {
+            timezone: timezone, 
+            dateFormat: dateFormat
+        }
     };
 
     try {
@@ -174,7 +182,7 @@ const handleUpdate = async () => {
 
         if (result.requiresLogout) {
             window.location.href = '/login?message=Email updated. Please log in again.';
-            return; // Exit early as we are redirecting
+            return;
         } 
         
         if (res.ok) {
@@ -185,7 +193,7 @@ const handleUpdate = async () => {
     } catch (err) {
         notifyError("Network Error", "Could not connect to server.");
     } finally {
-        isUpdating = false; // Turn off loading state
+        isUpdating = false; 
     }
 };
 </script>
