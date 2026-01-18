@@ -1,19 +1,18 @@
 <script>
-    // Import the new dynamic WeekCalendar component
-    import WeekCalendar from "../../../components/dashboard/WeekCalendar.svelte";
+	// Import the new dynamic WeekCalendar component
+	import WeekCalendar from '../../../components/dashboard/WeekCalendar.svelte';
 
-    // Keep state variables used in the header if they are still relevant
-    let currentView = 'Week'; 
-    
-    // Note: currentTimeStyle is now handled internally by WeekCalendar.svelte, 
-    // but keep it if you still use it elsewhere.
+	// Keep state variables used in the header if they are still relevant
+	let currentView = 'Week';
+
+	// Note: currentTimeStyle is now handled internally by WeekCalendar.svelte,
+	// but keep it if you still use it elsewhere.
 </script>
 
-<svelte:head>
-    </svelte:head>
+<svelte:head></svelte:head>
 
 <div class="font-display bg-primary-bg text-off-white flex h-screen w-full flex-col">
-    <!-- <header class="flex w-full items-center justify-between border-b-2 border-black bg-primary-accent px-6 py-3">
+	<!-- <header class="flex w-full items-center justify-between border-b-2 border-black bg-primary-accent px-6 py-3">
         <h1 class="text-2xl font-bold uppercase text-black">Scheduler</h1>
         <div class="flex items-center gap-6">
             <div class="flex items-center gap-2">
@@ -43,9 +42,7 @@
         </div>
     </header> -->
 
-    <main class="flex flex-1 overflow-hidden">
-        
-        <WeekCalendar />
-
-        </main>
+	<main class="flex flex-1 overflow-hidden">
+		<WeekCalendar />
+	</main>
 </div>

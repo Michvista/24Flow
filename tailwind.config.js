@@ -9,7 +9,7 @@ export default {
 				robson: ['Robson', 'sans-serif'],
 				poppins: ['Poppins', 'sans-serif'],
 				montserrat: ['Montserrat', 'sans-serif'],
-				display: ['Space Grotesk', 'sans-serif'], 
+				display: ['Space Grotesk', 'sans-serif'],
 				monoton: ['Monoton', 'sans-serif'],
 				'display-mono': ['IBM Plex Mono', 'monospace']
 			},

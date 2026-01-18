@@ -11,7 +11,8 @@ export const protect = async (req, res, next) => {
 
 			// 1. Find the user
 			const user = await prisma.user.findUnique({
-				where: { id: decoded.id }, omit: { password: true }
+				where: { id: decoded.id },
+				omit: { password: true }
 			});
 
 			if (!user) {
@@ -23,7 +24,7 @@ export const protect = async (req, res, next) => {
 			user.moods = user.moods ?? [];
 
 			req.user = user;
-			return next(); 
+			return next();
 		} catch (error) {
 			console.error('JWT Verify Error:', error.message);
 			return res.status(401).json({ message: 'Not authorized, token failed' });
