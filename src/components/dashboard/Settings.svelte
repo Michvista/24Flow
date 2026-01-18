@@ -16,13 +16,18 @@
 		Moon,
 		Timer,
 		ShieldCheck,
-		Zap
+		Zap,
+		RefreshCw
 	} from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import gsap from 'gsap';
 
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../SonnerToast.svelte';
+let { data = {} } = $props();
+
+// Use optional chaining or a fallback for user
+const user = $derived(data?.user || {});
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
@@ -54,36 +59,32 @@
 		});
 	}
 
-	let displayName = 'Alex';
-	let username = 'alex_24flower';
-	let email = 'alex@example.com';
-	let bio = 'Product designer and time management enthusiast.';
-	let avatarUrl = '';
-
-	// Tab State
-	let currentTab = 'settings'; // 'settings', 'notifications', 'billing'
+	
 
 	// Sidebar State
 	let isSidebarOpen = false;
-	let mobileSidebarElem;
+	let mobileSidebarElem: HTMLElement;
 
-	// Sleep State
-	let bedtime = '23:00';
-	let wakeTime = '07:00';
+	// 1. Change your declarations to use $state
+let bedtime = $state('23:00');
+let wakeTime = $state('07:00');
 
-	// Reactive Calculation for Sleep Duration
-	$: sleepMinutes = (() => {
-		const [bH, bM] = bedtime.split(':').map(Number);
-		const [wH, wM] = wakeTime.split(':').map(Number);
-		let diff = wH * 60 + wM - (bH * 60 + bM);
-		if (diff < 0) diff += 1440; // Handle overnight sleep
-		return diff;
-	})();
+// 2. Use $derived for the logic
+let sleepMinutes = $derived.by(() => {
+    const [bH, bM] = bedtime.split(':').map(Number);
+    const [wH, wM] = wakeTime.split(':').map(Number);
+    let diff = wH * 60 + wM - (bH * 60 + bM);
+    if (diff < 0) diff += 1440; // Handle overnight sleep
+    return diff;
+});
 
-	$: durationFormatted = `${Math.floor(sleepMinutes / 60)}h ${(sleepMinutes % 60).toString().padStart(2, '0')}m`;
+let durationFormatted = $derived(
+    `${Math.floor(sleepMinutes / 60)}h ${(sleepMinutes % 60).toString().padStart(2, '0')}m`
+);
 
-	// Reactive Efficiency Calculation (Mock: % of an 8-hour goal, capped at 100)
-	$: efficiency = Math.min(Math.round((sleepMinutes / 480) * 100), 100);
+let efficiency = $derived(
+    Math.min(Math.round((sleepMinutes / 480) * 100), 100)
+);
 
 	function generateRandomAvatar() {
 		const styles = ['adventurer', 'fun-emoji', 'bottts', 'lorelei', 'avataaars'];
@@ -92,9 +93,54 @@
 		return `https://api.dicebear.com/7.x/${randomStyle}/svg?seed=${randomSeed}`;
 	}
 
-	onMount(() => {
-		avatarUrl = generateRandomAvatar();
-	});
+let displayName = $state('Alex');
+let username = $state('alex_24flower');
+let email = $state('alex@example.com');
+let bio = $state('Product designer and time management enthusiast.');
+let avatarUrl = $state('');
+let isUpdating = $state(false);
+let currentTab = $state('settings'); // 'settings', 'notifications', 'billing'
+// New Preference States
+let timezone = $state('(GMT+00:00) UTC');
+let dateFormat = $state('MM/DD/YYYY');
+
+onMount(async () => {
+    avatarUrl = generateRandomAvatar();
+    
+    // Check if user exists in the data prop
+    if (data?.user) {
+        displayName = data.user.name || '';
+        username = data.user.username || '';
+        email = data.user.email || '';
+        bio = data.user.bio || '';
+        console.log('User loaded from props:', data.user);
+    } else {
+        const formData = {
+        name: displayName,
+        username,
+        email,
+        bio,
+        // Include preferences
+        preferences: {
+            timezone,
+            dateFormat
+        }
+    };
+        try {
+            const res = await fetch('http://localhost:3000/auth/profile', { credentials: 'include' });
+            if (res.ok) {
+                const result = await res.json();
+                const fetchedUser = result.data;
+                displayName = fetchedUser.name || '';
+                username = fetchedUser.username || '';
+                email = fetchedUser.email || '';
+                bio = fetchedUser.bio || '';
+            }
+        } catch (err) {
+            console.error("Could not load user data", err);
+        }
+    }
+});
 
 	function toggleMobileSidebar() {
 		isSidebarOpen = !isSidebarOpen;
@@ -105,20 +151,41 @@
 		}
 	}
 
-	const handleUpdate = async () => {
-    const res = await fetch('/api/update-profile', {
-        method: 'PATCH',
-        body: JSON.stringify(formData),
-        headers: { 'Content-Type': 'application/json' }
-    });
+const handleUpdate = async () => {
+    if (isUpdating) return; // Prevent double submissions
+    
+    isUpdating = true;
+    const formData = {
+        name: displayName,
+        username: username,
+        email: email,
+        bio: bio
+    };
 
-    const result = await res.json();
+    try {
+        const res = await fetch('http://localhost:3000/auth/update-profile', {
+            method: 'PATCH',
+            body: JSON.stringify(formData),
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
 
-    if (result.requiresLogout) {
-        // Redirect to login page because the cookie was cleared by the backend
-        window.location.href = '/login?message=Email updated. Please log in again.';
-    } else if (res.ok) {
-        notifySuccess("Success", "Profile updated!");
+        const result = await res.json();
+
+        if (result.requiresLogout) {
+            window.location.href = '/login?message=Email updated. Please log in again.';
+            return; // Exit early as we are redirecting
+        } 
+        
+        if (res.ok) {
+            notifySuccess("Success", "Profile updated!");
+        } else {
+            notifyError("Update Failed", result.message || "Check your details.");
+        }
+    } catch (err) {
+        notifyError("Network Error", "Could not connect to server.");
+    } finally {
+        isUpdating = false; // Turn off loading state
     }
 };
 </script>
@@ -258,11 +325,19 @@
 							system updates.{:else}Review your plan, invoices, and payment methods.{/if}
 					</p>
 				</div>
-				<button
-					class="neo-btn-primary px-6 py-3 text-white font-bold flex items-center gap-2 hover:opacity-45 hover:cursor-pointer uppercase"
-				>
-					<Save size={20} /> Save Changes
-				</button>
+			<button
+    on:click={handleUpdate}
+    disabled={isUpdating}
+    class="neo-btn-primary px-6 py-3 text-white font-bold flex items-center gap-2 uppercase transition-all
+    {isUpdating ? 'opacity-70 cursor-not-allowed shadow-none translate-x-1 translate-y-1' : 'hover:cursor-pointer'}"
+>
+    {#if isUpdating}
+        <div class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+      Processing...
+    {:else}
+        <Save size={20} /> Save Changes
+    {/if}
+</button>
 			</div>
 
 			{#if currentTab === 'settings'}
@@ -412,6 +487,7 @@
 									>
 									<div class="relative">
 										<select
+										bind:value={timezone}
 											class="neo-input h-12 px-4 w-full text-base font-bold appearance-none cursor-pointer"
 										>
 											<option>(GMT-08:00) Pacific Time</option>
@@ -430,6 +506,7 @@
 									>
 									<div class="relative">
 										<select
+										bind:value={dateFormat}
 											class="neo-input h-12 px-4 w-full text-base font-bold appearance-none cursor-pointer"
 										>
 											<option>MM/DD/YYYY</option>
@@ -516,6 +593,8 @@
 		</main>
 	</div>
 </div>
+<Toaster position="bottom-right" expand={false} richColors />
+
 
 <style lang="postcss">
 	:global(.font-display) {
