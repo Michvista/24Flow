@@ -1,23 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Noto+Sans:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Noto+Sans:wght@400..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap');
 
-@import "tailwindcss";
-@config "../tailwind.config.js";
+@import 'tailwindcss';
+@config '../tailwind.config.js';
 /* @import tailwindcss/forms; */
- 
+
 @font-face {
-  font-family: "Robson";
-  src: url("/fonts/RobsonBold.otf") format("opentype");
+	font-family: 'Robson';
+	src: url('/fonts/RobsonBold.otf') format('opentype');
 }
 
 @theme {
- --brand-primary: #123F76;
-				--brand-secondary: #78c2Ed;
-			--brand-accent: #6F6F6F;
-			--brand-accent-two: #DCDCDC;
+	--brand-primary: #123f76;
+	--brand-secondary: #78c2ed;
+	--brand-accent: #6f6f6f;
+	--brand-accent-two: #dcdcdc;
 }
-
-
-

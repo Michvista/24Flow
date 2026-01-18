@@ -1,2 +1,3 @@
 # 24Flow
+
 24Flow is an AI-powered 24-hour timetable that helps you plan your entire day from 12AM to 12AM. It converts natural language tasks into hourly blocks, auto-fills your schedule, optimizes focus and breaks, and intelligently resolves overlaps so every hour works for you.

@@ -20,6 +20,8 @@ model User {
   avatar       String?
   email        String   @unique
   name         String?
+  username     String? @unique
+  bio          String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

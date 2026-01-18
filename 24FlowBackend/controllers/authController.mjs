@@ -24,13 +24,21 @@ export const register = async (req, res, next) => {
 			data: {
 				name,
 				email,
-				password: hashedPassword,
+				password: hashedPassword
 			}
 		});
 
 		delete user.password;
 
 		const accessToken = await signAccessToken(user.id);
+
+		res.cookie('accessToken', accessToken, {
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 86400000 // 24 hours
+});
 
 		res.status(201).json({
 			status: true,
@@ -40,7 +48,8 @@ export const register = async (req, res, next) => {
 	} catch (e) {
 		next(e);
 	}
-};
+}; 
+
 
 export const login = async (req, res, next) => {
 	try {
@@ -49,17 +58,39 @@ export const login = async (req, res, next) => {
 		const user = await prisma.user.findUnique({ where: { email } });
 
 		if (!user) {
-			throw createError.NotFound('User not registered');
+			return res.status(404).json({
+				status: false,
+				message: 'User not registered'
+			});
 		}
 
-		const isMatch = await bcrypt.compare(password, user.password);
+		//  Check if user has a password (might be a Google-only user)
+		if (!user.password) {
+			return res.status(400).json({
+				status: false,
+				message: 'Please login with Google for this account'
+			});
+		}
+
+		const isMatch = await bcrypt.compare(String(password), String(user.password));
+
 		if (!isMatch) {
-			throw createError.Unauthorized('Email address or password not valid');
+			return res.status(401).json({
+				status: false,
+				message: 'Email address or password not valid'
+			});
 		}
-
 		delete user.password;
 
 		const accessToken = await signAccessToken(user.id);
+
+		res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 86400000 // 24 hours
+});
 
 		res.status(200).json({
 			status: true,
@@ -109,11 +140,61 @@ export const googleAuth = async (req, res) => {
 	// Generate tokens
 	const accessToken = await signAccessToken(user.id);
 
-	// cookiesOptions is not defined in this file; leaving response shape as-is
-	return res.status(200).json({
-		success: true,
-		message: 'User login successful',
-		user,
-		accessToken
+	//  STORE TOKEN IN COOKIE
+	res.cookie('accessToken', accessToken, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === 'production',
+		sameSite: 'lax'
 	});
+
+	// REDIRECT BACK TO FRONTEND
+	res.redirect('http://localhost:5173/dashboard');
+};
+
+
+export const updateProfile = async (req, res, next) => {
+	try {
+		const userId = req.user.id;
+		const { name, username, bio, email } = req.body;
+
+		// 1. Check if the user exists
+		const user = await prisma.user.findUnique({ where: { id: userId } });
+		if (!user) return res.status(404).json({ message: 'User not found' });
+
+		// 2. Check for Unique Conflicts (Email/Username)
+		if (email && email !== user.email) {
+			const existingEmail = await prisma.user.findUnique({ where: { email } });
+			if (existingEmail) return res.status(400).json({ message: 'Email already in use' });
+		}
+
+		// 3. Perform the update
+		const updatedUser = await prisma.user.update({
+			where: { id: userId },
+			data: {
+				name: name || undefined,
+				username: username || undefined,
+				bio: bio || undefined,
+				email: email || undefined
+			}
+		});
+
+		// 4. Handle Email Change (Security)
+		if (email && email !== user.email) {
+			// Clear the cookie so they are forced to log in with the new email
+			res.clearCookie('accessToken');
+			return res.status(200).json({
+				status: true,
+				message: 'Profile updated. Email changed, please log in again.',
+				requiresLogout: true
+			});
+		}
+
+		res.status(200).json({
+			status: true,
+			message: 'Profile updated successfully',
+			data: updatedUser
+		});
+	} catch (error) {
+		next(error);
+	}
 };

@@ -1,4 +1,4 @@
-export function scrollToId(id:string, offset = 0) {
+export function scrollToId(id: string, offset = 0) {
 	const el = document.getElementById(id);
 	if (!el) return;
 

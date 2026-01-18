@@ -1,6 +1,12 @@
 import express from 'express';
 import passport from 'passport';
-import { register, login, profile, googleAuth } from '../../controllers/authController.mjs';
+import {
+	register,
+	login,
+	profile,
+	googleAuth,
+	updateProfile
+} from '../../controllers/authController.mjs';
 import { protect } from '../../middlewares/verifyAuth.mjs';
 
 const router = express.Router();
@@ -18,7 +24,7 @@ router.get(
 router.get(
 	'/google/callback',
 	passport.authenticate('google', {
-		failureRedirect: '/login',
+		failureRedirect: 'http://localhost:5173/auth',
 		session: false,
 		failureMessage: 'Failed to login with Google'
 	}),
@@ -28,5 +34,6 @@ router.get(
 router.post('/login', login);
 router.post('/register', register);
 router.get('/profile', protect, profile);
+router.patch('/update-profile', protect, updateProfile);
 
 export default router;
