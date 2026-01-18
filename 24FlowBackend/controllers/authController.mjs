@@ -155,32 +155,45 @@ export const googleAuth = async (req, res) => {
 export const updateProfile = async (req, res, next) => {
 	try {
 		const userId = req.user.id;
-		const { name, username, bio, email } = req.body;
+		// Destructure preferences from req.body
+		const { name, username, bio, email, preferences } = req.body;
 
-		// 1. Check if the user exists
 		const user = await prisma.user.findUnique({ where: { id: userId } });
 		if (!user) return res.status(404).json({ message: 'User not found' });
 
-		// 2. Check for Unique Conflicts (Email/Username)
 		if (email && email !== user.email) {
 			const existingEmail = await prisma.user.findUnique({ where: { email } });
 			if (existingEmail) return res.status(400).json({ message: 'Email already in use' });
 		}
 
-		// 3. Perform the update
+		// Updated Prisma call
 		const updatedUser = await prisma.user.update({
 			where: { id: userId },
 			data: {
 				name: name || undefined,
 				username: username || undefined,
 				bio: bio || undefined,
-				email: email || undefined
-			}
+				email: email || undefined,
+				// Nested Update/Create for Preferences
+				preferences: preferences
+					? {
+							upsert: {
+								create: {
+									timezone: preferences.timezone,
+									dateFormat: preferences.dateFormat
+								},
+								update: {
+									timezone: preferences.timezone,
+									dateFormat: preferences.dateFormat
+								}
+							}
+						}
+					: undefined
+			},
+			include: { preferences: true } // Return the preferences in the response
 		});
 
-		// 4. Handle Email Change (Security)
 		if (email && email !== user.email) {
-			// Clear the cookie so they are forced to log in with the new email
 			res.clearCookie('accessToken');
 			return res.status(200).json({
 				status: true,
