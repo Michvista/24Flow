@@ -3,7 +3,7 @@
 	import { Menu, X, Calendar, Cpu, Settings as SettingsIcon } from 'lucide-svelte';
 	import gsap from 'gsap';
 
-	export let activeTab = 'AI Tools Hub';
+	let { activeTab = $bindable('AI Tools Hub') } = $props();
 
 	let avatarUrl = '';
 	let isMobileMenuOpen = false;
@@ -94,7 +94,7 @@
 			style="background-image: url('{avatarUrl}');"
 		>
 			{#if !avatarUrl}
-				<div class="animate-pulse bg-slate-300 w-full h-full"></div>
+				<div class=" w-full h-full"></div>
 			{/if}
 		</div>
 

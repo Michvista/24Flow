@@ -2,12 +2,11 @@
 	import AIToolsHub from '../../components/dashboard/AIToolsHub.svelte';
 	import Navbar from '../../components/dashboard/Navbar.svelte';
 	import Settings from '../../components/dashboard/Settings.svelte';
-	let { data } = $props();
-	const { user } = data;
 
 	// Default view
+	// Receive data from the page load function
+	let { data } = $props(); 
 	let activeTab = $state('AI Tools Hub');
-	console.log(user);
 </script>
 
 <div>
@@ -17,7 +16,7 @@
 		{#if activeTab === 'AI Tools Hub'}
 			<AIToolsHub />
 		{:else if activeTab === 'Settings'}
-			<Settings />
+			<Settings {data}/>
 		{/if}
 	</main>
 </div>
