@@ -121,7 +121,7 @@ onMount(async () => {
         }
     };
 
-    // 1. Check if user exists in the data prop (Fastest)
+    // 1. Check if user exists in the data prop
     if (data?.user) {
         assignUserData(data.user);
         console.log('User loaded from props:', data.user);
@@ -196,6 +196,26 @@ const handleUpdate = async () => {
         isUpdating = false; 
     }
 };
+
+const handleLogout = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/auth/logout', {
+            method: 'POST',
+            credentials: 'include' 
+        });
+
+        if (response.ok) {
+            // Perform a page reload and redirect to login
+            window.location.href = '/auth'; 
+			notifySuccess("LogOut completed", "redirecting...")
+        }
+    } catch (error) {
+        console.error('Logout failed:', error);
+		notifyError('Logout failed', String(error))
+		
+    }
+};
+
 </script>
 
 <svelte:head>
@@ -207,7 +227,7 @@ const handleUpdate = async () => {
 
 <div class="bg-background-dark text-white min-h-screen flex flex-col font-display relative">
 	<button
-		on:click={toggleMobileSidebar}
+		onclick={toggleMobileSidebar}
 		class="lg:hidden fixed bottom-6 right-6 z-[100] p-4 bg-[#1973f0] border-4 border-black shadow-[4px_4px_0_0_#000] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all rounded-none"
 	>
 		{#if isSidebarOpen}
@@ -225,7 +245,7 @@ const handleUpdate = async () => {
 			<h1 class="text-[#1973f0] text-xs font-bold tracking-widest mb-6 uppercase">System Menu</h1>
 			<nav class="flex flex-col gap-4">
 				<button
-					on:click={() => {
+					onclick={() => {
 						currentTab = 'settings';
 						toggleMobileSidebar();
 					}}
@@ -236,7 +256,7 @@ const handleUpdate = async () => {
 					<Settings size={22} /> <span>General</span>
 				</button>
 				<button
-					on:click={() => {
+					onclick={() => {
 						currentTab = 'notifications';
 						toggleMobileSidebar();
 					}}
@@ -247,7 +267,7 @@ const handleUpdate = async () => {
 					<Bell size={22} /> <span>Notifications</span>
 				</button>
 				<button
-					on:click={() => {
+					onclick={() => {
 						currentTab = 'billing';
 						toggleMobileSidebar();
 					}}
@@ -259,6 +279,14 @@ const handleUpdate = async () => {
 				</button>
 			</nav>
 		</div>
+		<div class="mt-auto pt-6 border-t-2 border-[#233248]">
+				<button
+				onclick={handleLogout}
+					class="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-red-500 text-red-500 font-bold hover:bg-red-500 hover:text-white transition-colors uppercase text-xs"
+				>
+					<LogOut size={18} /> Logout
+				</button>
+			</div>
 	</div>
 
 	<div class="flex flex-1 w-full max-w-[1440px] mx-auto relative">
@@ -269,7 +297,7 @@ const handleUpdate = async () => {
 				<h1 class="text-[#1973f0] text-xs font-bold tracking-widest mb-4 uppercase">System Menu</h1>
 				<nav class="flex flex-col gap-3">
 					<button
-						on:click={() => (currentTab = 'settings')}
+						onclick={() => (currentTab = 'settings')}
 						class="flex items-center gap-3 px-4 py-3 {currentTab === 'settings'
 							? 'bg-[#233248] border-black shadow-neo-primary'
 							: 'border-transparent text-[#91a9ca]'} border-2 text-white font-bold transition-transform hover:-translate-y-1 text-left w-full"
@@ -277,7 +305,7 @@ const handleUpdate = async () => {
 						<Settings size={20} /> <span class="text-sm">General</span>
 					</button>
 					<button
-						on:click={() => (currentTab = 'notifications')}
+						onclick={() => (currentTab = 'notifications')}
 						class="flex items-center gap-3 px-4 py-3 {currentTab === 'notifications'
 							? 'bg-[#233248] border-black shadow-neo-primary'
 							: 'border-transparent text-[#91a9ca]'} border-2 hover:bg-[#233248]/50 hover:text-white transition-colors text-left w-full"
@@ -285,7 +313,7 @@ const handleUpdate = async () => {
 						<Bell size={20} /> <span class="text-sm font-medium">Notifications</span>
 					</button>
 					<button
-						on:click={() => (currentTab = 'billing')}
+						onclick={() => (currentTab = 'billing')}
 						class="flex items-center gap-3 px-4 py-3 {currentTab === 'billing'
 							? 'bg-[#233248] border-black shadow-neo-primary'
 							: 'border-transparent text-[#91a9ca]'} border-2 hover:bg-[#233248]/50 hover:text-white transition-colors text-left w-full"
@@ -296,6 +324,7 @@ const handleUpdate = async () => {
 			</div>
 			<div class="mt-auto pt-6 border-t-2 border-[#233248]">
 				<button
+				onclick={handleLogout}
 					class="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-red-500 text-red-500 font-bold hover:bg-red-500 hover:text-white transition-colors uppercase text-xs"
 				>
 					<LogOut size={18} /> Logout
@@ -334,7 +363,7 @@ const handleUpdate = async () => {
 					</p>
 				</div>
 			<button
-    on:click={handleUpdate}
+    onclick={handleUpdate}
     disabled={isUpdating}
     class="neo-btn-primary px-6 py-3 text-white font-bold flex items-center gap-2 uppercase transition-all
     {isUpdating ? 'opacity-70 cursor-not-allowed shadow-none translate-x-1 translate-y-1' : 'hover:cursor-pointer'}"
@@ -391,6 +420,7 @@ const handleUpdate = async () => {
 											<input
 												class="neo-input h-12 px-4 w-full text-base font-bold border-l-0"
 												type="text"
+												placeholder="type a likeable username"
 												bind:value={username}
 											/>
 										</div>
@@ -412,6 +442,7 @@ const handleUpdate = async () => {
 										<textarea
 											class="neo-input py-3 px-4 w-full text-base font-bold resize-none"
 											rows="3"
+											placeholder="type something about yourself"
 											bind:value={bio}
 										></textarea>
 									</div>

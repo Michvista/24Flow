@@ -5,7 +5,8 @@ import {
 	login,
 	profile,
 	googleAuth,
-	updateProfile
+	updateProfile,
+	logOut
 } from '../../controllers/authController.mjs';
 import { protect } from '../../middlewares/verifyAuth.mjs';
 
@@ -35,5 +36,6 @@ router.post('/login', login);
 router.post('/register', register);
 router.get('/profile', protect, profile);
 router.patch('/update-profile', protect, updateProfile);
+router.post('/logout', logOut)
 
 export default router;

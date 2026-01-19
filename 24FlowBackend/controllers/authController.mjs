@@ -106,7 +106,12 @@ export const profile = async (req, res, next) => {
 	try {
 		const users = await prisma.user.findUnique({
 			where: { id: req.user.id },
-			omit: { password: true }
+			omit: { password: true },
+			include: {
+				preferences: true,
+				events: true,
+				tasks: true
+			}
 		});
 		res.status(200).json({
 			status: true,
@@ -178,6 +183,7 @@ export const updateProfile = async (req, res, next) => {
 				preferences: preferences
 					? {
 							upsert: {
+								where: { userId: userId },
 								create: {
 									timezone: preferences.timezone,
 									dateFormat: preferences.dateFormat
@@ -190,7 +196,7 @@ export const updateProfile = async (req, res, next) => {
 						}
 					: undefined
 			},
-			include: { preferences: true } // Return the preferences in the response
+			include: { preferences: true }
 		});
 
 		if (email && email !== user.email) {
@@ -206,6 +212,26 @@ export const updateProfile = async (req, res, next) => {
 			status: true,
 			message: 'Profile updated successfully',
 			data: updatedUser
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+
+export const logOut = async (req, res, next) => {
+	try {
+		//  Clear the specific cookie by its name (e.g., 'accessToken')
+		res.clearCookie('accessToken', {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'strict',
+			path: '/'
+		});
+
+		return res.status(200).json({
+			status: true,
+			message: 'Logged out successfully'
 		});
 	} catch (error) {
 		next(error);
