@@ -1,3 +1,4 @@
+import { Preferences, Event } from '../24FlowBackend/generated/prisma/index';
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {
@@ -11,13 +12,14 @@ declare global {
 				email: string;
 				avatar?: string;
 				googleId?: string;
-				  password?: string;
+				password?: string;
 
-  events:[];
-  tasks:[];
-  moods:[];
-  sleep:string;
-  behavior: [];
+				events: Event[];
+				tasks: [];
+				moods: [];
+				sleep: string;
+				behavior: [];
+				preferences: Preferences | null;
 			} | null;
 		}
 		// interface PageData {}
