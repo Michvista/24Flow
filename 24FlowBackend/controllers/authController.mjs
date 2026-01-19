@@ -110,7 +110,8 @@ export const profile = async (req, res, next) => {
 			include: {
 				preferences: true,
 				events: true,
-				tasks: true
+				tasks: true,
+				sleep: true
 			}
 		});
 		res.status(200).json({
@@ -161,7 +162,7 @@ export const updateProfile = async (req, res, next) => {
 	try {
 		const userId = req.user.id;
 		// Destructure preferences from req.body
-		const { name, username, bio, email, preferences } = req.body;
+		const { name, username, bio, email, preferences, sleepLog } = req.body;
 
 		const user = await prisma.user.findUnique({ where: { id: userId } });
 		if (!user) return res.status(404).json({ message: 'User not found' });
@@ -179,7 +180,7 @@ export const updateProfile = async (req, res, next) => {
 				username: username || undefined,
 				bio: bio || undefined,
 				email: email || undefined,
-				// Nested Update/Create for Preferences
+				// Nested Update/Create for Preferences & sleep
 				preferences: preferences
 					? {
 							upsert: {
@@ -194,9 +195,25 @@ export const updateProfile = async (req, res, next) => {
 								}
 							}
 						}
-					: undefined
-			},
-			include: { preferences: true }
+					: undefined,
+					 sleep: sleepLog ? {
+                    upsert: {
+                        where: { userId: userId },
+                        create: { 
+                            sleepTime: sleepLog.sleepTime, 
+                            wakeTime: sleepLog.wakeTime 
+                        },
+                        update: { 
+                            sleepTime: sleepLog.sleepTime, 
+                            wakeTime: sleepLog.wakeTime 
+                        }
+                    }
+                } : undefined
+            },
+            include: { 
+                preferences: true,
+                sleep: true 
+            } 
 		});
 
 		if (email && email !== user.email) {
