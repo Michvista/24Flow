@@ -1,19 +1,37 @@
-<script>
+<script lang="ts">
 	import Navbar from './Navbar.svelte';
-	import { Pencil, Trash2, Clock } from 'lucide-svelte';
+	import { Pencil, Trash2, Clock, User } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	
+		interface UserInfo {
+        username?: string;
+        name?: string;
+        email?: string;
+    }
 
 	export let eventTitle = 'Neobrutalism Design Workshop';
+	export let eventDescription = 'some desc';
 	export let startTime = '10:00 AM';
 	export let endTime = '01:00 PM';
 	export let eventDate = 'August 20, 2024';
+	export let location = 'Class'
+	export let userData: UserInfo = {};
 
 	let randomGradient = '';
 
-	// 1. Generate Random Dark Gradient
-	function generateGradient() {
+    export let recurringDays: number[] = [];
+    
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
+    $: recurrenceText = recurringDays?.length > 0
+        ? recurringDays.length === 7
+            ? 'Repeats daily'
+            : `Repeats every ${recurringDays.map(d => dayNames[d]).join(', ')}`
+        : 'Does not repeat';
+
+	function generateGradient():string {
 		const randomHue = () => Math.floor(Math.random() * 360);
-		// Keep lightness low (20-40%) for a "dark" professional look
+		// Keep lightness low (20-40%) for a dark look
 		const color1 = `hsl(${randomHue()}, 70%, 30%)`;
 		const color2 = `hsl(${randomHue()}, 60%, 20%)`;
 		const angle = Math.floor(Math.random() * 360);
@@ -21,8 +39,8 @@
 	}
 
 	// 2. Calculate Duration
-	function calculateDuration(start, end) {
-		const parseTime = (timeStr) => {
+	function calculateDuration(start:string, end:string):string {
+		const parseTime = (timeStr:string):number => {
 			// 1. Split into "10:00" and "AM"
 			const [time, modifier] = timeStr.split(' ');
 			let [hours, minutes] = time.split(':').map(Number);
@@ -33,7 +51,6 @@
 			} else if (modifier === 'AM' && hours === 12) {
 				hours = 0; // 12 AM becomes 00:00
 			}
-			// Note: 12 PM stays 12:00
 
 			return hours * 60 + minutes;
 		};
@@ -115,10 +132,10 @@
 									<p class="text-3xl font-bold leading-tight tracking-[-0.015em]">{eventTitle}</p>
 									<div class="flex flex-col gap-1 pt-2">
 										<p class="text-slate-500 dark:text-[#91a9ca] text-base font-normal">
-											A deep dive into raw, functional web aesthetics.
+											{eventDescription}
 										</p>
 										<p class="text-slate-500 dark:text-[#91a9ca] text-sm font-normal">
-											Created by Alex Johnson. Last updated on Aug 12, 2024.
+											Created by {userData.username || userData.name} Last updated on {eventDate}
 										</p>
 									</div>
 								</div>
@@ -152,6 +169,10 @@
 									<p class="text-slate-500 dark:text-[#1973f0] text-base font-medium">Duration</p>
 									<p class="text-2xl font-black tracking-tight">{duration}</p>
 								</div>
+								<div class="hidden sm:flex flex-col">
+									<p class="text-slate-500 dark:text-[#1973f0] text-base font-medium">Location</p>
+									<p class="text-2xl font-black tracking-tight capitalize">{location}</p>
+								</div>
 							</div>
 						</div>
 
@@ -168,6 +189,22 @@
 								</p>
 							</div>
 						</div>
+
+						{#if recurringDays && recurringDays.length > 0}
+    <div class="flex flex-col gap-4 p-4 sm:p-6 border-t-2 border-slate-900 dark:border-t-slate-300">
+        <div class="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-500 rounded">
+            <div class="text-blue-600 dark:text-blue-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="font-bold text-lg">Recurring Event</p>
+                <p class="text-sm text-gray-600 dark:text-gray-300">{recurrenceText}</p>
+            </div>
+        </div>
+    </div>
+{/if}
 					</div>
 				</div>
 			</main>

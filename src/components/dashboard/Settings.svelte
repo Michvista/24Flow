@@ -26,7 +26,7 @@
 	import SonnerToast from '../SonnerToast.svelte';
 let { data = {} } = $props();
 
-// Use optional chaining or a fallback for user
+
 const user = $derived(data?.user || {});
 
 	function notifySuccess(title: string, message: string) {

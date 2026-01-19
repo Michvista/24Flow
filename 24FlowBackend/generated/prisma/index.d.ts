@@ -2722,64 +2722,120 @@ export namespace Prisma {
 
   export type AggregateEvent = {
     _count: EventCountAggregateOutputType | null
+    _avg: EventAvgAggregateOutputType | null
+    _sum: EventSumAggregateOutputType | null
     _min: EventMinAggregateOutputType | null
     _max: EventMaxAggregateOutputType | null
   }
 
+  export type EventAvgAggregateOutputType = {
+    recurringDays: number | null
+  }
+
+  export type EventSumAggregateOutputType = {
+    recurringDays: number[]
+  }
+
   export type EventMinAggregateOutputType = {
     id: string | null
-    userId: string | null
     title: string | null
+    location: string | null
     desc: string | null
     startTime: Date | null
     endTime: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    color: string | null
+    colorName: string | null
+    textColor: string | null
+    userId: string | null
   }
 
   export type EventMaxAggregateOutputType = {
     id: string | null
-    userId: string | null
     title: string | null
+    location: string | null
     desc: string | null
     startTime: Date | null
     endTime: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    color: string | null
+    colorName: string | null
+    textColor: string | null
+    userId: string | null
   }
 
   export type EventCountAggregateOutputType = {
     id: number
-    userId: number
     title: number
+    location: number
     desc: number
     startTime: number
     endTime: number
+    recurringDays: number
+    createdAt: number
+    updatedAt: number
+    color: number
+    colorName: number
+    textColor: number
+    userId: number
     _all: number
   }
 
 
+  export type EventAvgAggregateInputType = {
+    recurringDays?: true
+  }
+
+  export type EventSumAggregateInputType = {
+    recurringDays?: true
+  }
+
   export type EventMinAggregateInputType = {
     id?: true
-    userId?: true
     title?: true
+    location?: true
     desc?: true
     startTime?: true
     endTime?: true
+    createdAt?: true
+    updatedAt?: true
+    color?: true
+    colorName?: true
+    textColor?: true
+    userId?: true
   }
 
   export type EventMaxAggregateInputType = {
     id?: true
-    userId?: true
     title?: true
+    location?: true
     desc?: true
     startTime?: true
     endTime?: true
+    createdAt?: true
+    updatedAt?: true
+    color?: true
+    colorName?: true
+    textColor?: true
+    userId?: true
   }
 
   export type EventCountAggregateInputType = {
     id?: true
-    userId?: true
     title?: true
+    location?: true
     desc?: true
     startTime?: true
     endTime?: true
+    recurringDays?: true
+    createdAt?: true
+    updatedAt?: true
+    color?: true
+    colorName?: true
+    textColor?: true
+    userId?: true
     _all?: true
   }
 
@@ -2821,6 +2877,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: EventAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EventSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: EventMinAggregateInputType
@@ -2851,18 +2919,29 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: EventCountAggregateInputType | true
+    _avg?: EventAvgAggregateInputType
+    _sum?: EventSumAggregateInputType
     _min?: EventMinAggregateInputType
     _max?: EventMaxAggregateInputType
   }
 
   export type EventGroupByOutputType = {
     id: string
-    userId: string
     title: string
+    location: string | null
     desc: string | null
     startTime: Date
     endTime: Date
+    recurringDays: number[]
+    createdAt: Date
+    updatedAt: Date
+    color: string
+    colorName: string
+    textColor: string
+    userId: string
     _count: EventCountAggregateOutputType | null
+    _avg: EventAvgAggregateOutputType | null
+    _sum: EventSumAggregateOutputType | null
     _min: EventMinAggregateOutputType | null
     _max: EventMaxAggregateOutputType | null
   }
@@ -2883,44 +2962,72 @@ export namespace Prisma {
 
   export type EventSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
     title?: boolean
+    location?: boolean
     desc?: boolean
     startTime?: boolean
     endTime?: boolean
+    recurringDays?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    color?: boolean
+    colorName?: boolean
+    textColor?: boolean
+    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["event"]>
 
   export type EventSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
     title?: boolean
+    location?: boolean
     desc?: boolean
     startTime?: boolean
     endTime?: boolean
+    recurringDays?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    color?: boolean
+    colorName?: boolean
+    textColor?: boolean
+    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["event"]>
 
   export type EventSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
     title?: boolean
+    location?: boolean
     desc?: boolean
     startTime?: boolean
     endTime?: boolean
+    recurringDays?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    color?: boolean
+    colorName?: boolean
+    textColor?: boolean
+    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["event"]>
 
   export type EventSelectScalar = {
     id?: boolean
-    userId?: boolean
     title?: boolean
+    location?: boolean
     desc?: boolean
     startTime?: boolean
     endTime?: boolean
+    recurringDays?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    color?: boolean
+    colorName?: boolean
+    textColor?: boolean
+    userId?: boolean
   }
 
-  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "desc" | "startTime" | "endTime", ExtArgs["result"]["event"]>
+  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "location" | "desc" | "startTime" | "endTime" | "recurringDays" | "createdAt" | "updatedAt" | "color" | "colorName" | "textColor" | "userId", ExtArgs["result"]["event"]>
   export type EventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -2938,11 +3045,18 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      userId: string
       title: string
+      location: string | null
       desc: string | null
       startTime: Date
       endTime: Date
+      recurringDays: number[]
+      createdAt: Date
+      updatedAt: Date
+      color: string
+      colorName: string
+      textColor: string
+      userId: string
     }, ExtArgs["result"]["event"]>
     composites: {}
   }
@@ -3368,11 +3482,18 @@ export namespace Prisma {
    */
   interface EventFieldRefs {
     readonly id: FieldRef<"Event", 'String'>
-    readonly userId: FieldRef<"Event", 'String'>
     readonly title: FieldRef<"Event", 'String'>
+    readonly location: FieldRef<"Event", 'String'>
     readonly desc: FieldRef<"Event", 'String'>
     readonly startTime: FieldRef<"Event", 'DateTime'>
     readonly endTime: FieldRef<"Event", 'DateTime'>
+    readonly recurringDays: FieldRef<"Event", 'Int[]'>
+    readonly createdAt: FieldRef<"Event", 'DateTime'>
+    readonly updatedAt: FieldRef<"Event", 'DateTime'>
+    readonly color: FieldRef<"Event", 'String'>
+    readonly colorName: FieldRef<"Event", 'String'>
+    readonly textColor: FieldRef<"Event", 'String'>
+    readonly userId: FieldRef<"Event", 'String'>
   }
     
 
@@ -9079,11 +9200,18 @@ export namespace Prisma {
 
   export const EventScalarFieldEnum: {
     id: 'id',
-    userId: 'userId',
     title: 'title',
+    location: 'location',
     desc: 'desc',
     startTime: 'startTime',
-    endTime: 'endTime'
+    endTime: 'endTime',
+    recurringDays: 'recurringDays',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    color: 'color',
+    colorName: 'colorName',
+    textColor: 'textColor',
+    userId: 'userId'
   };
 
   export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
@@ -9216,6 +9344,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -9233,20 +9375,6 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
   /**
    * Deep Input Types
@@ -9353,21 +9481,35 @@ export namespace Prisma {
     OR?: EventWhereInput[]
     NOT?: EventWhereInput | EventWhereInput[]
     id?: StringFilter<"Event"> | string
-    userId?: StringFilter<"Event"> | string
     title?: StringFilter<"Event"> | string
+    location?: StringNullableFilter<"Event"> | string | null
     desc?: StringNullableFilter<"Event"> | string | null
     startTime?: DateTimeFilter<"Event"> | Date | string
     endTime?: DateTimeFilter<"Event"> | Date | string
+    recurringDays?: IntNullableListFilter<"Event">
+    createdAt?: DateTimeFilter<"Event"> | Date | string
+    updatedAt?: DateTimeFilter<"Event"> | Date | string
+    color?: StringFilter<"Event"> | string
+    colorName?: StringFilter<"Event"> | string
+    textColor?: StringFilter<"Event"> | string
+    userId?: StringFilter<"Event"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type EventOrderByWithRelationInput = {
     id?: SortOrder
-    userId?: SortOrder
     title?: SortOrder
+    location?: SortOrderInput | SortOrder
     desc?: SortOrderInput | SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    recurringDays?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    color?: SortOrder
+    colorName?: SortOrder
+    textColor?: SortOrder
+    userId?: SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -9376,24 +9518,40 @@ export namespace Prisma {
     AND?: EventWhereInput | EventWhereInput[]
     OR?: EventWhereInput[]
     NOT?: EventWhereInput | EventWhereInput[]
-    userId?: StringFilter<"Event"> | string
     title?: StringFilter<"Event"> | string
+    location?: StringNullableFilter<"Event"> | string | null
     desc?: StringNullableFilter<"Event"> | string | null
     startTime?: DateTimeFilter<"Event"> | Date | string
     endTime?: DateTimeFilter<"Event"> | Date | string
+    recurringDays?: IntNullableListFilter<"Event">
+    createdAt?: DateTimeFilter<"Event"> | Date | string
+    updatedAt?: DateTimeFilter<"Event"> | Date | string
+    color?: StringFilter<"Event"> | string
+    colorName?: StringFilter<"Event"> | string
+    textColor?: StringFilter<"Event"> | string
+    userId?: StringFilter<"Event"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type EventOrderByWithAggregationInput = {
     id?: SortOrder
-    userId?: SortOrder
     title?: SortOrder
+    location?: SortOrderInput | SortOrder
     desc?: SortOrderInput | SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    recurringDays?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    color?: SortOrder
+    colorName?: SortOrder
+    textColor?: SortOrder
+    userId?: SortOrder
     _count?: EventCountOrderByAggregateInput
+    _avg?: EventAvgOrderByAggregateInput
     _max?: EventMaxOrderByAggregateInput
     _min?: EventMinOrderByAggregateInput
+    _sum?: EventSumOrderByAggregateInput
   }
 
   export type EventScalarWhereWithAggregatesInput = {
@@ -9401,11 +9559,18 @@ export namespace Prisma {
     OR?: EventScalarWhereWithAggregatesInput[]
     NOT?: EventScalarWhereWithAggregatesInput | EventScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Event"> | string
-    userId?: StringWithAggregatesFilter<"Event"> | string
     title?: StringWithAggregatesFilter<"Event"> | string
+    location?: StringNullableWithAggregatesFilter<"Event"> | string | null
     desc?: StringNullableWithAggregatesFilter<"Event"> | string | null
     startTime?: DateTimeWithAggregatesFilter<"Event"> | Date | string
     endTime?: DateTimeWithAggregatesFilter<"Event"> | Date | string
+    recurringDays?: IntNullableListFilter<"Event">
+    createdAt?: DateTimeWithAggregatesFilter<"Event"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Event"> | Date | string
+    color?: StringWithAggregatesFilter<"Event"> | string
+    colorName?: StringWithAggregatesFilter<"Event"> | string
+    textColor?: StringWithAggregatesFilter<"Event"> | string
+    userId?: StringWithAggregatesFilter<"Event"> | string
   }
 
   export type TaskWhereInput = {
@@ -9791,63 +9956,112 @@ export namespace Prisma {
   export type EventCreateInput = {
     id?: string
     title: string
+    location?: string | null
     desc?: string | null
     startTime: Date | string
     endTime: Date | string
+    recurringDays?: EventCreaterecurringDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    color: string
+    colorName: string
+    textColor: string
     user: UserCreateNestedOneWithoutEventsInput
   }
 
   export type EventUncheckedCreateInput = {
     id?: string
-    userId: string
     title: string
+    location?: string | null
     desc?: string | null
     startTime: Date | string
     endTime: Date | string
+    recurringDays?: EventCreaterecurringDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    color: string
+    colorName: string
+    textColor: string
+    userId: string
   }
 
   export type EventUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    recurringDays?: EventUpdaterecurringDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    color?: StringFieldUpdateOperationsInput | string
+    colorName?: StringFieldUpdateOperationsInput | string
+    textColor?: StringFieldUpdateOperationsInput | string
     user?: UserUpdateOneRequiredWithoutEventsNestedInput
   }
 
   export type EventUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    recurringDays?: EventUpdaterecurringDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    color?: StringFieldUpdateOperationsInput | string
+    colorName?: StringFieldUpdateOperationsInput | string
+    textColor?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type EventCreateManyInput = {
     id?: string
-    userId: string
     title: string
+    location?: string | null
     desc?: string | null
     startTime: Date | string
     endTime: Date | string
+    recurringDays?: EventCreaterecurringDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    color: string
+    colorName: string
+    textColor: string
+    userId: string
   }
 
   export type EventUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    recurringDays?: EventUpdaterecurringDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    color?: StringFieldUpdateOperationsInput | string
+    colorName?: StringFieldUpdateOperationsInput | string
+    textColor?: StringFieldUpdateOperationsInput | string
   }
 
   export type EventUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    recurringDays?: EventUpdaterecurringDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    color?: StringFieldUpdateOperationsInput | string
+    colorName?: StringFieldUpdateOperationsInput | string
+    textColor?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type TaskCreateInput = {
@@ -10291,6 +10505,14 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type IntNullableListFilter<$PrismaModel = never> = {
+    equals?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    has?: number | IntFieldRefInput<$PrismaModel> | null
+    hasEvery?: number[] | ListIntFieldRefInput<$PrismaModel>
+    hasSome?: number[] | ListIntFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -10298,29 +10520,56 @@ export namespace Prisma {
 
   export type EventCountOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
     title?: SortOrder
+    location?: SortOrder
     desc?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    recurringDays?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    color?: SortOrder
+    colorName?: SortOrder
+    textColor?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type EventAvgOrderByAggregateInput = {
+    recurringDays?: SortOrder
   }
 
   export type EventMaxOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
     title?: SortOrder
+    location?: SortOrder
     desc?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    color?: SortOrder
+    colorName?: SortOrder
+    textColor?: SortOrder
+    userId?: SortOrder
   }
 
   export type EventMinOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
     title?: SortOrder
+    location?: SortOrder
     desc?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    color?: SortOrder
+    colorName?: SortOrder
+    textColor?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type EventSumOrderByAggregateInput = {
+    recurringDays?: SortOrder
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -10731,10 +10980,19 @@ export namespace Prisma {
     update?: XOR<XOR<PreferencesUpdateToOneWithWhereWithoutUserInput, PreferencesUpdateWithoutUserInput>, PreferencesUncheckedUpdateWithoutUserInput>
   }
 
+  export type EventCreaterecurringDaysInput = {
+    set: number[]
+  }
+
   export type UserCreateNestedOneWithoutEventsInput = {
     create?: XOR<UserCreateWithoutEventsInput, UserUncheckedCreateWithoutEventsInput>
     connectOrCreate?: UserCreateOrConnectWithoutEventsInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type EventUpdaterecurringDaysInput = {
+    set?: number[]
+    push?: number | number[]
   }
 
   export type UserUpdateOneRequiredWithoutEventsNestedInput = {
@@ -10967,17 +11225,31 @@ export namespace Prisma {
   export type EventCreateWithoutUserInput = {
     id?: string
     title: string
+    location?: string | null
     desc?: string | null
     startTime: Date | string
     endTime: Date | string
+    recurringDays?: EventCreaterecurringDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    color: string
+    colorName: string
+    textColor: string
   }
 
   export type EventUncheckedCreateWithoutUserInput = {
     id?: string
     title: string
+    location?: string | null
     desc?: string | null
     startTime: Date | string
     endTime: Date | string
+    recurringDays?: EventCreaterecurringDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    color: string
+    colorName: string
+    textColor: string
   }
 
   export type EventCreateOrConnectWithoutUserInput = {
@@ -11112,11 +11384,18 @@ export namespace Prisma {
     OR?: EventScalarWhereInput[]
     NOT?: EventScalarWhereInput | EventScalarWhereInput[]
     id?: StringFilter<"Event"> | string
-    userId?: StringFilter<"Event"> | string
     title?: StringFilter<"Event"> | string
+    location?: StringNullableFilter<"Event"> | string | null
     desc?: StringNullableFilter<"Event"> | string | null
     startTime?: DateTimeFilter<"Event"> | Date | string
     endTime?: DateTimeFilter<"Event"> | Date | string
+    recurringDays?: IntNullableListFilter<"Event">
+    createdAt?: DateTimeFilter<"Event"> | Date | string
+    updatedAt?: DateTimeFilter<"Event"> | Date | string
+    color?: StringFilter<"Event"> | string
+    colorName?: StringFilter<"Event"> | string
+    textColor?: StringFilter<"Event"> | string
+    userId?: StringFilter<"Event"> | string
   }
 
   export type TaskUpsertWithWhereUniqueWithoutUserInput = {
@@ -11774,9 +12053,16 @@ export namespace Prisma {
   export type EventCreateManyUserInput = {
     id?: string
     title: string
+    location?: string | null
     desc?: string | null
     startTime: Date | string
     endTime: Date | string
+    recurringDays?: EventCreaterecurringDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    color: string
+    colorName: string
+    textColor: string
   }
 
   export type TaskCreateManyUserInput = {
@@ -11797,25 +12083,46 @@ export namespace Prisma {
   export type EventUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    recurringDays?: EventUpdaterecurringDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    color?: StringFieldUpdateOperationsInput | string
+    colorName?: StringFieldUpdateOperationsInput | string
+    textColor?: StringFieldUpdateOperationsInput | string
   }
 
   export type EventUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    recurringDays?: EventUpdaterecurringDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    color?: StringFieldUpdateOperationsInput | string
+    colorName?: StringFieldUpdateOperationsInput | string
+    textColor?: StringFieldUpdateOperationsInput | string
   }
 
   export type EventUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
     desc?: NullableStringFieldUpdateOperationsInput | string | null
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    recurringDays?: EventUpdaterecurringDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    color?: StringFieldUpdateOperationsInput | string
+    colorName?: StringFieldUpdateOperationsInput | string
+    textColor?: StringFieldUpdateOperationsInput | string
   }
 
   export type TaskUpdateWithoutUserInput = {
