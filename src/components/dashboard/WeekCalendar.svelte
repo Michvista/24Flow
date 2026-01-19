@@ -12,7 +12,7 @@
 	import { ChevronLeft, ChevronRight, Plus, X, Menu as MenuIcon } from 'lucide-svelte';
 	import MiniCalendar from './MiniCalendar.svelte';
 	import EventDetails from './EventDetails.svelte';
-	import AddTodo from './AddTodo.svelte'; // Assuming you named the second component this
+	import AddTodo from './AddTodo.svelte'; 
 	import Create from './Create.svelte';
 	import gsap from 'gsap';
 
@@ -303,6 +303,7 @@
 			)
 			.to(menuContent, { opacity: 0, y: -20, duration: 0.4 }, 0);
 	}
+
 </script>
 
 {#if isAddTodoOpen}
@@ -364,13 +365,13 @@
 					><path
 						clip-rule="evenodd"
 						d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z"
-						fill="currentColor"
+						fill="white"
 						fill-rule="evenodd"
 					></path></svg
 				>
 			</div>
 			<h2
-				class="text-slate-900 font-monoton dark:text-white text-base sm:text-lg font-bold leading-tight tracking-[-0.015em]"
+				class="text-white font-monoton dark:text-white text-base sm:text-lg font-bold leading-tight tracking-[-0.015em]"
 			>
 				24FLOW
 			</h2>
