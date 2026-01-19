@@ -66,12 +66,12 @@ const user = $derived(data?.user || {});
 	let mobileSidebarElem: HTMLElement;
 
 	// 1. Change your declarations to use $state
-let bedtime = $state('23:00');
+let sleepTime = $state('23:00');
 let wakeTime = $state('07:00');
 
 // 2. Use $derived for the logic
 let sleepMinutes = $derived.by(() => {
-    const [bH, bM] = bedtime.split(':').map(Number);
+    const [bH, bM] = sleepTime.split(':').map(Number);
     const [wH, wM] = wakeTime.split(':').map(Number);
     let diff = wH * 60 + wM - (bH * 60 + bM);
     if (diff < 0) diff += 1440; // Handle overnight sleep
@@ -104,11 +104,26 @@ let currentTab = $state('settings'); // 'settings', 'notifications', 'billing'
 let timezone = $state('(GMT+00:00) UTC');
 let dateFormat = $state('MM/DD/YYYY');
 
+interface UserData {
+    name?: string;
+    username?: string;
+    email?: string;
+    bio?: string;
+    preferences?: {
+        timezone?: string;
+        dateFormat?: string;
+    };
+	sleep?: {
+		sleepTime?: string;
+		wakeTime?: string;
+	}
+}
+
 onMount(async () => {
     avatarUrl = generateRandomAvatar();
     
     // Helper function to assign user data to state variables
-    const assignUserData = (userData) => {
+    const assignUserData = (userData:UserData) => {
         displayName = userData.name || '';
         username = userData.username || '';
         email = userData.email || '';
@@ -119,6 +134,10 @@ onMount(async () => {
             timezone = userData.preferences.timezone || '(GMT+00:00) UTC';
             dateFormat = userData.preferences.dateFormat || 'MM/DD/YYYY';
         }
+		if (userData.sleep){
+			sleepTime = userData.sleep.sleepTime || '23:00';
+			wakeTime = userData.sleep.wakeTime || '7:00';
+		}
     };
 
     // 1. Check if user exists in the data prop
@@ -167,7 +186,11 @@ const handleUpdate = async () => {
         preferences: {
             timezone: timezone, 
             dateFormat: dateFormat
-        }
+        },
+		 sleepLog: {
+                sleepTime: sleepTime,
+                wakeTime: wakeTime
+            },
     };
 
     try {
@@ -467,12 +490,12 @@ const handleLogout = async () => {
 									<div class="flex-1 min-w-[200px]">
 										<label
 											class="block text-[#91a9ca] text-xs font-bold mb-2 uppercase tracking-wider"
-											>Bedtime</label
+											>sleepTime</label
 										>
 										<input
 											class="neo-input w-full text-2xl font-mono font-bold py-4 px-4"
 											type="time"
-											bind:value={bedtime}
+											bind:value={sleepTime}
 										/>
 									</div>
 									<div class="flex-1 min-w-[200px]">
@@ -590,6 +613,7 @@ const handleLogout = async () => {
 						<div>
 							<h2 class="text-2xl font-black uppercase">Notification Preferences</h2>
 							<p class="text-[#91a9ca]">You have 3 active notification channels.</p>
+							<p class="text-red-500 capitalize"> This is not a functioning feature</p>
 						</div>
 					</div>
 					<div class="grid gap-4">
@@ -607,6 +631,7 @@ const handleLogout = async () => {
 				<div class="neo-card p-8 border-[#1973f0] border-4 shadow-neo-primary">
 					<div class="flex flex-col gap-6">
 						<div class="bg-[#1973f0] p-6 border-2 border-black">
+							<p class="text-red-500 capitalize"> This is not a functioning feature</p>
 							<span class="text-xs font-black uppercase tracking-[0.2em] opacity-80"
 								>Current Plan</span
 							>
