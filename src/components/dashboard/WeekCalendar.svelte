@@ -621,7 +621,7 @@ let prefilledTime: string = "";
 							isMobileSidebarOpen = false;
 						}}
 					>
-						<div class="mt-1 h-4 w-4 flex-shrink-0 border-2 border-black bg-{event.color}"></div>
+						<div class="mt-1 h-4 w-4 flex-shrink-0 border-2 border-black" style="background-color: {event.color};"></div>
 						<div>
 							<p class="font-bold text-lg leading-none mb-1">{event.start}</p>
 							<p class="text-sm font-medium text-gray-300">{event.title}</p>
