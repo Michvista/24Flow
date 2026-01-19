@@ -25,7 +25,6 @@ router.post('/', createEvent);
 
 // Update event
 router.patch('/:id', updateEvent);
-router.put('/:id', updateEvent);
 
 // Delete event
 router.delete('/:id', deleteEvent);

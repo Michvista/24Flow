@@ -4,10 +4,6 @@ import { onMount } from 'svelte';
     import { format } from 'date-fns';
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../SonnerToast.svelte';
-// let { data = {} } = $props();
-
-
-// const user = $derived(data?.user || {});
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
