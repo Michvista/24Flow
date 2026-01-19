@@ -24,7 +24,7 @@ export let data;
 
 
 	interface CalendarEvent {
-    id: number;
+    id: string;
     title: string;
     startTime: string;
     endTime: string;
@@ -222,13 +222,14 @@ async function fetchEvents() {
             credentials: 'include' 
         });
         const json = await res.json();
-        
+        if (res.ok && json.status === 'success') {
         events = json.data.map((event: any): CalendarEvent => ({
             ...event,
             date: new Date(event.startTime), 
             start: format(new Date(event.startTime), 'HH:mm'),
             end: format(new Date(event.endTime), 'HH:mm')
         }));
+	}
         
         console.log(`Loaded ${json.meta.total} events (${json.meta.baseEvents} base + ${json.meta.recurringInstances} recurring)`);
     } catch (e) {
@@ -675,6 +676,7 @@ let prefilledTime: string = "";
 				</button>
 				{#if isDetailsOpen && selectedEventData}
     <EventDetails 
+	id={selectedEventData.id}
  	eventTitle={selectedEventData.title}
 	eventDescription={selectedEventData.description}
 					startTime={selectedEventData.start}

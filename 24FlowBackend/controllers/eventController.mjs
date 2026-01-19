@@ -129,39 +129,53 @@ export const getEventById = async (req, res, next) => {
 
 export const updateEvent = async (req, res, next) => {
 	try {
+		// Use the parameter name defined in your router (likely 'id')
 		const { id } = req.params;
-		const updates = req.body;
 
-		// Clean update object to match schema
+		if (!id) {
+			return res.status(400).json({ status: 'fail', message: 'No ID provided' });
+		}
+
+		// Strip the virtual suffix (e.g., _w0_d1) to get the real Database UUID
+		const dbId = id.includes('_') ? id.split('_')[0] : id;
+
+		const { title, location, description, startTime, endTime } = req.body;
 		const updateData = {};
-		if (updates.title) updateData.title = updates.title;
-		if (updates.location !== undefined) updateData.location = updates.location;
-		if (updates.description !== undefined) updateData.desc = updates.description;
-		if (updates.startTime) updateData.startTime = new Date(updates.startTime);
-		if (updates.endTime) updateData.endTime = new Date(updates.endTime);
-		if (updates.recurringDays) updateData.recurringDays = updates.recurringDays;
-		if (updates.color) updateData.color = updates.color;
-		if (updates.colorName) updateData.colorName = updates.colorName;
-		if (updates.textColor) updateData.textColor = updates.textColor;
+
+		if (title) updateData.title = title;
+		if (location !== undefined) updateData.location = location;
+		if (description !== undefined) updateData.desc = description; // Mapping 'description' to 'desc'
+		if (startTime) updateData.startTime = new Date(startTime);
+		if (endTime) updateData.endTime = new Date(endTime);
 
 		const updatedEvent = await prisma.event.update({
-			where: { id, userId: req.user.id },
+			where: {
+				id: dbId,
+				userId: req.user.id // Security: Ensure user owns the event
+			},
 			data: updateData
 		});
 
 		res.status(200).json({ status: 'success', data: updatedEvent });
 	} catch (error) {
+		// Prisma throws P2025 if the record isn't found
+		if (error.code === 'P2025') {
+			return res.status(404).json({ status: 'fail', message: 'Event not found' });
+		}
 		next(error);
 	}
 };
 
 export const deleteEvent = async (req, res, next) => {
-	try {
-		await prisma.event.delete({
-			where: { id: req.params.id, userId: req.user.id }
-		});
-		res.status(200).json({ status: 'success', message: 'Deleted' });
-	} catch (error) {
-		next(error);
-	}
+    try {
+        const { id } = req.params;
+        const dbId = id.includes('_') ? id.split('_')[0] : id;
+
+        await prisma.event.delete({
+            where: { id: dbId, userId: req.user.id }
+        });
+        res.status(200).json({ status: 'success', message: 'Event series deleted' });
+    } catch (error) {
+        next(error);
+    }
 };
