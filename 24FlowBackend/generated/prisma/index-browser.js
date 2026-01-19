@@ -135,11 +135,18 @@ exports.Prisma.UserScalarFieldEnum = {
 
 exports.Prisma.EventScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
   title: 'title',
+  location: 'location',
   desc: 'desc',
   startTime: 'startTime',
-  endTime: 'endTime'
+  endTime: 'endTime',
+  recurringDays: 'recurringDays',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  color: 'color',
+  colorName: 'colorName',
+  textColor: 'textColor',
+  userId: 'userId'
 };
 
 exports.Prisma.TaskScalarFieldEnum = {

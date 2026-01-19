@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import {
 		format,
@@ -15,21 +15,48 @@
 	import AddTodo from './AddTodo.svelte'; 
 	import Create from './Create.svelte';
 	import gsap from 'gsap';
+	 import { Toaster } from 'svelte-sonner';
 
-	// --- State Management ---
-	let selectedEventData = null;
-	let isDetailsOpen = false;
-	let detailsOverlay;
-	let detailsContent;
 
-	// --- Add Todo Modal State ---
-	let isAddTodoOpen = false;
-	let todoOverlay;
-	let todoContent;
+export let data; 
+    $: user = data?.user;
+    $: console.log(user); 
 
-	let isMobileSidebarOpen = false;
 
-	// --- Animation Logic (Event Details style) ---
+	interface CalendarEvent {
+    id: number;
+    title: string;
+    startTime: string;
+    endTime: string;
+    date: Date;
+    start: string; 
+    end: string;
+    color: string;
+    textColor: string; 
+    text?: string;     
+    location?: string;
+    description?: string;
+	recurringDays?: [];
+}
+
+	let selectedEventData: CalendarEvent | null = null;
+    let isDetailsOpen = false;
+    let detailsOverlay: HTMLDivElement;
+    let detailsContent: HTMLDivElement;
+
+    // --- Add Todo Modal State ---
+    let isAddTodoOpen = false;
+    let todoOverlay: HTMLDivElement;
+    let todoContent: HTMLDivElement;
+    
+    // --- Menu Logic ---
+    let menuOverlay: HTMLDivElement;
+    let menuContent: HTMLDivElement;
+    let container: HTMLDivElement;
+
+    // --- Event Handling ---
+    let events: CalendarEvent[] = [];
+
 	async function openAddTodo() {
 		isAddTodoOpen = true;
 		await tick();
@@ -56,9 +83,8 @@
 		);
 	}
 
-	// --- Event Handling Logic ---
-	function handleEventClick(eventObj) {
-		const convertTo12hr = (timeStr) => {
+	function handleEventClick(eventObj: CalendarEvent) {
+		const convertTo12hr = (timeStr:string) => {
 			const [h, m] = timeStr.split(':');
 			const hh = parseInt(h);
 			const suffix = hh >= 12 ? 'PM' : 'AM';
@@ -101,94 +127,118 @@
 		);
 	}
 
-	// --- Calendar Data Logic ---
 	let currentDay = startOfToday();
 	let currentView = 'Week';
 	const baseDate = startOfWeek(startOfToday());
 
-	const events = [
-		{
-			id: 1,
-			title: 'Morning Sync',
-			start: '9:00',
-			end: '10:30',
-			date: addDays(baseDate, 0),
-			color: 'primary-accent',
-			text: 'white'
-		},
-		{
-			id: 2,
-			title: 'Project Review',
-			start: '13:00',
-			end: '14:00',
-			date: addDays(baseDate, 0),
-			color: 'primary-accent',
-			text: 'white'
-		},
-		{
-			id: 3,
-			title: 'Client Call',
-			start: '14:00',
-			end: '15:00',
-			date: addDays(baseDate, 1),
-			color: 'secondary-yellow',
-			text: 'black'
-		},
-		{
-			id: 4,
-			title: 'Design Sync',
-			start: '10:00',
-			end: '11:00',
-			date: addDays(baseDate, 2),
-			color: 'secondary-yellow',
-			text: 'black'
-		},
-		{
-			id: 5,
-			title: 'Project Kick-off',
-			start: '14:00',
-			end: '15:30',
-			date: addDays(baseDate, 2),
-			color: 'secondary-green',
-			text: 'black'
-		},
-		{
-			id: 6,
-			title: 'Team Retro',
-			start: '16:00',
-			end: '17:00',
-			date: addDays(baseDate, 2),
-			color: 'secondary-purple',
-			text: 'white'
-		},
-		{
-			id: 7,
-			title: 'Workshop A',
-			start: '11:00',
-			end: '12:30',
-			date: addDays(baseDate, 3),
-			color: 'secondary-green',
-			text: 'black'
-		},
-		{
-			id: 11,
-			title: 'Deep Work',
-			start: '9:00',
-			end: '10:00',
-			date: addDays(baseDate, 5),
-			color: 'secondary-purple',
-			text: 'white'
-		},
-		{
-			id: 12,
-			title: 'Strategy Session',
-			start: '14:00',
-			end: '17:00',
-			date: addDays(baseDate, 5),
-			color: 'primary-accent',
-			text: 'white'
-		}
-	];
+	// const events = [
+	// 	{
+	// 		id: 1,
+	// 		title: 'Morning Sync',
+	// 		start: '9:00',
+	// 		end: '10:30',
+	// 		date: addDays(baseDate, 0),
+	// 		color: 'primary-accent',
+	// 		text: 'white'
+	// 	},
+	// 	{
+	// 		id: 2,
+	// 		title: 'Project Review',
+	// 		start: '13:00',
+	// 		end: '14:00',
+	// 		date: addDays(baseDate, 0),
+	// 		color: 'primary-accent',
+	// 		text: 'white'
+	// 	},
+	// 	{
+	// 		id: 3,
+	// 		title: 'Client Call',
+	// 		start: '14:00',
+	// 		end: '15:00',
+	// 		date: addDays(baseDate, 1),
+	// 		color: 'secondary-yellow',
+	// 		text: 'black'
+	// 	},
+	// 	{
+	// 		id: 4,
+	// 		title: 'Design Sync',
+	// 		start: '10:00',
+	// 		end: '11:00',
+	// 		date: addDays(baseDate, 2),
+	// 		color: 'secondary-yellow',
+	// 		text: 'black'
+	// 	},
+	// 	{
+	// 		id: 5,
+	// 		title: 'Project Kick-off',
+	// 		start: '14:00',
+	// 		end: '15:30',
+	// 		date: addDays(baseDate, 2),
+	// 		color: 'secondary-green',
+	// 		text: 'black'
+	// 	},
+	// 	{
+	// 		id: 6,
+	// 		title: 'Team Retro',
+	// 		start: '16:00',
+	// 		end: '17:00',
+	// 		date: addDays(baseDate, 2),
+	// 		color: 'secondary-purple',
+	// 		text: 'white'
+	// 	},
+	// 	{
+	// 		id: 7,
+	// 		title: 'Workshop A',
+	// 		start: '11:00',
+	// 		end: '12:30',
+	// 		date: addDays(baseDate, 3),
+	// 		color: 'secondary-green',
+	// 		text: 'black'
+	// 	},
+	// 	{
+	// 		id: 11,
+	// 		title: 'Deep Work',
+	// 		start: '9:00',
+	// 		end: '10:00',
+	// 		date: addDays(baseDate, 5),
+	// 		color: 'secondary-purple',
+	// 		text: 'white'
+	// 	},
+	// 	{
+	// 		id: 12,
+	// 		title: 'Strategy Session',
+	// 		start: '14:00',
+	// 		end: '17:00',
+	// 		date: addDays(baseDate, 5),
+	// 		color: 'primary-accent',
+	// 		text: 'white'
+	// 	}
+	// ];
+
+
+async function fetchEvents() {
+    try {
+        const res = await fetch('http://localhost:3000/events', { 
+            credentials: 'include' 
+        });
+        const json = await res.json();
+        
+        events = json.data.map((event: any): CalendarEvent => ({
+            ...event,
+            date: new Date(event.startTime), 
+            start: format(new Date(event.startTime), 'HH:mm'),
+            end: format(new Date(event.endTime), 'HH:mm')
+        }));
+        
+        console.log(`Loaded ${json.meta.total} events (${json.meta.baseEvents} base + ${json.meta.recurringInstances} recurring)`);
+    } catch (e) {
+        console.error("Failed to load events", e);
+    }
+}
+
+onMount(() => {
+    fetchEvents();
+});
 
 	let tasks = [
 		{ id: 1, title: 'Review PR #231', completed: true },
@@ -201,7 +251,7 @@
 	$: currentTimeLineTop = getHours(new Date()) * 60 + getMinutes(new Date());
 	$: selectedDayEvents = events.filter((e) => isSameDay(e.date, currentDay));
 
-	function getEventStyle(event) {
+	function getEventStyle(event: CalendarEvent): string {
 		const [h, m] = event.start.split(':').map(Number);
 		const [eh, em] = event.end.split(':').map(Number);
 		const start = h * 60 + m;
@@ -209,35 +259,44 @@
 		return `top: ${start}px; height: ${end - start}px;`;
 	}
 
-	function handleGridClick(event, day) {
+let prefilledDate: Date = new Date(); 
+let prefilledTime: string = "";
+
+	function handleGridClick(event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }, day: Date) {
 		const timeGrid = event.currentTarget.getBoundingClientRect();
 		const yPos = event.clientY - timeGrid.top;
 		const startHour = Math.floor(yPos / 60);
 		const startMinute = Math.floor(yPos % 60);
-		const appointmentTime = new Date(
-			day.getFullYear(),
-			day.getMonth(),
-			day.getDate(),
-			startHour,
-			startMinute
-		);
-		let timeString =
-			startHour === 0
-				? `00:${format(appointmentTime, 'mm')} AM`
-				: format(appointmentTime, 'h:mm a');
-		alert(`Proposed: ${format(appointmentTime, 'E, MMM d')} at ${timeString}`);
+		// const appointmentTime = new Date(
+		// 	day.getFullYear(),
+		// 	day.getMonth(),
+		// 	day.getDate(),
+		// 	startHour,
+		// 	startMinute
+		// );
+		// let timeString =
+		// 	startHour === 0
+		// 		? `00:${format(appointmentTime, 'mm')} AM`
+		// 		: format(appointmentTime, 'h:mm a');
+		// alert(`Proposed: ${format(appointmentTime, 'E, MMM d')} at ${timeString}`);
+
+	const appointmentTime = new Date(day);
+    appointmentTime.setHours(startHour, 0, 0, 0);
+
+		prefilledDate = appointmentTime;
+        prefilledTime = format(appointmentTime, 'HH:mm'); 
+
+        // Trigger the add event 
+        openMenu();
 	}
 
-	function navigateWeek(direction) {
+	function navigateWeek(direction:number) {
 		currentDay = addDays(currentDay, direction * 7);
 	}
 
-	// --- GSAP Header/Main Create Menu Logic ---
-	let menuOverlay;
-	let menuContent;
-	let container;
 	let isOpen = false;
 	let isAnimating = false;
+	let isMobileSidebarOpen = false;
 
 	$: if (typeof document !== 'undefined') {
 		if (isOpen || isDetailsOpen || isAddTodoOpen) document.body.classList.add('no-scroll');
@@ -250,9 +309,15 @@
 	});
 
 	function menuClick() {
-		if (!isOpen) openMenu();
-		else closeMenu();
-	}
+        if (!isOpen) {
+            // Reset prefilled data if clicking the general button
+            prefilledDate = new Date(); 
+            prefilledTime = format(new Date(), 'HH:mm');
+            openMenu();
+        } else {
+            closeMenu();
+        }
+    }
 
 	function openMenu() {
 		if (isAnimating || isOpen) return;
@@ -341,7 +406,11 @@
 	</button>
 	<div class="flex justify-center items-start py-20 min-h-full w-full" bind:this={menuContent}>
 		<div class="w-full max-w-4xl px-6">
-			<Create />
+		<Create 
+            initialDate={prefilledDate} 
+            initialTime={prefilledTime} 
+            onSuccess={closeMenu} 
+        />
 		</div>
 	</div>
 </div>
@@ -494,20 +563,19 @@
 								on:click={(e) => handleGridClick(e, day)}
 							>
 								{#each dayEvents as event}
-									<div
-										class="absolute w-full px-0.5 sm:px-1 z-20"
-										style={getEventStyle(event)}
-										on:click|stopPropagation={() => handleEventClick(event)}
-									>
-										<div
-											class="bg-{event.color} border-2 border-black text-{event.text} p-1 sm:p-2 h-full shadow-[2px_2px_0px_#000] sm:shadow-[4px_4px_0px_#000] rounded-md overflow-hidden transition-transform cursor-pointer"
-										>
-											<span class="block text-[8px] sm:text-[10px] font-bold">{event.start}</span>
-											<span class="block text-[10px] sm:text-xs font-bold truncate"
-												>{event.title}</span
-											>
-										</div>
-									</div>
+<div
+    class="absolute w-full px-0.5 sm:px-1 z-20"
+    style={getEventStyle(event)}
+    on:click|stopPropagation={() => handleEventClick(event)}
+>
+    <div
+        class="border-2 border-black p-1 sm:p-2 h-full shadow-[2px_2px_0px_#000] sm:shadow-[4px_4px_0px_#000] rounded-md overflow-hidden transition-transform cursor-pointer"
+        style="background-color: {event.color}; color: {event.textColor};"
+    >
+        <span class="block text-[8px] sm:text-[10px] font-bold">{event.start}</span>
+        <span class="block text-[10px] sm:text-xs font-bold truncate">{event.title}</span>
+    </div>
+</div>
 								{/each}
 							</div>
 						{/each}
@@ -605,16 +673,23 @@
 				>
 					<X size={24} color="black" strokeWidth={3} />
 				</button>
-				<EventDetails
-					eventTitle={selectedEventData.title}
+				{#if isDetailsOpen && selectedEventData}
+    <EventDetails 
+ 	eventTitle={selectedEventData.title}
+	eventDescription={selectedEventData.description}
 					startTime={selectedEventData.start}
 					endTime={selectedEventData.end}
 					eventDate={format(selectedEventData.date, 'MMMM d, yyyy')}
-				/>
+        location={selectedEventData.location}
+		userData={user}
+		recurringDays={selectedEventData.recurringDays || []}
+    />
+{/if}
 			</div>
 		</div>
 	{/if}
 </div>
+<Toaster position="bottom-right" expand={false} richColors />
 
 <style>
 	@import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');

@@ -1,16 +1,139 @@
-<script>
-	import { MapPin, Calendar } from 'lucide-svelte';
+<script lang="ts">
+import { onMount } from 'svelte';
+    import { MapPin, Calendar } from 'lucide-svelte';
+    import { format } from 'date-fns';
+	import { Toaster, toast } from 'svelte-sonner';
+	import SonnerToast from '../SonnerToast.svelte';
+// let { data = {} } = $props();
 
-	// Form State
-	let title = '';
-	let location = '';
-	let date = '';
-	let description = '';
 
+// const user = $derived(data?.user || {});
+
+	function notifySuccess(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'success'
+			},
+			duration: 5000
+		});
+	}
+
+	function notifyError(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'error'
+			},
+			duration: 5000
+		});
+	}
+
+export let initialDate: Date = new Date();
+    export let initialTime: string = '';
+    export let onSuccess = () => {};  
+
+	
+
+    // Form State
+    let title = '';
+    let location = '';
+    let date = ''; // Bound to the HTML date input
+    let description = '';
+
+	let selectedDays = [1, 3]; // Indices for M, W
+	
+
+let startTimeIndex: number | null = null;
+    let endTimeIndex: number | null = null;
+    
+    // Sync props with local state on load
+    onMount(() => {
+        if (initialDate) {
+            date = format(initialDate, 'yyyy-MM-dd');
+        }
+        if (initialTime) {
+            // If the grid click gives us "14:20", we find the closest index in timeSlots
+            const hour = initialTime.split(':')[0];
+            const index = timeSlots.findIndex(t => t.startsWith(hour));
+            if (index !== -1) startTimeIndex = index;
+        }
+    });
+
+	
+    async function handleSubmit() {
+       if (!title || startTimeIndex === null) {
+            notifyError("Validation Error","Please provide a title and start time.");
+            return;
+        }
+
+        const startStr = `${date}T${timeSlots[startTimeIndex]}:00`;
+        const endStr = endTimeIndex !== null 
+            ? `${date}T${timeSlots[endTimeIndex]}:00`
+            : `${date}T${timeSlots[startTimeIndex + 1] || '23:59'}:00`;
+
+        // Neobrutalist Color Palette
+       // In Create.svelte, replace the handleSubmit function's color section:
+
+const colors = [
+    { bg: '#f7ff5c', text: '#000000', name: 'secondary-yellow' },
+    { bg: '#00f57a', text: '#000000', name: 'secondary-green' },
+    { bg: '#af52de', text: '#ffffff', name: 'secondary-purple' },
+    { bg: '#3d7bff', text: '#ffffff', name: 'primary-accent' }
+];
+const randomStyle = colors[Math.floor(Math.random() * colors.length)];
+
+const payload = {
+    title,
+    location,
+    description,
+    startTime: new Date(startStr).toISOString(),
+    endTime: new Date(endStr).toISOString(),
+    recurringDays: selectedDays,
+    color: randomStyle.bg,  // Send hex color
+    textColor: randomStyle.text,
+    colorName: randomStyle.name 
+};
+        try {
+            const response = await fetch('http://localhost:3000/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                credentials: 'include' 
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+				notifySuccess("Event Created", "reloading page...")
+                console.log('Event Created:', result);
+                onSuccess();
+
+				    setTimeout(() => {
+        window.location.reload();
+    }, 1500);
+            } else {
+                const err = await response.json();
+                alert(`Error: ${err.message}`);
+				notifyError("Error occured", String(err.message))
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+			notifyError('System Fetch Error', String(error))
+        }
+    }
 	// 1. Dynamic Recurrence Text
 	const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-	let selectedDays = [1, 3]; // Indices for M, W
 
 	$: recurrenceText =
 		selectedDays.length === 0
@@ -22,38 +145,51 @@
 						.map((i) => dayNames[i])
 						.join(', ')}`;
 
+						$: if (initialDate) {
+        date = format(initialDate, 'yyyy-MM-dd');
+    }
+
+    $: if (initialTime) {
+        const hour = initialTime.split(':')[0];
+        const index = timeSlots.findIndex(t => t.startsWith(hour));
+        if (index !== -1) startTimeIndex = index;
+    }
+
 	// 2. Dynamic Time Generation (00:00 to 23:00)
 	const timeSlots = Array.from({ length: 24 }, (_, i) => {
 		return i.toString().padStart(2, '0') + ':00';
 	});
 
-	// 3. Time Span Logic
-	let startTimeIndex = null;
-	let endTimeIndex = null;
+	
 
-	function handleTimeClick(index) {
-		if (startTimeIndex === null || endTimeIndex !== null) {
-			// Start a new selection
-			startTimeIndex = index;
-			endTimeIndex = null;
-		} else {
-			// Complete the range
-			if (index < startTimeIndex) {
-				endTimeIndex = startTimeIndex;
-				startTimeIndex = index;
-			} else if (index === startTimeIndex) {
-				startTimeIndex = null; // Deselect if clicking same button
-			} else {
-				endTimeIndex = index;
-			}
-		}
-	}
+	function handleTimeClick(index: number) {
+        if (startTimeIndex === null || endTimeIndex !== null) {
+            startTimeIndex = index;
+            endTimeIndex = null;
+        } else {
+            if (index === startTimeIndex) {
+                startTimeIndex = null;
+            } else {
+                // We allow index to be less than startTimeIndex!
+                // This means the event ends the following day.
+                endTimeIndex = index;
+            }
+        }
+    }
 
-	$: isSelected = (index) => {
-		if (startTimeIndex === null) return false;
-		if (endTimeIndex === null) return index === startTimeIndex;
-		return index >= startTimeIndex && index <= endTimeIndex;
-	};
+    // Update the visual selection logic to handle the "wrap around"
+    $: isSelected = (index: number) => {
+        if (startTimeIndex === null) return false;
+        if (endTimeIndex === null) return index === startTimeIndex;
+        
+        if (startTimeIndex <= endTimeIndex) {
+            // Normal same-day range
+            return index >= startTimeIndex && index <= endTimeIndex;
+        } else {
+            // Overnight range: select from start to end of day, AND start of day to end index
+            return index >= startTimeIndex || index <= endTimeIndex;
+        }
+    };
 </script>
 
 <svelte:head>
@@ -69,7 +205,7 @@
 			<h1 class="text-5xl font-black leading-tight tracking-[-0.033em]">Create New Event</h1>
 		</div>
 
-		<form class="space-y-10" on:submit|preventDefault>
+		<form class="space-y-10" on:submit|preventDefault={handleSubmit}>
 			<div class="flex flex-col gap-2">
 				<label class="text-sm font-bold uppercase tracking-widest">Title</label>
 				<input
@@ -185,6 +321,8 @@
 		</form>
 	</div>
 </div>
+<Toaster position="bottom-right" expand={false} richColors />
+
 
 <style>
 	.font-display {

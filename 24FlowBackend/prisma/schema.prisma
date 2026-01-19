@@ -34,14 +34,25 @@ model User {
 }
 
 model Event {
-  id        String   @id @default(uuid())
-  userId    String
-  title     String
-  desc      String?
-  startTime DateTime
-  endTime   DateTime
+  id            String   @id @default(uuid())
+  title         String
+  location      String?
+  desc          String?  @map("description") // Mapping 'desc' to 'description'
+  startTime     DateTime
+  endTime       DateTime
+  
+  // Storing recurrence as an array of integers [0, 1, 2...] 
+  recurringDays Int[]    
 
-  user      User     @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  color     String   
+  colorName     String   
+  textColor String   
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Task {

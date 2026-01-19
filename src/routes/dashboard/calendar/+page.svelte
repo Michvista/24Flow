@@ -4,7 +4,7 @@
 
 	// Keep state variables used in the header if they are still relevant
 	let currentView = 'Week';
-
+export let data;
 	// Note: currentTimeStyle is now handled internally by WeekCalendar.svelte,
 	// but keep it if you still use it elsewhere.
 </script>
@@ -43,6 +43,6 @@
     </header> -->
 
 	<main class="flex flex-1 overflow-hidden">
-		<WeekCalendar />
+		<WeekCalendar data={data}/>
 	</main>
 </div>
