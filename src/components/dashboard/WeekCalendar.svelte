@@ -7,7 +7,8 @@
 		isSameDay,
 		getHours,
 		getMinutes,
-		startOfToday
+		startOfToday,
+		endOfWeek, addWeeks, subWeeks
 	} from 'date-fns';
 	import { ChevronLeft, ChevronRight, Plus, X, Menu as MenuIcon } from 'lucide-svelte';
 	import MiniCalendar from './MiniCalendar.svelte';
@@ -35,8 +36,8 @@ export let data;
     textColor: string; 
     text?: string;     
     location?: string;
-    description?: string;
-	recurringDays?: [];
+    desc?: string;
+	recurringDays?: number[];
 }
 
 	let selectedEventData: CalendarEvent | null = null;
@@ -44,17 +45,14 @@ export let data;
     let detailsOverlay: HTMLDivElement;
     let detailsContent: HTMLDivElement;
 
-    // --- Add Todo Modal State ---
     let isAddTodoOpen = false;
     let todoOverlay: HTMLDivElement;
     let todoContent: HTMLDivElement;
     
-    // --- Menu Logic ---
     let menuOverlay: HTMLDivElement;
     let menuContent: HTMLDivElement;
     let container: HTMLDivElement;
 
-    // --- Event Handling ---
     let events: CalendarEvent[] = [];
 
 	async function openAddTodo() {
@@ -237,14 +235,14 @@ async function fetchEvents() {
     }
 }
 
-onMount(() => {
-    fetchEvents();
-});
+// onMount(() => {
+//     fetchEvents();
+// });
 
-	let tasks = [
-		{ id: 1, title: 'Review PR #231', completed: true },
-		{ id: 2, title: 'Update Documentation', completed: false }
-	];
+	// let tasks = [
+	// 	{ id: 1, title: 'Review PR #231', completed: true },
+	// 	{ id: 2, title: 'Update Documentation', completed: false }
+	// ];
 
 	$: weekStart = startOfWeek(currentDay, { weekStartsOn: 0 });
 	$: weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
@@ -369,6 +367,99 @@ let prefilledTime: string = "";
 			)
 			.to(menuContent, { opacity: 0, y: -20, duration: 0.4 }, 0);
 	}
+	interface Task  {
+  id: string;
+  title: string;
+  description: string;
+  completed: boolean;
+};
+
+let tasks: Task[] = [];
+
+    // 1. Fetch tasks automatically on load
+    onMount(async () => {
+        await fetchTasks();
+    });
+
+    async function fetchTasks() {
+        try {
+            const res = await fetch('http://localhost:3000/tasks', { credentials: 'include' });
+            const result = await res.json();
+            if (res.ok) tasks = result.data;
+        } catch (err) {
+            console.error("Error fetching tasks:", err);
+        }
+    }
+
+    // 2. Handle adding task 
+    function handleTaskAdded(newTask: Task) {
+        tasks = [newTask, ...tasks];
+    }
+
+  async function toggleTask(task: Task) {
+
+    tasks = [...tasks]; // Trigger UI update for the line-through class
+
+    try {
+        const res = await fetch(`http://localhost:3000/tasks/${task.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ completed: task.completed }) // Send the already-flipped value
+        });
+
+        if (!res.ok) {
+            // Rollback only if the server fails
+            task.completed = !task.completed;
+            tasks = [...tasks];
+            console.error("Failed to update task on server");
+        }
+    } catch (err) {
+        task.completed = !task.completed;
+        tasks = [...tasks];
+        console.error("Network error updating task:", err);
+    }
+}
+
+let currentViewDate = new Date();
+
+
+async function fetchEventsForRange() {
+    const rangeStart = startOfWeek(subWeeks(currentViewDate, 2));
+    const rangeEnd = endOfWeek(addWeeks(currentViewDate, 6));
+
+    const startStr = rangeStart.toISOString();
+    const endStr = rangeEnd.toISOString();
+
+    try {
+        const res = await fetch(
+            `http://localhost:3000/events?start=${startStr}&end=${endStr}`,
+            { credentials: 'include' }
+        );
+
+        const result = await res.json();
+       // Inside fetchEventsForRange
+if (res.ok) {
+    events = result.data.map((event: any) => {
+        const sDate = new Date(event.startTime);
+        return {
+            ...event,
+            date: sDate, 
+            start: format(sDate, 'HH:mm'),
+            end: format(new Date(event.endTime), 'HH:mm')
+        };
+    });
+}
+    } catch (err) {
+        console.error("Failed to load events", err);
+    }
+}
+
+$: {
+    if (currentViewDate) {
+        fetchEventsForRange();
+    }
+}
 
 </script>
 
@@ -389,7 +480,7 @@ let prefilledTime: string = "";
 			>
 				<X size={24} color="black" strokeWidth={3} />
 			</button>
-			<AddTodo onCancel={closeAddTodo} />
+			<AddTodo onCancel={closeAddTodo} onAdd={handleTaskAdded}/>
 		</div>
 	</div>
 {/if}
@@ -646,6 +737,7 @@ let prefilledTime: string = "";
 						<input
 							type="checkbox"
 							bind:checked={task.completed}
+							on:change={() => toggleTask(task)}
 							class="h-4 w-4 border-2 border-off-white bg-transparent text-primary-accent focus:ring-0 rounded-none cursor-pointer"
 						/>
 						<span class="text-sm {task.completed ? 'line-through text-gray-500' : 'text-off-white'}"
@@ -678,7 +770,7 @@ let prefilledTime: string = "";
     <EventDetails 
 	id={selectedEventData.id}
  	eventTitle={selectedEventData.title}
-	eventDescription={selectedEventData.description}
+	eventDescription={selectedEventData.desc}
 					startTime={selectedEventData.start}
 					endTime={selectedEventData.end}
 					eventDate={format(selectedEventData.date, 'MMMM d, yyyy')}

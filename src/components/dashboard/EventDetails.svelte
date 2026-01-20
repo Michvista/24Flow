@@ -127,6 +127,9 @@
                 location = editLocation;
                 isEditing = false;
                 notifySuccess("Success!", "Event details updated successfully.");
+					    setTimeout(() => {
+        window.location.reload();
+    }, 1500);
             } else {
                 const errData = await res.json();
                 notifyError("Update Failed", errData.message || "Could not update event.");

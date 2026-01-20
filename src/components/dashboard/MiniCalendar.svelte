@@ -17,13 +17,8 @@
 
 	// 1. Initialize viewDate
 	let viewDate = startOfMonth(currentDay);
-
-	// 2. FIX: We use a reactive statement that ONLY triggers when currentDay changes.
-	// We do NOT put 'viewDate' inside the if-check logic to prevent the reset loop.
 	$: {
 		const syncDate = startOfMonth(currentDay);
-		// We use a temporary variable to check against the current viewDate
-		// without making the whole block depend on viewDate updates.
 		updateView(currentDay);
 	}
 
