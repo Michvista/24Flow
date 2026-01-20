@@ -2,7 +2,7 @@
 	import { X, PlusCircle, ChevronDown, Calendar, Timer, Info, ArrowLeft } from 'lucide-svelte';
 	import { gsap } from 'gsap';
 
-	let { show = $bindable(), onAdd } = $props();
+	let { show = $bindable(), onAdd, initial = undefined } = $props();
 
 	// Form State
 	let task = $state({
@@ -29,6 +29,23 @@
 			description: ''
 		};
 	}
+
+	// When the modal opens, prefill fields from `initial` if provided.
+	// Avoid reading `task` inside the effect to prevent an infinite update loop.
+	$effect(() => {
+		if (show && initial) {
+			// Only copy known fields from `initial` and provide safe defaults.
+			task = {
+				title: initial.title ?? '',
+				subject: initial.subject ?? '',
+				type: initial.type ?? 'deep_work',
+				date: initial.date ?? '',
+				startTime: initial.startTime ?? '',
+				duration: initial.duration ?? '60',
+				description: initial.description ?? ''
+			};
+		}
+	});
 
 	// GSAP Animation Logic
 	$effect(() => {

@@ -1,4 +1,4 @@
-<script lang="ts">
+<script runes lang="ts">
 	import {
 		TriangleAlert,
 		ArrowDown,
@@ -48,7 +48,10 @@
 	let activeConflict = $derived(allConflicts[currentConflictIdx]);
 
 	// Function to automatically calculate CSS positions based on time and index
-	function calculatePosition(task, index) {
+	function calculatePosition(
+		task: { start: number; end: number; title?: string; type?: string },
+		index: number
+	) {
 		// Base time starts at 14:00 (represented as 1400)
 		const baseTime = 1400;
 		const pixelsPerMinute = 1.2; // Scaling factor for height

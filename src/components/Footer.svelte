@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { scrollToId } from '$lib/scrollToId';
 	import gsap from 'gsap';
@@ -23,7 +23,7 @@
 		});
 	});
 
-	const handleNavClick = (id) => {
+	const handleNavClick = (id: string) => {
 		scrollToId(id, NAV_HEIGHT);
 	};
 </script>
@@ -66,19 +66,31 @@
 		</div>
 
 		<div class="flex flex-col gap-3 text-right pt-10 md:pt-0">
-			<a
-				class="hover:text-gray-300 transition cursor-pointer"
-				on:click={() => handleNavClick('home')}>Home</a
+			<button
+				type="button"
+				class="hover:text-gray-300 transition cursor-pointer bg-transparent text-left"
+				onclick={() => handleNavClick('home')}
 			>
+				Home
+			</button>
+
 			<a class="hover:text-gray-300 transition cursor-pointer" href="/dashboard">Get Started</a>
-			<a
-				class="hover:text-gray-300 transition cursor-pointer"
-				on:click={() => handleNavClick('features')}>Features</a
+
+			<button
+				type="button"
+				class="hover:text-gray-300 transition cursor-pointer bg-transparent text-left"
+				onclick={() => handleNavClick('features')}
 			>
-			<a
-				class="hover:text-gray-300 transition cursor-pointer"
-				on:click={() => handleNavClick('footer')}>Contact</a
+				Features
+			</button>
+
+			<button
+				type="button"
+				class="hover:text-gray-300 transition cursor-pointer bg-transparent text-left"
+				onclick={() => handleNavClick('footer')}
 			>
+				Contact
+			</button>
 		</div>
 	</div>
 
@@ -94,9 +106,21 @@
 		<p>© 2025 24Flow. All rights reserved.</p>
 
 		<div class="flex gap-6 pt-4 md:pt-0">
-			<a class="hover:text-white transition cursor-pointer">LinkedIn</a>
-			<a class="hover:text-white transition cursor-pointer">Facebook</a>
-			<a class="hover:text-white transition cursor-pointer">Twitter</a>
+			<button
+				type="button"
+				aria-label="LinkedIn"
+				class="hover:text-white transition cursor-pointer bg-transparent">LinkedIn</button
+			>
+			<button
+				type="button"
+				aria-label="Facebook"
+				class="hover:text-white transition cursor-pointer bg-transparent">Facebook</button
+			>
+			<button
+				type="button"
+				aria-label="Twitter"
+				class="hover:text-white transition cursor-pointer bg-transparent">Twitter</button
+			>
 		</div>
 	</div>
 </footer>

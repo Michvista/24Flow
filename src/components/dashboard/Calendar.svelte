@@ -3,7 +3,7 @@
 	><head>
 		<meta charset="utf-8" />
 		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
-		<title>Refined Scheduler Dashboard</title>
+		<title>testdb</title>
 		<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 		<link href="https://fonts.googleapis.com" rel="preconnect" />
 		<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -93,7 +93,7 @@
 						>
 							<span class="truncate text-sm font-bold">Week</span>
 							<input
-								checked=""
+								checked={true}
 								class="invisible w-0"
 								name="view-toggle"
 								type="radio"
@@ -600,7 +600,7 @@
 							<p class="text-xs font-bold uppercase text-gray-500 mb-2">Tasks</p>
 							<div class="flex items-center gap-2 mb-2">
 								<input
-									checked=""
+									checked={true}
 									class="h-4 w-4 border-2 border-off-white bg-transparent text-primary-accent focus:ring-0 rounded-none"
 									type="checkbox"
 								/>

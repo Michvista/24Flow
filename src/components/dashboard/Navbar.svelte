@@ -1,14 +1,15 @@
-<script>
+<script runes lang="ts">
 	import { onMount } from 'svelte';
 	import { Menu, X, Calendar, Cpu, Settings as SettingsIcon } from 'lucide-svelte';
 	import gsap from 'gsap';
 
 	let { activeTab = $bindable('AI Tools Hub') } = $props();
 
-	let avatarUrl = '';
-	let isMobileMenuOpen = false;
-	let sidebarElement;
-	let menuLinks = [];
+	// reactive state in runes mode
+	let avatarUrl = $state<string>('');
+	let isMobileMenuOpen = $state<boolean>(false);
+	let sidebarElement: HTMLElement | null = null;
+	let menuLinks: HTMLElement[] = [];
 
 	function generateRandomAvatar() {
 		const styles = ['adventurer', 'fun-emoji', 'bottts', 'lorelei', 'avataaars'];

@@ -38,7 +38,8 @@
 
 	// GSAP Animation Logic
 	$effect(() => {
-		if (!sidebarElement) return;
+		// Ensure both elements exist before animating
+		if (!sidebarElement || !overlayElement) return;
 
 		if (isSidebarOpen) {
 			// Open Sidebar

@@ -57,7 +57,7 @@
 		</p>
 	{/if}
 
-	<MoodModal bind:isOpen={showModal} onConfirm={handleMoodUpdate} />
+	<MoodModal bind:show={showModal} onAdd={handleMoodUpdate} />
 </main>
 
 <Toaster position="bottom-right" />

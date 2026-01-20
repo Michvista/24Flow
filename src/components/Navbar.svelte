@@ -1,12 +1,12 @@
-<script>
+<script lang="ts">
 	import { scrollToId } from '$lib/scrollToId';
 	import { Menu, X } from 'lucide-svelte';
 	import gsap from 'gsap';
 
 	const NAV_HEIGHT = 72;
-	let isOpen = false;
-	let sidebarElement; // This is now the "Curtain"
-	let menuLinks = [];
+	let isOpen: boolean = false;
+	let sidebarElement: HTMLElement | null = null; // This is now the "Curtain"
+	let menuLinks: HTMLElement[] = [];
 
 	const buttonClass =
 		'px-6 py-2 h-12 bg-brand-primary text-white mt-1 mb-[-5] rounded-md cursor-pointer text-lg ' +
@@ -33,7 +33,7 @@
 		}
 	}
 
-	const handleNavClick = (id) => {
+	const handleNavClick = (id: string) => {
 		if (isOpen) toggleMobileMenu();
 		scrollToId(id, NAV_HEIGHT);
 	};

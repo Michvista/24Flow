@@ -36,6 +36,22 @@
 	}
 
 	function handleDrop(e: DragEvent, targetTask: Task) {
+		// If a backlog item is dragged from the sidebar, parent sets dataTransfer info
+		try {
+			const raw = e.dataTransfer?.getData('application/json');
+			if (raw) {
+				const parsed = JSON.parse(raw);
+				if (parsed?.source === 'backlog') {
+					// Delegate to parent onDrop: place the backlog item at the target task's slot
+					onDrop(e, targetTask.day, targetTask.time);
+					e.preventDefault();
+					return;
+				}
+			}
+		} catch (err) {
+			// ignore and fall back to internal behavior
+		}
+
 		if (!isEditMode || !draggedTask) return;
 		e.preventDefault();
 		e.stopPropagation();
@@ -46,7 +62,7 @@
 
 		// If moving to different day, update day
 		if (draggedTaskData.day !== targetDayIndex) {
-			scheduleData = scheduleData.map((t) => {
+			scheduleData = scheduleData.map((t: Task) => {
 				if (t.id === draggedTaskData.id) {
 					return { ...t, day: targetDayIndex, time: targetTime };
 				}
@@ -55,7 +71,7 @@
 		} else {
 			// Same day - swap times
 			const draggedTime = draggedTaskData.time;
-			scheduleData = scheduleData.map((t) => {
+			scheduleData = scheduleData.map((t: Task) => {
 				if (t.id === draggedTaskData.id) {
 					return { ...t, time: targetTime };
 				}
@@ -94,8 +110,9 @@
 
 	$effect(() => {
 		if (listContainer) {
-			listContainer.addEventListener('scroll', checkStickyHeaders);
-			return () => listContainer.removeEventListener('scroll', checkStickyHeaders);
+			const node = listContainer;
+			node.addEventListener('scroll', checkStickyHeaders);
+			return () => node.removeEventListener('scroll', checkStickyHeaders);
 		}
 	});
 </script>

@@ -8,52 +8,52 @@
 		getHours,
 		getMinutes,
 		startOfToday,
-		endOfWeek, addWeeks, subWeeks
+		endOfWeek,
+		addWeeks,
+		subWeeks
 	} from 'date-fns';
 	import { ChevronLeft, ChevronRight, Plus, X, Menu as MenuIcon } from 'lucide-svelte';
 	import MiniCalendar from './MiniCalendar.svelte';
 	import EventDetails from './EventDetails.svelte';
-	import AddTodo from './AddTodo.svelte'; 
+	import AddTodo from './AddTodo.svelte';
 	import Create from './Create.svelte';
 	import gsap from 'gsap';
-	 import { Toaster } from 'svelte-sonner';
+	import { Toaster } from 'svelte-sonner';
 
-
-export let data; 
-    $: user = data?.user;
-    $: console.log(user); 
-
+	export let data;
+	$: user = data?.user;
+	$: console.log(user);
 
 	interface CalendarEvent {
-    id: string;
-    title: string;
-    startTime: string;
-    endTime: string;
-    date: Date;
-    start: string; 
-    end: string;
-    color: string;
-    textColor: string; 
-    text?: string;     
-    location?: string;
-    desc?: string;
-	recurringDays?: number[];
-}
+		id: string;
+		title: string;
+		startTime: string;
+		endTime: string;
+		date: Date;
+		start: string;
+		end: string;
+		color: string;
+		textColor: string;
+		text?: string;
+		location?: string;
+		desc?: string;
+		recurringDays?: number[];
+	}
 
 	let selectedEventData: CalendarEvent | null = null;
-    let isDetailsOpen = false;
-    let detailsOverlay: HTMLDivElement;
-    let detailsContent: HTMLDivElement;
+	let isDetailsOpen = false;
+	let detailsOverlay: HTMLDivElement;
+	let detailsContent: HTMLDivElement;
 
-    let isAddTodoOpen = false;
-    let todoOverlay: HTMLDivElement;
-    let todoContent: HTMLDivElement;
-    
-    let menuOverlay: HTMLDivElement;
-    let menuContent: HTMLDivElement;
-    let container: HTMLDivElement;
+	let isAddTodoOpen = false;
+	let todoOverlay: HTMLDivElement;
+	let todoContent: HTMLDivElement;
 
-    let events: CalendarEvent[] = [];
+	let menuOverlay: HTMLDivElement;
+	let menuContent: HTMLDivElement;
+	let container: HTMLDivElement;
+
+	let events: CalendarEvent[] = [];
 
 	async function openAddTodo() {
 		isAddTodoOpen = true;
@@ -82,7 +82,7 @@ export let data;
 	}
 
 	function handleEventClick(eventObj: CalendarEvent) {
-		const convertTo12hr = (timeStr:string) => {
+		const convertTo12hr = (timeStr: string) => {
 			const [h, m] = timeStr.split(':');
 			const hh = parseInt(h);
 			const suffix = hh >= 12 ? 'PM' : 'AM';
@@ -213,31 +213,34 @@ export let data;
 	// 	}
 	// ];
 
+	async function fetchEvents() {
+		try {
+			const res = await fetch('http://localhost:3000/events', {
+				credentials: 'include'
+			});
+			const json = await res.json();
+			if (res.ok && json.status === 'success') {
+				events = json.data.map(
+					(event: any): CalendarEvent => ({
+						...event,
+						date: new Date(event.startTime),
+						start: format(new Date(event.startTime), 'HH:mm'),
+						end: format(new Date(event.endTime), 'HH:mm')
+					})
+				);
+			}
 
-async function fetchEvents() {
-    try {
-        const res = await fetch('http://localhost:3000/events', { 
-            credentials: 'include' 
-        });
-        const json = await res.json();
-        if (res.ok && json.status === 'success') {
-        events = json.data.map((event: any): CalendarEvent => ({
-            ...event,
-            date: new Date(event.startTime), 
-            start: format(new Date(event.startTime), 'HH:mm'),
-            end: format(new Date(event.endTime), 'HH:mm')
-        }));
+			console.log(
+				`Loaded ${json.meta.total} events (${json.meta.baseEvents} base + ${json.meta.recurringInstances} recurring)`
+			);
+		} catch (e) {
+			console.error('Failed to load events', e);
+		}
 	}
-        
-        console.log(`Loaded ${json.meta.total} events (${json.meta.baseEvents} base + ${json.meta.recurringInstances} recurring)`);
-    } catch (e) {
-        console.error("Failed to load events", e);
-    }
-}
 
-// onMount(() => {
-//     fetchEvents();
-// });
+	// onMount(() => {
+	//     fetchEvents();
+	// });
 
 	// let tasks = [
 	// 	{ id: 1, title: 'Review PR #231', completed: true },
@@ -258,10 +261,13 @@ async function fetchEvents() {
 		return `top: ${start}px; height: ${end - start}px;`;
 	}
 
-let prefilledDate: Date = new Date(); 
-let prefilledTime: string = "";
+	let prefilledDate: Date = new Date();
+	let prefilledTime: string = '';
 
-	function handleGridClick(event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }, day: Date) {
+	function handleGridClick(
+		event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement },
+		day: Date
+	) {
 		const timeGrid = event.currentTarget.getBoundingClientRect();
 		const yPos = event.clientY - timeGrid.top;
 		const startHour = Math.floor(yPos / 60);
@@ -279,17 +285,26 @@ let prefilledTime: string = "";
 		// 		: format(appointmentTime, 'h:mm a');
 		// alert(`Proposed: ${format(appointmentTime, 'E, MMM d')} at ${timeString}`);
 
-	const appointmentTime = new Date(day);
-    appointmentTime.setHours(startHour, 0, 0, 0);
+		const appointmentTime = new Date(day);
+		appointmentTime.setHours(startHour, 0, 0, 0);
 
 		prefilledDate = appointmentTime;
-        prefilledTime = format(appointmentTime, 'HH:mm'); 
+		prefilledTime = format(appointmentTime, 'HH:mm');
 
-        // Trigger the add event 
-        openMenu();
+		// Trigger the add event
+		openMenu();
 	}
 
-	function navigateWeek(direction:number) {
+	// Keyboard alternative for activating the grid cell (centers on 9:00)
+	function handleGridClickKeyboard(day: Date) {
+		const appointmentTime = new Date(day);
+		appointmentTime.setHours(9, 0, 0, 0); // sensible default for keyboard users
+		prefilledDate = appointmentTime;
+		prefilledTime = format(appointmentTime, 'HH:mm');
+		openMenu();
+	}
+
+	function navigateWeek(direction: number) {
 		currentDay = addDays(currentDay, direction * 7);
 	}
 
@@ -308,15 +323,15 @@ let prefilledTime: string = "";
 	});
 
 	function menuClick() {
-        if (!isOpen) {
-            // Reset prefilled data if clicking the general button
-            prefilledDate = new Date(); 
-            prefilledTime = format(new Date(), 'HH:mm');
-            openMenu();
-        } else {
-            closeMenu();
-        }
-    }
+		if (!isOpen) {
+			// Reset prefilled data if clicking the general button
+			prefilledDate = new Date();
+			prefilledTime = format(new Date(), 'HH:mm');
+			openMenu();
+		} else {
+			closeMenu();
+		}
+	}
 
 	function openMenu() {
 		if (isAnimating || isOpen) return;
@@ -367,100 +382,96 @@ let prefilledTime: string = "";
 			)
 			.to(menuContent, { opacity: 0, y: -20, duration: 0.4 }, 0);
 	}
-	interface Task  {
-  id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-};
+	interface Task {
+		id: string;
+		title: string;
+		description: string;
+		completed: boolean;
+	}
 
-let tasks: Task[] = [];
+	let tasks: Task[] = [];
 
-    // 1. Fetch tasks automatically on load
-    onMount(async () => {
-        await fetchTasks();
-    });
+	// 1. Fetch tasks automatically on load
+	onMount(async () => {
+		await fetchTasks();
+	});
 
-    async function fetchTasks() {
-        try {
-            const res = await fetch('http://localhost:3000/tasks', { credentials: 'include' });
-            const result = await res.json();
-            if (res.ok) tasks = result.data;
-        } catch (err) {
-            console.error("Error fetching tasks:", err);
-        }
-    }
+	async function fetchTasks() {
+		try {
+			const res = await fetch('http://localhost:3000/tasks', { credentials: 'include' });
+			const result = await res.json();
+			if (res.ok) tasks = result.data;
+		} catch (err) {
+			console.error('Error fetching tasks:', err);
+		}
+	}
 
-    // 2. Handle adding task 
-    function handleTaskAdded(newTask: Task) {
-        tasks = [newTask, ...tasks];
-    }
+	// 2. Handle adding task
+	function handleTaskAdded(newTask: Task) {
+		tasks = [newTask, ...tasks];
+	}
 
-  async function toggleTask(task: Task) {
+	async function toggleTask(task: Task) {
+		tasks = [...tasks]; // Trigger UI update for the line-through class
 
-    tasks = [...tasks]; // Trigger UI update for the line-through class
+		try {
+			const res = await fetch(`http://localhost:3000/tasks/${task.id}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({ completed: task.completed }) // Send the already-flipped value
+			});
 
-    try {
-        const res = await fetch(`http://localhost:3000/tasks/${task.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ completed: task.completed }) // Send the already-flipped value
-        });
+			if (!res.ok) {
+				// Rollback only if the server fails
+				task.completed = !task.completed;
+				tasks = [...tasks];
+				console.error('Failed to update task on server');
+			}
+		} catch (err) {
+			task.completed = !task.completed;
+			tasks = [...tasks];
+			console.error('Network error updating task:', err);
+		}
+	}
 
-        if (!res.ok) {
-            // Rollback only if the server fails
-            task.completed = !task.completed;
-            tasks = [...tasks];
-            console.error("Failed to update task on server");
-        }
-    } catch (err) {
-        task.completed = !task.completed;
-        tasks = [...tasks];
-        console.error("Network error updating task:", err);
-    }
-}
+	let currentViewDate = new Date();
 
-let currentViewDate = new Date();
+	async function fetchEventsForRange() {
+		const rangeStart = startOfWeek(subWeeks(currentViewDate, 2));
+		const rangeEnd = endOfWeek(addWeeks(currentViewDate, 6));
 
+		const startStr = rangeStart.toISOString();
+		const endStr = rangeEnd.toISOString();
 
-async function fetchEventsForRange() {
-    const rangeStart = startOfWeek(subWeeks(currentViewDate, 2));
-    const rangeEnd = endOfWeek(addWeeks(currentViewDate, 6));
+		try {
+			const res = await fetch(`http://localhost:3000/events?start=${startStr}&end=${endStr}`, {
+				credentials: 'include'
+			});
 
-    const startStr = rangeStart.toISOString();
-    const endStr = rangeEnd.toISOString();
+			const result = await res.json();
+			// Inside fetchEventsForRange
+			if (res.ok) {
+				events = result.data.map((event: any) => {
+					const sDate = new Date(event.startTime);
+					return {
+						...event,
+						date: sDate,
+						start: format(sDate, 'HH:mm'),
+						end: format(new Date(event.endTime), 'HH:mm')
+					};
+				});
+			}
+		} catch (err) {
+			console.error('Failed to load events', err);
+		}
+	}
 
-    try {
-        const res = await fetch(
-            `http://localhost:3000/events?start=${startStr}&end=${endStr}`,
-            { credentials: 'include' }
-        );
-
-        const result = await res.json();
-       // Inside fetchEventsForRange
-if (res.ok) {
-    events = result.data.map((event: any) => {
-        const sDate = new Date(event.startTime);
-        return {
-            ...event,
-            date: sDate, 
-            start: format(sDate, 'HH:mm'),
-            end: format(new Date(event.endTime), 'HH:mm')
-        };
-    });
-}
-    } catch (err) {
-        console.error("Failed to load events", err);
-    }
-}
-
-$: {
-    if (currentViewDate) {
-        fetchEventsForRange();
-    }
-}
-
+	$: {
+		if (currentViewDate) {
+			fetchEventsForRange();
+		}
+	}
 </script>
 
 {#if isAddTodoOpen}
@@ -468,6 +479,13 @@ $: {
 		bind:this={todoOverlay}
 		class="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
 		on:click={closeAddTodo}
+		role="button"
+		tabindex="0"
+		on:keydown={(e) => {
+			if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+				closeAddTodo();
+			}
+		}}
 	>
 		<div
 			bind:this={todoContent}
@@ -480,7 +498,7 @@ $: {
 			>
 				<X size={24} color="black" strokeWidth={3} />
 			</button>
-			<AddTodo onCancel={closeAddTodo} onAdd={handleTaskAdded}/>
+			<AddTodo onCancel={closeAddTodo} onAdd={handleTaskAdded} />
 		</div>
 	</div>
 {/if}
@@ -498,11 +516,7 @@ $: {
 	</button>
 	<div class="flex justify-center items-start py-20 min-h-full w-full" bind:this={menuContent}>
 		<div class="w-full max-w-4xl px-6">
-		<Create 
-            initialDate={prefilledDate} 
-            initialTime={prefilledTime} 
-            onSuccess={closeMenu} 
-        />
+			<Create initialDate={prefilledDate} initialTime={prefilledTime} onSuccess={closeMenu} />
 		</div>
 	</div>
 </div>
@@ -653,21 +667,37 @@ $: {
 									? 'bg-secondary-yellow/5'
 									: ''}"
 								on:click={(e) => handleGridClick(e, day)}
+								role="button"
+								tabindex="0"
+								on:keydown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										handleGridClickKeyboard(day);
+									}
+								}}
 							>
 								{#each dayEvents as event}
-<div
-    class="absolute w-full px-0.5 sm:px-1 z-20"
-    style={getEventStyle(event)}
-    on:click|stopPropagation={() => handleEventClick(event)}
->
-    <div
-        class="border-2 border-black p-1 sm:p-2 h-full shadow-[2px_2px_0px_#000] sm:shadow-[4px_4px_0px_#000] rounded-md overflow-hidden transition-transform cursor-pointer"
-        style="background-color: {event.color}; color: {event.textColor};"
-    >
-        <span class="block text-[8px] sm:text-[10px] font-bold">{event.start}</span>
-        <span class="block text-[10px] sm:text-xs font-bold truncate">{event.title}</span>
-    </div>
-</div>
+									<div
+										class="absolute w-full px-0.5 sm:px-1 z-20"
+										style={getEventStyle(event)}
+										on:click|stopPropagation={() => handleEventClick(event)}
+										role="button"
+										tabindex="0"
+										on:keydown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												handleEventClick(event);
+											}
+										}}
+									>
+										<div
+											class="border-2 border-black p-1 sm:p-2 h-full shadow-[2px_2px_0px_#000] sm:shadow-[4px_4px_0px_#000] rounded-md overflow-hidden transition-transform cursor-pointer"
+											style="background-color: {event.color}; color: {event.textColor};"
+										>
+											<span class="block text-[8px] sm:text-[10px] font-bold">{event.start}</span>
+											<span class="block text-[10px] sm:text-xs font-bold truncate"
+												>{event.title}</span
+											>
+										</div>
+									</div>
 								{/each}
 							</div>
 						{/each}
@@ -712,8 +742,19 @@ $: {
 							handleEventClick(event);
 							isMobileSidebarOpen = false;
 						}}
+						role="button"
+						tabindex="0"
+						on:keydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								handleEventClick(event);
+								isMobileSidebarOpen = false;
+							}
+						}}
 					>
-						<div class="mt-1 h-4 w-4 flex-shrink-0 border-2 border-black" style="background-color: {event.color};"></div>
+						<div
+							class="mt-1 h-4 w-4 flex-shrink-0 border-2 border-black"
+							style="background-color: {event.color};"
+						></div>
 						<div>
 							<p class="font-bold text-lg leading-none mb-1">{event.start}</p>
 							<p class="text-sm font-medium text-gray-300">{event.title}</p>
@@ -754,6 +795,13 @@ $: {
 			bind:this={detailsOverlay}
 			class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4"
 			on:click={closeDetails}
+			role="button"
+			tabindex="0"
+			on:keydown={(e) => {
+				if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+					closeDetails();
+				}
+			}}
 		>
 			<div
 				bind:this={detailsContent}
@@ -767,18 +815,18 @@ $: {
 					<X size={24} color="black" strokeWidth={3} />
 				</button>
 				{#if isDetailsOpen && selectedEventData}
-    <EventDetails 
-	id={selectedEventData.id}
- 	eventTitle={selectedEventData.title}
-	eventDescription={selectedEventData.desc}
-					startTime={selectedEventData.start}
-					endTime={selectedEventData.end}
-					eventDate={format(selectedEventData.date, 'MMMM d, yyyy')}
-        location={selectedEventData.location}
-		userData={user}
-		recurringDays={selectedEventData.recurringDays || []}
-    />
-{/if}
+					<EventDetails
+						id={selectedEventData.id}
+						eventTitle={selectedEventData.title}
+						eventDescription={selectedEventData.desc}
+						startTime={selectedEventData.start}
+						endTime={selectedEventData.end}
+						eventDate={format(selectedEventData.date, 'MMMM d, yyyy')}
+						location={selectedEventData.location}
+						userData={user}
+						recurringDays={selectedEventData.recurringDays || []}
+					/>
+				{/if}
 			</div>
 		</div>
 	{/if}
