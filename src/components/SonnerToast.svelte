@@ -2,18 +2,21 @@
 	import { CheckCircle2, AlertTriangle, Info, X } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 
-	let { title = 'Notification', message = '', type = 'success', toastId } = $props();
+	type ToastType = 'success' | 'error' | 'info';
 
-	const colors = {
+	let { title = 'Notification', message = '', type = 'success' as ToastType, toastId } = $props();
+
+	const colors: Record<ToastType, string> = {
 		success: 'bg-[#1973f0]',
 		error: 'bg-red-500',
 		info: 'bg-[#1a2432]'
 	};
+
+	const colorClass = colors[type] ?? colors.success;
 </script>
 
 <div
-	class="flex w-[350px] items-start gap-4 border-2 border-white {colors[type] ||
-		colors.success} p-4 text-white shadow-[6px_6px_0px_0px_#000000] ring-1 ring-black/50"
+	class={`flex w-[350px] items-start gap-4 border-2 border-white ${colorClass} p-4 text-white shadow-[6px_6px_0px_0px_#000000] ring-1 ring-black/50`}
 >
 	<div class="mt-1">
 		{#if type === 'error'}

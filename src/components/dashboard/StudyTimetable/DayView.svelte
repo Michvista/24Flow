@@ -43,17 +43,35 @@
 	}
 
 	function handleDrop(e: DragEvent, targetTask: Task) {
+		// If a backlog item is dragged from the sidebar, the parent page sets dataTransfer info
+		try {
+			const raw = e.dataTransfer?.getData('application/json');
+			if (raw) {
+				const parsed = JSON.parse(raw);
+				if (parsed?.source === 'backlog') {
+					// Delegate to parent onDrop: place the backlog item at the target task's time on this day
+					onDrop(e, currentDayIndex, targetTask.time);
+					e.preventDefault();
+					return;
+				}
+			}
+		} catch (err) {
+			// ignore parse errors and fallthrough to local behavior
+		}
+
 		if (!isEditMode || !draggedTask) return;
 		e.preventDefault();
 		e.stopPropagation();
 
 		// Swap times between dragged and target task
-		const draggedTime = draggedTask.time;
+		// capture non-null dragged task for use inside callbacks
+		const dragged = draggedTask!;
+		const draggedTime = dragged.time;
 		const targetTime = targetTask.time;
 
 		// Update the schedule data
-		scheduleData = scheduleData.map((t) => {
-			if (t.id === draggedTask.id) {
+		scheduleData = scheduleData.map((t: Task) => {
+			if (t.id === dragged.id) {
 				return { ...t, time: targetTime };
 			}
 			if (t.id === targetTask.id) {

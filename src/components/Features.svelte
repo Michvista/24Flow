@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import gsap from 'gsap';
 	import unBox from '$lib/imgs/unbox.png';
@@ -54,12 +54,13 @@
 	});
 
 	onMount(() => {
-		const cards = document.querySelectorAll('.feature-card');
+		const cards = document.querySelectorAll('.feature-card') as NodeListOf<HTMLElement>;
 
 		cards.forEach((card, index) => {
 			if (index !== 0 && index !== cards.length - 1) return; // only first + last
 
-			const img = card.querySelector('.hover-pop-img');
+			const img = card.querySelector('.hover-pop-img') as HTMLElement | null;
+			if (!img) return;
 
 			let moveTL = gsap.timeline({ paused: true });
 
@@ -73,7 +74,7 @@
 				);
 
 			// Magnetic follow animation (cursor inside card)
-			const follow = (e) => {
+			const follow = (e: MouseEvent) => {
 				const rect = card.getBoundingClientRect();
 				const x = e.clientX - rect.left - rect.width / 2;
 				const y = e.clientY - rect.top - rect.height / 2;
@@ -91,12 +92,12 @@
 			card.addEventListener('mouseenter', () => {
 				revealTL.play();
 				moveTL.play();
-				card.addEventListener('mousemove', follow);
+				card.addEventListener('mousemove', follow as EventListener);
 			});
 
 			card.addEventListener('mouseleave', () => {
 				revealTL.reverse();
-				card.removeEventListener('mousemove', follow);
+				card.removeEventListener('mousemove', follow as EventListener);
 
 				// Reset position
 				gsap.to(img, {

@@ -1,4 +1,4 @@
-<script>
+<script runes lang="ts">
 	import {
 		format,
 		startOfMonth,
@@ -13,16 +13,17 @@
 	} from 'date-fns';
 	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
-	export let currentDay;
+	let { currentDay = $bindable<Date>() } = $props();
 
-	// 1. Initialize viewDate
-	let viewDate = startOfMonth(currentDay);
-	$: {
-		const syncDate = startOfMonth(currentDay);
-		updateView(currentDay);
-	}
+	//  Initialize viewDate as reactive state (fall back to today if currentDay not yet provided)
+	let viewDate = $state<Date>(startOfMonth(currentDay ?? new Date()));
 
-	function updateView(newDay) {
+	$effect(() => {
+		const syncDate = startOfMonth(currentDay ?? new Date());
+		updateView(currentDay ?? new Date());
+	});
+
+	function updateView(newDay: Date) {
 		const newMonth = startOfMonth(newDay);
 		if (format(newMonth, 'yyyy-MM') !== format(viewDate, 'yyyy-MM')) {
 			viewDate = newMonth;

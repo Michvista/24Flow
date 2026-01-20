@@ -43,7 +43,7 @@
 	const progressWidth = $derived(Math.min((totalHours / 40) * 100, 100));
 
 	// Get next break and work session based on current time
-	const getNextStatus = $derived(() => {
+	const ns = $derived(() => {
 		const now = currentTime;
 		const currentDayIdx = (now.getDay() + 6) % 7; // Convert Sunday=0 to Monday=0 system
 		const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -51,15 +51,15 @@
 		// Get today's events
 		const todaysEvents = scheduleData
 			.filter((i: Task) => i.week === 0 && i.day === currentDayIdx)
-			.map((i) => {
+			.map((i: Task) => {
 				const [h, m] = i.time.split(':').map(Number);
 				return { ...i, totalMins: h * 60 + (m || 0) };
 			})
-			.filter((i) => i.totalMins > currentMinutes)
-			.sort((a, b) => a.totalMins - b.totalMins);
+			.filter((i: { totalMins: number }) => i.totalMins > currentMinutes)
+			.sort((a: { totalMins: number }, b: { totalMins: number }) => a.totalMins - b.totalMins);
 
-		const nextBreak = todaysEvents.find((e) => e.isBreak);
-		const nextWork = todaysEvents.find((e) => !e.isBreak);
+		const nextBreak = todaysEvents.find((e: any) => e.isBreak);
+		const nextWork = todaysEvents.find((e: any) => !e.isBreak);
 
 		const formatDiff = (targetMins: number) => {
 			const diff = targetMins - currentMinutes;
@@ -89,6 +89,8 @@
 		};
 	});
 
+	// ns is a derived value and can be used directly in the template
+
 	// Animation Effect
 	$effect(() => {
 		if (!sidebarElement || !overlayElement) return;
@@ -111,6 +113,13 @@
 	bind:this={overlayElement}
 	class="fixed inset-0 bg-black/60 z-40 hidden opacity-0 lg:hidden"
 	onclick={() => (isOpen = false)}
+	role="button"
+	tabindex="0"
+	onkeydown={(e) => {
+		if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+			isOpen = false;
+		}
+	}}
 ></div>
 
 <aside
@@ -223,9 +232,9 @@
 					</div>
 					<div class="overflow-hidden flex-1">
 						<div class="text-[#92a4c9] text-[9px] font-bold uppercase">Next Break</div>
-						{#if getNextStatus().break}
-							<div class="text-white font-bold text-sm truncate">{getNextStatus().break.title}</div>
-							<div class="text-primary text-[10px] font-mono">{getNextStatus().break.time}</div>
+						{#if ns()?.break}
+							<div class="text-white font-bold text-sm truncate">{ns()?.break?.title}</div>
+							<div class="text-primary text-[10px] font-mono">{ns()?.break?.time}</div>
 						{:else}
 							<div class="text-white/50 font-bold text-sm">No breaks today</div>
 						{/if}
@@ -241,9 +250,9 @@
 					</div>
 					<div class="overflow-hidden flex-1">
 						<div class="text-[#92a4c9] text-[9px] font-bold uppercase">Next Study</div>
-						{#if getNextStatus().work}
-							<div class="text-white font-bold text-sm truncate">{getNextStatus().work.title}</div>
-							<div class="text-primary text-[10px] font-mono">{getNextStatus().work.time}</div>
+						{#if ns()?.work}
+							<div class="text-white font-bold text-sm truncate">{ns()?.work?.title}</div>
+							<div class="text-primary text-[10px] font-mono">{ns()?.work?.time}</div>
 						{:else}
 							<div class="text-white/50 font-bold text-sm">All done for today!</div>
 						{/if}

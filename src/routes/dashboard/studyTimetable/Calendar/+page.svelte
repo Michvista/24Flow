@@ -1,4 +1,4 @@
-<script lang="ts">
+<script runes lang="ts">
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import {
@@ -30,6 +30,7 @@
 	let currentDayIndex = $state(0); // For day view
 	let isSidebarOpen = $state(false);
 	let showDetailedModal = $state(false);
+	let modalInitial = $state<any>(null);
 	let showCreateModal = $state(false);
 	let isHeaderSticky = $state(false);
 
@@ -37,11 +38,13 @@
 	let mainContent = $state<HTMLElement>();
 
 	onMount(() => {
-		if (mainContent) {
-			mainContent.addEventListener('scroll', () => {
-				isHeaderSticky = mainContent.scrollTop > 20;
-			});
-		}
+		if (!mainContent) return;
+		const node = mainContent;
+		const handler = () => {
+			isHeaderSticky = node.scrollTop > 20;
+		};
+		node.addEventListener('scroll', handler);
+		return () => node.removeEventListener('scroll', handler);
 	});
 
 	// --- Rich Dummy Data ---
@@ -198,6 +201,16 @@
 
 	function onDragStart(event: DragEvent, item: any, source: 'backlog' | 'calendar') {
 		draggedItem = { ...item, source };
+		// make the drag source visible to drop targets that only inspect dataTransfer
+		try {
+			if (event.dataTransfer) {
+				event.dataTransfer.effectAllowed = 'move';
+				// include minimal info so children can detect a backlog drag
+				event.dataTransfer.setData('application/json', JSON.stringify({ id: item.id, source }));
+			}
+		} catch (err) {
+			// ignore failures in older browsers/environments
+		}
 	}
 
 	function onDrop(event: DragEvent, day: number, time: string) {
@@ -413,7 +426,14 @@
 						onDelete={handleDelete}
 						{onDrop}
 						{onDragStart}
-						onOpenAdd={() => (showDetailedModal = true)}
+						onOpenAdd={() => {
+							modalInitial = {
+								date: getCurrentDayDate().toISOString().slice(0, 10),
+								startTime: '09:00',
+								duration: '60'
+							};
+							showDetailedModal = true;
+						}}
 					/>
 				{:else}
 					<ListView
@@ -424,7 +444,10 @@
 						onDelete={handleDelete}
 						{onDrop}
 						{onDragStart}
-						onOpenAdd={() => (showDetailedModal = true)}
+						onOpenAdd={() => {
+							modalInitial = null;
+							showDetailedModal = true;
+						}}
 					/>
 				{/if}
 			</div>
@@ -455,7 +478,7 @@
 		/>
 	</div>
 
-	<AddTaskModal bind:show={showDetailedModal} onAdd={handleDetailedAdd} />
+	<AddTaskModal bind:show={showDetailedModal} onAdd={handleDetailedAdd} initial={modalInitial} />
 
 	{#if showCreateModal}
 		<div
