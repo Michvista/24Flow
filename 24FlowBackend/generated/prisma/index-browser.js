@@ -153,10 +153,8 @@ exports.Prisma.TaskScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   title: 'title',
-  startTime: 'startTime',
-  endTime: 'endTime',
-  completed: 'completed',
-  repeatDaily: 'repeatDaily'
+  description: 'description',
+  completed: 'completed'
 };
 
 exports.Prisma.MoodLogScalarFieldEnum = {

@@ -3,41 +3,83 @@ import prisma from '../db.mjs';
 /**
  * Helper to generate virtual recurring instances
  */
-const generateRecurringEvents = (baseEvent, recurringDays, weeksAhead = 8) => {
-	if (!recurringDays || recurringDays.length === 0) return [baseEvent];
+// HELPER: Check if two dates are the same calendar day
 
-	const events = [];
-	const startDate = new Date(baseEvent.startTime);
-	const endDate = new Date(baseEvent.endTime);
-	const dayOfWeek = startDate.getDay();
-	const duration = endDate.getTime() - startDate.getTime();
+const isSameDay = (d1, d2) => {
+	const date1 = new Date(d1);
+	const date2 = new Date(d2);
+	return (
+		date1.getFullYear() === date2.getFullYear() &&
+		date1.getMonth() === date2.getMonth() &&
+		date1.getDate() === date2.getDate()
+	);
+};
 
-	// Add original
-	events.push(baseEvent);
+export const getEvents = async (req, res, next) => {
+	try {
+		const { start, end } = req.query;
 
-	for (let week = 0; week < weeksAhead; week++) {
-		recurringDays.forEach((targetDay) => {
-			// Skip if it's the exact same day/week as the base event
-			if (week === 0 && targetDay === dayOfWeek) return;
-
-			const daysToAdd = ((targetDay - dayOfWeek + 7) % 7) + week * 7;
-			const newStart = new Date(startDate);
-			newStart.setDate(startDate.getDate() + daysToAdd);
-			const newEnd = new Date(newStart.getTime() + duration);
-
-			events.push({
-				...baseEvent,
-				// Using string IDs since your schema uses UUID Strings
-				id: `${baseEvent.id}_w${week}_d${targetDay}`,
-				startTime: newStart.toISOString(),
-				endTime: newEnd.toISOString(),
-				isRecurringInstance: true,
-				parentEventId: baseEvent.id,
-				date: newStart
-			});
+		const events = await prisma.event.findMany({
+			where: { userId: req.user.id },
+			orderBy: { startTime: 'asc' }
 		});
+
+		let allEvents = [];
+		events.forEach((event) => {
+			// Include the base event
+			allEvents.push({
+				...event,
+				isRecurringInstance: false,
+				parentEventId: event.id
+			});
+
+			// If it's a recurring event, generate the "virtual" copies
+			if (event.recurringDays?.length > 0 && start && end) {
+				allEvents.push(...generateRecurringEventsInRange(event, event.recurringDays, start, end));
+			}
+		});
+
+		res.status(200).json({ status: 'success', data: allEvents });
+	} catch (error) {
+		next(error);
 	}
-	return events;
+};
+
+const generateRecurringEventsInRange = (baseEvent, recurringDays, rangeStart, rangeEnd) => {
+	const virtualEvents = [];
+	const baseStart = new Date(baseEvent.startTime);
+	const baseEnd = new Date(baseEvent.endTime);
+	const duration = baseEnd.getTime() - baseStart.getTime();
+
+	let currentDate = new Date(rangeStart);
+	currentDate.setHours(0, 0, 0, 0);
+	const finalDate = new Date(rangeEnd);
+
+	while (currentDate <= finalDate) {
+		const dayOfWeek = currentDate.getDay(); // 0 (Sun) to 6 (Sat)
+
+		if (recurringDays.includes(dayOfWeek)) {
+			const occurrenceStart = new Date(currentDate);
+			occurrenceStart.setHours(baseStart.getHours(), baseStart.getMinutes(), 0, 0);
+
+			// Don't duplicate the base event if it's on the same day
+			// Also ensure we don't generate occurrences BEFORE the event was created
+			if (!isSameDay(occurrenceStart, baseStart) && occurrenceStart > baseStart) {
+				const occurrenceEnd = new Date(occurrenceStart.getTime() + duration);
+
+				virtualEvents.push({
+					...baseEvent,
+					id: `${baseEvent.id}_${occurrenceStart.getTime()}`, // Unique virtual ID
+					startTime: occurrenceStart.toISOString(),
+					endTime: occurrenceEnd.toISOString(),
+					isRecurringInstance: true,
+					parentEventId: baseEvent.id
+				});
+			}
+		}
+		currentDate.setDate(currentDate.getDate() + 1);
+	}
+	return virtualEvents;
 };
 
 export const createEvent = async (req, res, next) => {
@@ -62,14 +104,13 @@ export const createEvent = async (req, res, next) => {
 			data: {
 				title,
 				location: location || '',
-				desc: description || '', // Prisma maps this to 'description' column
+				desc: description || '',
 				startTime: new Date(startTime),
 				endTime: new Date(endTime),
 				recurringDays: recurringDays || [],
 				color: color || '#3d7bff',
 				colorName: colorName || 'blue',
 				textColor: textColor || '#ffffff',
-				// schema uses String UUIDs, so no parseInt needed
 				user: { connect: { id: req.user.id } }
 			}
 		});
@@ -81,44 +122,33 @@ export const createEvent = async (req, res, next) => {
 	}
 };
 
-export const getEvents = async (req, res, next) => {
-	try {
-		const events = await prisma.event.findMany({
-			where: { userId: req.user.id },
-			orderBy: { startTime: 'asc' }
-		});
-
-		let allEvents = [];
-		events.forEach((event) => {
-			if (event.recurringDays?.length > 0) {
-				allEvents = [...allEvents, ...generateRecurringEvents(event, event.recurringDays)];
-			} else {
-				allEvents.push(event);
-			}
-		});
-
-		allEvents.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
-		res.status(200).json({ status: 'success', data: allEvents });
-	} catch (error) {
-		next(error);
-	}
-};
-
 export const getEventById = async (req, res, next) => {
 	try {
 		const { id } = req.params;
 		const isInstance = id.includes('_');
 		const dbId = isInstance ? id.split('_')[0] : id;
 
-		let event = await prisma.event.findFirst({
+		const event = await prisma.event.findFirst({
 			where: { id: dbId, userId: req.user.id }
 		});
 
 		if (!event) return res.status(404).json({ status: 'fail', message: 'Not found' });
 
 		if (isInstance) {
-			const instances = generateRecurringEvents(event, event.recurringDays);
-			event = instances.find((e) => e.id === id);
+			const timestamp = parseInt(id.split('_')[1]);
+			const occStart = new Date(timestamp);
+			const duration = new Date(event.endTime).getTime() - new Date(event.startTime).getTime();
+
+			return res.status(200).json({
+				status: 'success',
+				data: {
+					...event,
+					id: id,
+					startTime: occStart.toISOString(),
+					endTime: new Date(occStart.getTime() + duration).toISOString(),
+					isRecurringInstance: true
+				}
+			});
 		}
 
 		res.status(200).json({ status: 'success', data: event });
@@ -129,7 +159,6 @@ export const getEventById = async (req, res, next) => {
 
 export const updateEvent = async (req, res, next) => {
 	try {
-		// Use the parameter name defined in your router (likely 'id')
 		const { id } = req.params;
 
 		if (!id) {
@@ -151,7 +180,7 @@ export const updateEvent = async (req, res, next) => {
 		const updatedEvent = await prisma.event.update({
 			where: {
 				id: dbId,
-				userId: req.user.id // Security: Ensure user owns the event
+				userId: req.user.id
 			},
 			data: updateData
 		});
@@ -167,15 +196,15 @@ export const updateEvent = async (req, res, next) => {
 };
 
 export const deleteEvent = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-        const dbId = id.includes('_') ? id.split('_')[0] : id;
+	try {
+		const { id } = req.params;
+		const dbId = id.includes('_') ? id.split('_')[0] : id;
 
-        await prisma.event.delete({
-            where: { id: dbId, userId: req.user.id }
-        });
-        res.status(200).json({ status: 'success', message: 'Event series deleted' });
-    } catch (error) {
-        next(error);
-    }
+		await prisma.event.delete({
+			where: { id: dbId, userId: req.user.id }
+		});
+		res.status(200).json({ status: 'success', message: 'Event series deleted' });
+	} catch (error) {
+		next(error);
+	}
 };

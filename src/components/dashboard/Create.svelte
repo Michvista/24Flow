@@ -39,12 +39,17 @@ export let initialDate: Date = new Date();
     export let initialTime: string = '';
     export let onSuccess = () => {};  
 
-	
+	interface NeoColor {
+    bg: string;
+    text: string;
+    name: string;
+    description?: string;
+}
 
     // Form State
     let title = '';
     let location = '';
-    let date = ''; // Bound to the HTML date input
+    let date = '';
     let description = '';
 
 	let selectedDays = [1, 3]; // Indices for M, W
@@ -78,15 +83,33 @@ let startTimeIndex: number | null = null;
             ? `${date}T${timeSlots[endTimeIndex]}:00`
             : `${date}T${timeSlots[startTimeIndex + 1] || '23:59'}:00`;
 
-        // Neobrutalist Color Palette
-       // In Create.svelte, replace the handleSubmit function's color section:
+//  Neobrutalist Color Palette
 
-const colors = [
+
+const colors: NeoColor[] = [
+    // Original Palette
     { bg: '#f7ff5c', text: '#000000', name: 'secondary-yellow' },
     { bg: '#00f57a', text: '#000000', name: 'secondary-green' },
     { bg: '#af52de', text: '#ffffff', name: 'secondary-purple' },
-    { bg: '#3d7bff', text: '#ffffff', name: 'primary-accent' }
+    { bg: '#3d7bff', text: '#ffffff', name: 'primary-accent' },
+
+    // Extended High-Contrast Vivids
+    { bg: '#ff5c5c', text: '#000000', name: 'neo-red' },
+    { bg: '#ff90e8', text: '#000000', name: 'neo-pink' },
+    { bg: '#05d9e8', text: '#000000', name: 'neo-cyan' },
+    { bg: '#ffbd12', text: '#000000', name: 'neo-orange' },
+
+    // Deep Neutrals (For Heavy Borders & Shadows)
+    { bg: '#000000', text: '#ffffff', name: 'ink-black' },
+    { bg: '#ffffff', text: '#000000', name: 'stark-white' },
+    { bg: '#bebebe', text: '#000000', name: 'concrete-gray' },
+
+    // Muted Accents (For secondary UI elements)
+    { bg: '#d6ff00', text: '#000000', name: 'acid-lime' },
+    { bg: '#8a2be2', text: '#ffffff', name: 'royal-purple' },
+    { bg: '#171717', text: '#00f57a', name: 'dark-mode-bg' }
 ];
+
 const randomStyle = colors[Math.floor(Math.random() * colors.length)];
 
 const payload = {
@@ -296,6 +319,7 @@ const payload = {
 						Description
 					</p>
 					<textarea
+					bind:value={description}
 						class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden text-text-primary focus:outline-0 focus:ring-4 focus:ring-primary/50 border-4 border-black bg-surface h-40 placeholder:text-text-secondary p-[15px] text-base font-normal leading-normal"
 						placeholder="Add a description for your event..."
 					></textarea>
@@ -317,9 +341,6 @@ const payload = {
 		</form>
 	</div>
 </div>
-<Toaster position="bottom-right" expand={false} richColors />
-
-
 <style>
 	.font-display {
 		font-family: 'Space Grotesk', sans-serif;

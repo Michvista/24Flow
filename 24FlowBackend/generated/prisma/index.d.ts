@@ -3922,30 +3922,24 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     title: string | null
-    startTime: Date | null
-    endTime: Date | null
+    description: string | null
     completed: boolean | null
-    repeatDaily: boolean | null
   }
 
   export type TaskMaxAggregateOutputType = {
     id: string | null
     userId: string | null
     title: string | null
-    startTime: Date | null
-    endTime: Date | null
+    description: string | null
     completed: boolean | null
-    repeatDaily: boolean | null
   }
 
   export type TaskCountAggregateOutputType = {
     id: number
     userId: number
     title: number
-    startTime: number
-    endTime: number
+    description: number
     completed: number
-    repeatDaily: number
     _all: number
   }
 
@@ -3954,30 +3948,24 @@ export namespace Prisma {
     id?: true
     userId?: true
     title?: true
-    startTime?: true
-    endTime?: true
+    description?: true
     completed?: true
-    repeatDaily?: true
   }
 
   export type TaskMaxAggregateInputType = {
     id?: true
     userId?: true
     title?: true
-    startTime?: true
-    endTime?: true
+    description?: true
     completed?: true
-    repeatDaily?: true
   }
 
   export type TaskCountAggregateInputType = {
     id?: true
     userId?: true
     title?: true
-    startTime?: true
-    endTime?: true
+    description?: true
     completed?: true
-    repeatDaily?: true
     _all?: true
   }
 
@@ -4057,10 +4045,8 @@ export namespace Prisma {
     id: string
     userId: string
     title: string
-    startTime: Date
-    endTime: Date
+    description: string | null
     completed: boolean
-    repeatDaily: boolean
     _count: TaskCountAggregateOutputType | null
     _min: TaskMinAggregateOutputType | null
     _max: TaskMaxAggregateOutputType | null
@@ -4084,10 +4070,8 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     title?: boolean
-    startTime?: boolean
-    endTime?: boolean
+    description?: boolean
     completed?: boolean
-    repeatDaily?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
@@ -4095,10 +4079,8 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     title?: boolean
-    startTime?: boolean
-    endTime?: boolean
+    description?: boolean
     completed?: boolean
-    repeatDaily?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
@@ -4106,10 +4088,8 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     title?: boolean
-    startTime?: boolean
-    endTime?: boolean
+    description?: boolean
     completed?: boolean
-    repeatDaily?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
@@ -4117,13 +4097,11 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     title?: boolean
-    startTime?: boolean
-    endTime?: boolean
+    description?: boolean
     completed?: boolean
-    repeatDaily?: boolean
   }
 
-  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "startTime" | "endTime" | "completed" | "repeatDaily", ExtArgs["result"]["task"]>
+  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "description" | "completed", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -4143,10 +4121,8 @@ export namespace Prisma {
       id: string
       userId: string
       title: string
-      startTime: Date
-      endTime: Date
+      description: string | null
       completed: boolean
-      repeatDaily: boolean
     }, ExtArgs["result"]["task"]>
     composites: {}
   }
@@ -4574,10 +4550,8 @@ export namespace Prisma {
     readonly id: FieldRef<"Task", 'String'>
     readonly userId: FieldRef<"Task", 'String'>
     readonly title: FieldRef<"Task", 'String'>
-    readonly startTime: FieldRef<"Task", 'DateTime'>
-    readonly endTime: FieldRef<"Task", 'DateTime'>
+    readonly description: FieldRef<"Task", 'String'>
     readonly completed: FieldRef<"Task", 'Boolean'>
-    readonly repeatDaily: FieldRef<"Task", 'Boolean'>
   }
     
 
@@ -9221,10 +9195,8 @@ export namespace Prisma {
     id: 'id',
     userId: 'userId',
     title: 'title',
-    startTime: 'startTime',
-    endTime: 'endTime',
-    completed: 'completed',
-    repeatDaily: 'repeatDaily'
+    description: 'description',
+    completed: 'completed'
   };
 
   export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
@@ -9580,10 +9552,8 @@ export namespace Prisma {
     id?: StringFilter<"Task"> | string
     userId?: StringFilter<"Task"> | string
     title?: StringFilter<"Task"> | string
-    startTime?: DateTimeFilter<"Task"> | Date | string
-    endTime?: DateTimeFilter<"Task"> | Date | string
+    description?: StringNullableFilter<"Task"> | string | null
     completed?: BoolFilter<"Task"> | boolean
-    repeatDaily?: BoolFilter<"Task"> | boolean
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -9591,10 +9561,8 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     title?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrder
+    description?: SortOrderInput | SortOrder
     completed?: SortOrder
-    repeatDaily?: SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -9605,10 +9573,8 @@ export namespace Prisma {
     NOT?: TaskWhereInput | TaskWhereInput[]
     userId?: StringFilter<"Task"> | string
     title?: StringFilter<"Task"> | string
-    startTime?: DateTimeFilter<"Task"> | Date | string
-    endTime?: DateTimeFilter<"Task"> | Date | string
+    description?: StringNullableFilter<"Task"> | string | null
     completed?: BoolFilter<"Task"> | boolean
-    repeatDaily?: BoolFilter<"Task"> | boolean
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
@@ -9616,10 +9582,8 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     title?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrder
+    description?: SortOrderInput | SortOrder
     completed?: SortOrder
-    repeatDaily?: SortOrder
     _count?: TaskCountOrderByAggregateInput
     _max?: TaskMaxOrderByAggregateInput
     _min?: TaskMinOrderByAggregateInput
@@ -9632,10 +9596,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Task"> | string
     userId?: StringWithAggregatesFilter<"Task"> | string
     title?: StringWithAggregatesFilter<"Task"> | string
-    startTime?: DateTimeWithAggregatesFilter<"Task"> | Date | string
-    endTime?: DateTimeWithAggregatesFilter<"Task"> | Date | string
+    description?: StringNullableWithAggregatesFilter<"Task"> | string | null
     completed?: BoolWithAggregatesFilter<"Task"> | boolean
-    repeatDaily?: BoolWithAggregatesFilter<"Task"> | boolean
   }
 
   export type MoodLogWhereInput = {
@@ -10067,10 +10029,8 @@ export namespace Prisma {
   export type TaskCreateInput = {
     id?: string
     title: string
-    startTime: Date | string
-    endTime: Date | string
+    description?: string | null
     completed?: boolean
-    repeatDaily?: boolean
     user: UserCreateNestedOneWithoutTasksInput
   }
 
@@ -10078,19 +10038,15 @@ export namespace Prisma {
     id?: string
     userId: string
     title: string
-    startTime: Date | string
-    endTime: Date | string
+    description?: string | null
     completed?: boolean
-    repeatDaily?: boolean
   }
 
   export type TaskUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     completed?: BoolFieldUpdateOperationsInput | boolean
-    repeatDaily?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutTasksNestedInput
   }
 
@@ -10098,39 +10054,31 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     completed?: BoolFieldUpdateOperationsInput | boolean
-    repeatDaily?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TaskCreateManyInput = {
     id?: string
     userId: string
     title: string
-    startTime: Date | string
-    endTime: Date | string
+    description?: string | null
     completed?: boolean
-    repeatDaily?: boolean
   }
 
   export type TaskUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     completed?: BoolFieldUpdateOperationsInput | boolean
-    repeatDaily?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TaskUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     completed?: BoolFieldUpdateOperationsInput | boolean
-    repeatDaily?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type MoodLogCreateInput = {
@@ -10581,30 +10529,24 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     title?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrder
+    description?: SortOrder
     completed?: SortOrder
-    repeatDaily?: SortOrder
   }
 
   export type TaskMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     title?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrder
+    description?: SortOrder
     completed?: SortOrder
-    repeatDaily?: SortOrder
   }
 
   export type TaskMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     title?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrder
+    description?: SortOrder
     completed?: SortOrder
-    repeatDaily?: SortOrder
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -11265,19 +11207,15 @@ export namespace Prisma {
   export type TaskCreateWithoutUserInput = {
     id?: string
     title: string
-    startTime: Date | string
-    endTime: Date | string
+    description?: string | null
     completed?: boolean
-    repeatDaily?: boolean
   }
 
   export type TaskUncheckedCreateWithoutUserInput = {
     id?: string
     title: string
-    startTime: Date | string
-    endTime: Date | string
+    description?: string | null
     completed?: boolean
-    repeatDaily?: boolean
   }
 
   export type TaskCreateOrConnectWithoutUserInput = {
@@ -11421,10 +11359,8 @@ export namespace Prisma {
     id?: StringFilter<"Task"> | string
     userId?: StringFilter<"Task"> | string
     title?: StringFilter<"Task"> | string
-    startTime?: DateTimeFilter<"Task"> | Date | string
-    endTime?: DateTimeFilter<"Task"> | Date | string
+    description?: StringNullableFilter<"Task"> | string | null
     completed?: BoolFilter<"Task"> | boolean
-    repeatDaily?: BoolFilter<"Task"> | boolean
   }
 
   export type MoodLogUpsertWithWhereUniqueWithoutUserInput = {
@@ -12068,10 +12004,8 @@ export namespace Prisma {
   export type TaskCreateManyUserInput = {
     id?: string
     title: string
-    startTime: Date | string
-    endTime: Date | string
+    description?: string | null
     completed?: boolean
-    repeatDaily?: boolean
   }
 
   export type MoodLogCreateManyUserInput = {
@@ -12128,28 +12062,22 @@ export namespace Prisma {
   export type TaskUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     completed?: BoolFieldUpdateOperationsInput | boolean
-    repeatDaily?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TaskUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     completed?: BoolFieldUpdateOperationsInput | boolean
-    repeatDaily?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TaskUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     completed?: BoolFieldUpdateOperationsInput | boolean
-    repeatDaily?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type MoodLogUpdateWithoutUserInput = {

@@ -56,13 +56,11 @@ model Event {
 }
 
 model Task {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   userId      String
   title       String
-  startTime   DateTime
-  endTime     DateTime
-  completed   Boolean  @default(false)
-  repeatDaily Boolean  @default(false)
+  description String?
+  completed   Boolean @default(false)
 
   user User @relation(fields: [userId], references: [id])
 }
