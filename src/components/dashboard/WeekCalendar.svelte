@@ -12,13 +12,14 @@
 		addWeeks,
 		subWeeks
 	} from 'date-fns';
-	import { ChevronLeft, ChevronRight, Plus, X, Menu as MenuIcon } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRight, Plus, X, Menu as MenuIcon, Trash2 } from 'lucide-svelte';
 	import MiniCalendar from './MiniCalendar.svelte';
 	import EventDetails from './EventDetails.svelte';
 	import AddTodo from './AddTodo.svelte';
 	import Create from './Create.svelte';
 	import gsap from 'gsap';
-	import { Toaster } from 'svelte-sonner';
+	import { Toaster, toast } from 'svelte-sonner';
+	import SonnerToast from '../SonnerToast.svelte';
 
 	export let data;
 	$: user = data?.user;
@@ -54,6 +55,8 @@
 	let container: HTMLDivElement;
 
 	let events: CalendarEvent[] = [];
+
+	
 
 	async function openAddTodo() {
 		isAddTodoOpen = true;
@@ -238,6 +241,37 @@
 		}
 	}
 
+	function notifySuccess(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'success'
+			},
+			duration: 5000
+		});
+	}
+
+	function notifyError(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'error'
+			},
+			duration: 5000
+		});
+	}
+
+
 	// onMount(() => {
 	//     fetchEvents();
 	// });
@@ -403,6 +437,33 @@
 			if (res.ok) tasks = result.data;
 		} catch (err) {
 			console.error('Error fetching tasks:', err);
+		}
+	}
+
+	async function deleteTask(taskId: string) {
+		// Optimistically remove the task from UI
+		const originalTasks = [...tasks];
+		tasks = tasks.filter((task) => task.id !== taskId);
+
+		try {
+			const res = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+				method: 'DELETE',
+				credentials: 'include'
+			});
+
+			notifySuccess('Task Deleted', 'The task has been successfully deleted.');
+
+			if (!res.ok) {
+				// Rollback if server deletion fails
+				tasks = originalTasks;
+				notifyError('Deletion Failed', 'Could not delete the task. Please try again.');
+				console.error('Failed to delete task on server');
+			}
+		} catch (err) {
+			// Rollback on network error
+			tasks = originalTasks;
+			notifyError('Network Error', 'Please check your connection and try again.');
+			console.error('Network error deleting task:', err);
 		}
 	}
 
@@ -773,19 +834,26 @@
 						<Plus size={14} strokeWidth={4} />
 					</button>
 				</div>
-				{#each tasks as task}
-					<div class="flex items-center gap-3 mb-3">
-						<input
-							type="checkbox"
-							bind:checked={task.completed}
-							on:change={() => toggleTask(task)}
-							class="h-4 w-4 border-2 border-off-white bg-transparent text-primary-accent focus:ring-0 rounded-none cursor-pointer"
-						/>
-						<span class="text-sm {task.completed ? 'line-through text-gray-500' : 'text-off-white'}"
-							>{task.title}</span
-						>
+				<div class="max-h-48 overflow-y-auto">
+					{#each tasks as task}
+					<div class="flex items-center justify-between mb-3">
+						<div class="flex items-center gap-3 mb-3">
+							<input
+								type="checkbox"
+								bind:checked={task.completed}
+								on:change={() => toggleTask(task)}
+								class="h-4 w-4 border-2 border-off-white bg-transparent text-primary-accent focus:ring-0 rounded-none cursor-pointer"
+							/>
+							<span class="text-sm {task.completed ? 'line-through text-gray-500' : 'text-off-white'}"
+								>{task.title}</span
+							>
+						</div>
+						<button on:click={() => deleteTask(task.id)} class="p-1">
+								<Trash2 size={16} color="red"/>
+							</button>
 					</div>
-				{/each}
+					{/each}
+				</div>
 			</div>
 		</aside>
 	</main>
