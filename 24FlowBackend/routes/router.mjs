@@ -2,6 +2,7 @@ import express from 'express';
 import auth from './authRoutes/auth.mjs';
 import event from './eventRoutes/event.mjs';
 import task from './taskRoutes/task.mjs';
+import tools from './AIRoutes/AIToolsRoute.mjs';
 import createError from 'http-errors';
 
 const router = express.Router();
@@ -13,6 +14,7 @@ router.get('/', (req, res) => {
 router.use('/auth', auth);
 router.use('/events', event)
 router.use('/tasks', task)
+router.use('/ai',tools )
 
 router.use(async (req, res, next) => {
 	next(createError.NotFound('Route not Found'));
