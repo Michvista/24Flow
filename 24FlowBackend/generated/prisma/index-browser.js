@@ -185,6 +185,15 @@ exports.Prisma.PreferencesScalarFieldEnum = {
   userId: 'userId'
 };
 
+exports.Prisma.AIToolsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  toolType: 'toolType',
+  inputData: 'inputData',
+  outputData: 'outputData',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -218,7 +227,8 @@ exports.Prisma.ModelName = {
   MoodLog: 'MoodLog',
   SleepLog: 'SleepLog',
   BehaviorSummary: 'BehaviorSummary',
-  Preferences: 'Preferences'
+  Preferences: 'Preferences',
+  AITools: 'AITools'
 };
 
 /**

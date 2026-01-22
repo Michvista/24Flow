@@ -12,7 +12,6 @@
 	} from 'lucide-svelte';
 	import Footer from './Footer.svelte';
 
-	// Data for the tools grid with Lucide components
 	const tools = [
 		{
 			title: 'AI Auto-fill My Day',

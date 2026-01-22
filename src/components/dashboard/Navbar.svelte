@@ -1,11 +1,11 @@
-<script runes lang="ts">
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { Menu, X, Calendar, Cpu, Settings as SettingsIcon } from 'lucide-svelte';
 	import gsap from 'gsap';
 
 	let { activeTab = $bindable('AI Tools Hub') } = $props();
 
-	// reactive state in runes mode
+	// reactive state in   mode
 	let avatarUrl = $state<string>('');
 	let isMobileMenuOpen = $state<boolean>(false);
 	let sidebarElement: HTMLElement | null = null;

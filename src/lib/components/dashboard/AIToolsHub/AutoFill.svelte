@@ -1,44 +1,175 @@
 <script lang="ts">
-	import { WandSparkles, Plus, Trash2, Clock } from 'lucide-svelte';
+	import { WandSparkles, Plus, Trash2, Clock, Calendar, RefreshCw } from 'lucide-svelte';
 	import Navbar from '../../../../components/dashboard/Navbar.svelte';
 
+	import { Toaster, toast } from 'svelte-sonner';
+	import SonnerToast from '../../../../components/SonnerToast.svelte';
+
+	function notifySuccess(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'success'
+			},
+			duration: 5000
+		});
+	}
+
+	function notifyError(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'error'
+			},
+			duration: 5000
+		});
+	}
+
+	// Types
+	interface Task {
+		id: number;
+		title: string;
+		duration: number;
+		tag: string;
+		color: string;
+		// optional fields used elsewhere in the app
+		isBreak?: boolean;
+		description?: string;
+		time?: string;
+	}
+
 	// Task State
-	let tasks = $state([
-		{
-			id: 1,
-			title: 'Design System Audit',
-			duration: 60,
-			tag: 'High Priority',
-			color: 'border-primary'
-		},
-		{ id: 2, title: 'Client Emails', duration: 30, tag: 'Batch', color: 'border-pink-500' },
-		{ id: 3, title: 'Frontend Deployment', duration: 45, tag: 'DevOps', color: 'border-yellow-500' }
-	]);
+	let tasks: Task[] = [];
 
 	// Form State
-	let newTaskTitle = $state('');
-	let newTaskMins = $state<number | null>(null);
+	let newTaskTitle = '';
+	let newTaskMins: number | null = null;
 
 	// Availability State
-	let startTime = $state('09:00');
-	let endTime = $state('17:00');
+	let startTime = '09:00';
+	let endTime = '17:00';
 
-	function addTask() {
+	let selectedDate = new Date().toISOString().split('T')[0];
+
+	interface NeoColor {
+		border: string;
+		text: string;
+		name: string;
+		description?: string;
+	}
+
+	const colors: NeoColor[] = [
+		// Original Palette
+		{ border: '#f7ff5c', text: '#000000', name: 'secondary-yellow' },
+		{ border: '#00f57a', text: '#000000', name: 'secondary-green' },
+		{ border: '#af52de', text: '#ffffff', name: 'secondary-purple' },
+		{ border: '#3d7bff', text: '#ffffff', name: 'primary-accent' },
+
+		// Extended High-Contrast Vivids
+		{ border: '#ff5c5c', text: '#000000', name: 'neo-red' },
+		{ border: '#ff90e8', text: '#000000', name: 'neo-pink' },
+		{ border: '#05d9e8', text: '#000000', name: 'neo-cyan' },
+		{ border: '#ffbd12', text: '#000000', name: 'neo-orange' },
+
+		// Deep Neutrals (For Heavy Borders & Shadows)
+		{ border: '#000000', text: '#ffffff', name: 'ink-black' },
+		{ border: '#ffffff', text: '#000000', name: 'stark-white' },
+		{ border: '#bebebe', text: '#000000', name: 'concrete-gray' },
+
+		// Muted Accents (For secondary UI elements)
+		{ border: '#d6ff00', text: '#000000', name: 'acid-lime' },
+		{ border: '#8a2be2', text: '#ffffff', name: 'royal-purple' },
+		{ border: '#171717', text: '#00f57a', name: 'dark-mode-border' }
+	];
+
+	const randomStyle = colors[Math.floor(Math.random() * colors.length)];
+
+	async function AItagGenerator(title: string): Promise<string> {
+		try {
+			const res = await fetch('http://localhost:3000/ai/tool', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({
+					toolType: 'GENERATE_TAG',
+					payload: { title }
+				})
+			});
+
+			const result = await res.json();
+			return result.data.tag || 'General';
+		} catch (err) {
+			console.error('AItagGenerator failed', err);
+			return 'General';
+		}
+	}
+
+	let isAddingTask = false;
+	async function addTask() {
 		if (!newTaskTitle || !newTaskMins) return;
+		isAddingTask = true;
+		const tag = await AItagGenerator(newTaskTitle);
 		const newTask = {
 			id: Date.now(),
 			title: newTaskTitle,
 			duration: newTaskMins,
-			tag: 'New Task',
-			color: 'border-primary'
+			tag,
+			color: randomStyle.border
 		};
 		tasks = [...tasks, newTask];
 		newTaskTitle = '';
 		newTaskMins = null;
+		isAddingTask = false;
 	}
 
 	function deleteTask(id: number) {
 		tasks = tasks.filter((t) => t.id !== id);
+	}
+
+	let isGenerating = false;
+	async function handleGenerate() {
+		isGenerating = true; 
+
+		try {
+			const res = await fetch('http://localhost:3000/ai/tool', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({
+					toolType: 'AUTO_FILL',
+					payload: {
+						tasks: tasks,
+						availability: { start: startTime, end: endTime },
+						date: selectedDate
+					}
+				})
+			});
+
+			if (res.ok) {
+				notifySuccess('Schedule Generated', 'Your tasks have been scheduled successfully!');
+				setTimeout(() => {
+					window.location.href = '/dashboard/calendar';
+				}, 1500);
+			}
+		} catch (err) {
+			console.error('Auto-fill failed', err);
+			notifyError(
+				'Auto-Fill Failed',
+				'There was an error generating your schedule. Please try again.'
+			);
+		} finally {
+			isGenerating = false;
+		}
 	}
 
 	const totalMinutes = $derived(tasks.reduce((sum, t) => sum + t.duration, 0));
@@ -64,7 +195,7 @@
 			>
 				1
 			</div>
-			<h2 class="text-2xl font-bold uppercase tracking-tight text-white">Your Tasks</h2>
+			<h2 class="text-2xl font-bold uppercase tracking-tight text-white">Your Events</h2>
 		</div>
 
 		<div class="bg-[#16202c] border-2 border-[#2d4059] p-6 md:p-8 shadow-[4px_4px_0px_0px_#1973f0]">
@@ -89,9 +220,16 @@
 				</label>
 				<button
 					onclick={addTask}
-					class="w-full md:w-auto h-[50px] px-8 bg-white text-black font-black uppercase border-2 border-gray-400 hover:bg-primary hover:text-white hover:border-white hover:shadow-[4px_4px_0px_0px_#ffffff] transition-all flex items-center justify-center gap-2"
+					disabled={isAddingTask}
+					class=" {isAddingTask
+						? 'opacity-50 cursor-not-allowed'
+						: ''} w-full md:w-auto h-[50px] px-8 bg-white text-black font-black uppercase border-2 border-gray-400 hover:bg-primary hover:text-white hover:border-white hover:shadow-[4px_4px_0px_0px_#ffffff] transition-all flex items-center justify-center gap-2"
 				>
-					<Plus size={18} /> Add
+					{#if isAddingTask}
+						Generating...
+					{:else}
+						<Plus size={18} /> Add
+					{/if}
 				</button>
 			</div>
 
@@ -183,20 +321,64 @@
 		</div>
 	</section>
 
+	<section class="flex flex-col gap-6">
+		<div class="flex items-center gap-3">
+			<div
+				class="bg-primary text-white font-bold w-8 h-8 flex items-center justify-center border border-white"
+			>
+				3
+			</div>
+			<h2 class="text-2xl font-bold uppercase tracking-tight text-white">Target Date</h2>
+		</div>
+
+		<div class="bg-[#16202c] border-2 border-[#2d4059] p-6 md:p-8 shadow-[4px_4px_0px_0px_#1973f0]">
+			<div class="flex flex-col md:flex-row items-center gap-8">
+				<div class="flex items-center gap-4 w-full">
+					<div class="bg-[#2d4059] p-3 rounded-sm">
+						<Calendar class="text-primary" size={24} />
+					</div>
+					<div>
+						<h3 class="text-lg font-bold uppercase text-white">Schedule Day</h3>
+						<p class="text-sm text-gray-500">Which day should the AI fill?</p>
+					</div>
+				</div>
+				<div class="w-full md:w-auto">
+					<label class="block">
+						<span class="block text-xs font-bold text-primary mb-2 uppercase tracking-wider"
+							>Pick Date</span
+						>
+						<input
+							bind:value={selectedDate}
+							class="w-full md:w-64 bg-[#101822] border-2 border-[#2d4059] text-white px-4 py-3 font-mono text-lg focus:border-primary focus:outline-none transition-all"
+							type="date"
+						/>
+					</label>
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<div class="pt-6">
 		<button
+		onclick={handleGenerate}
+		disabled={isGenerating}
 			class="group relative w-full bg-primary py-6 border-2 border-white overflow-hidden shadow-[4px_4px_0px_0px_#ffffff] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all text-white"
 		>
 			<div
 				class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
 			></div>
 			<div class="relative flex items-center justify-center gap-3">
-				<WandSparkles size={28} />
-				<span class="text-2xl font-black uppercase tracking-widest">Generate Schedule</span>
+				{#if !isGenerating}
+					<WandSparkles size={28} />
+					{:else}
+					<RefreshCw size={28} class="animate-spin" />
+				{/if}
+				<span class="text-2xl font-black uppercase tracking-widest">{isGenerating ? "Generating..." : "Generate Schedule"}</span>
 			</div>
 		</button>
 	</div>
 </div>
+<Toaster position="bottom-right" expand={false} richColors />
 
 <style>
 	/* Custom scrollbar to match the original design */

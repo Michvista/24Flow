@@ -48,6 +48,11 @@ export type BehaviorSummary = $Result.DefaultSelection<Prisma.$BehaviorSummaryPa
  * 
  */
 export type Preferences = $Result.DefaultSelection<Prisma.$PreferencesPayload>
+/**
+ * Model AITools
+ * 
+ */
+export type AITools = $Result.DefaultSelection<Prisma.$AIToolsPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -235,6 +240,16 @@ export class PrismaClient<
     * ```
     */
   get preferences(): Prisma.PreferencesDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.aITools`: Exposes CRUD operations for the **AITools** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AITools
+    * const aITools = await prisma.aITools.findMany()
+    * ```
+    */
+  get aITools(): Prisma.AIToolsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -675,7 +690,8 @@ export namespace Prisma {
     MoodLog: 'MoodLog',
     SleepLog: 'SleepLog',
     BehaviorSummary: 'BehaviorSummary',
-    Preferences: 'Preferences'
+    Preferences: 'Preferences',
+    AITools: 'AITools'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -691,7 +707,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "event" | "task" | "moodLog" | "sleepLog" | "behaviorSummary" | "preferences"
+      modelProps: "user" | "event" | "task" | "moodLog" | "sleepLog" | "behaviorSummary" | "preferences" | "aITools"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1213,6 +1229,80 @@ export namespace Prisma {
           }
         }
       }
+      AITools: {
+        payload: Prisma.$AIToolsPayload<ExtArgs>
+        fields: Prisma.AIToolsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AIToolsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AIToolsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload>
+          }
+          findFirst: {
+            args: Prisma.AIToolsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AIToolsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload>
+          }
+          findMany: {
+            args: Prisma.AIToolsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload>[]
+          }
+          create: {
+            args: Prisma.AIToolsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload>
+          }
+          createMany: {
+            args: Prisma.AIToolsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AIToolsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload>[]
+          }
+          delete: {
+            args: Prisma.AIToolsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload>
+          }
+          update: {
+            args: Prisma.AIToolsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload>
+          }
+          deleteMany: {
+            args: Prisma.AIToolsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AIToolsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AIToolsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload>[]
+          }
+          upsert: {
+            args: Prisma.AIToolsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIToolsPayload>
+          }
+          aggregate: {
+            args: Prisma.AIToolsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAITools>
+          }
+          groupBy: {
+            args: Prisma.AIToolsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AIToolsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AIToolsCountArgs<ExtArgs>
+            result: $Utils.Optional<AIToolsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1328,6 +1418,7 @@ export namespace Prisma {
     sleepLog?: SleepLogOmit
     behaviorSummary?: BehaviorSummaryOmit
     preferences?: PreferencesOmit
+    aITools?: AIToolsOmit
   }
 
   /* Types for Logging */
@@ -1411,12 +1502,14 @@ export namespace Prisma {
     events: number
     tasks: number
     moods: number
+    actions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     events?: boolean | UserCountOutputTypeCountEventsArgs
     tasks?: boolean | UserCountOutputTypeCountTasksArgs
     moods?: boolean | UserCountOutputTypeCountMoodsArgs
+    actions?: boolean | UserCountOutputTypeCountActionsArgs
   }
 
   // Custom InputTypes
@@ -1449,6 +1542,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountMoodsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MoodLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountActionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIToolsWhereInput
   }
 
 
@@ -1666,6 +1766,7 @@ export namespace Prisma {
     sleep?: boolean | User$sleepArgs<ExtArgs>
     behavior?: boolean | User$behaviorArgs<ExtArgs>
     preferences?: boolean | User$preferencesArgs<ExtArgs>
+    actions?: boolean | User$actionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1716,6 +1817,7 @@ export namespace Prisma {
     sleep?: boolean | User$sleepArgs<ExtArgs>
     behavior?: boolean | User$behaviorArgs<ExtArgs>
     preferences?: boolean | User$preferencesArgs<ExtArgs>
+    actions?: boolean | User$actionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1730,6 +1832,7 @@ export namespace Prisma {
       sleep: Prisma.$SleepLogPayload<ExtArgs> | null
       behavior: Prisma.$BehaviorSummaryPayload<ExtArgs> | null
       preferences: Prisma.$PreferencesPayload<ExtArgs> | null
+      actions: Prisma.$AIToolsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2142,6 +2245,7 @@ export namespace Prisma {
     sleep<T extends User$sleepArgs<ExtArgs> = {}>(args?: Subset<T, User$sleepArgs<ExtArgs>>): Prisma__SleepLogClient<$Result.GetResult<Prisma.$SleepLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     behavior<T extends User$behaviorArgs<ExtArgs> = {}>(args?: Subset<T, User$behaviorArgs<ExtArgs>>): Prisma__BehaviorSummaryClient<$Result.GetResult<Prisma.$BehaviorSummaryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     preferences<T extends User$preferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$preferencesArgs<ExtArgs>>): Prisma__PreferencesClient<$Result.GetResult<Prisma.$PreferencesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    actions<T extends User$actionsArgs<ExtArgs> = {}>(args?: Subset<T, User$actionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2695,6 +2799,30 @@ export namespace Prisma {
      */
     include?: PreferencesInclude<ExtArgs> | null
     where?: PreferencesWhereInput
+  }
+
+  /**
+   * User.actions
+   */
+  export type User$actionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+    where?: AIToolsWhereInput
+    orderBy?: AIToolsOrderByWithRelationInput | AIToolsOrderByWithRelationInput[]
+    cursor?: AIToolsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AIToolsScalarFieldEnum | AIToolsScalarFieldEnum[]
   }
 
   /**
@@ -9143,6 +9271,1069 @@ export namespace Prisma {
 
 
   /**
+   * Model AITools
+   */
+
+  export type AggregateAITools = {
+    _count: AIToolsCountAggregateOutputType | null
+    _min: AIToolsMinAggregateOutputType | null
+    _max: AIToolsMaxAggregateOutputType | null
+  }
+
+  export type AIToolsMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    toolType: string | null
+    createdAt: Date | null
+  }
+
+  export type AIToolsMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    toolType: string | null
+    createdAt: Date | null
+  }
+
+  export type AIToolsCountAggregateOutputType = {
+    id: number
+    userId: number
+    toolType: number
+    inputData: number
+    outputData: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AIToolsMinAggregateInputType = {
+    id?: true
+    userId?: true
+    toolType?: true
+    createdAt?: true
+  }
+
+  export type AIToolsMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    toolType?: true
+    createdAt?: true
+  }
+
+  export type AIToolsCountAggregateInputType = {
+    id?: true
+    userId?: true
+    toolType?: true
+    inputData?: true
+    outputData?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AIToolsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AITools to aggregate.
+     */
+    where?: AIToolsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AITools to fetch.
+     */
+    orderBy?: AIToolsOrderByWithRelationInput | AIToolsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AIToolsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AITools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AITools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AITools
+    **/
+    _count?: true | AIToolsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AIToolsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AIToolsMaxAggregateInputType
+  }
+
+  export type GetAIToolsAggregateType<T extends AIToolsAggregateArgs> = {
+        [P in keyof T & keyof AggregateAITools]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAITools[P]>
+      : GetScalarType<T[P], AggregateAITools[P]>
+  }
+
+
+
+
+  export type AIToolsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIToolsWhereInput
+    orderBy?: AIToolsOrderByWithAggregationInput | AIToolsOrderByWithAggregationInput[]
+    by: AIToolsScalarFieldEnum[] | AIToolsScalarFieldEnum
+    having?: AIToolsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AIToolsCountAggregateInputType | true
+    _min?: AIToolsMinAggregateInputType
+    _max?: AIToolsMaxAggregateInputType
+  }
+
+  export type AIToolsGroupByOutputType = {
+    id: string
+    userId: string
+    toolType: string
+    inputData: JsonValue
+    outputData: JsonValue
+    createdAt: Date
+    _count: AIToolsCountAggregateOutputType | null
+    _min: AIToolsMinAggregateOutputType | null
+    _max: AIToolsMaxAggregateOutputType | null
+  }
+
+  type GetAIToolsGroupByPayload<T extends AIToolsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AIToolsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AIToolsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AIToolsGroupByOutputType[P]>
+            : GetScalarType<T[P], AIToolsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AIToolsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    toolType?: boolean
+    inputData?: boolean
+    outputData?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aITools"]>
+
+  export type AIToolsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    toolType?: boolean
+    inputData?: boolean
+    outputData?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aITools"]>
+
+  export type AIToolsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    toolType?: boolean
+    inputData?: boolean
+    outputData?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aITools"]>
+
+  export type AIToolsSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    toolType?: boolean
+    inputData?: boolean
+    outputData?: boolean
+    createdAt?: boolean
+  }
+
+  export type AIToolsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "toolType" | "inputData" | "outputData" | "createdAt", ExtArgs["result"]["aITools"]>
+  export type AIToolsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AIToolsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AIToolsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AIToolsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AITools"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      toolType: string
+      inputData: Prisma.JsonValue
+      outputData: Prisma.JsonValue
+      createdAt: Date
+    }, ExtArgs["result"]["aITools"]>
+    composites: {}
+  }
+
+  type AIToolsGetPayload<S extends boolean | null | undefined | AIToolsDefaultArgs> = $Result.GetResult<Prisma.$AIToolsPayload, S>
+
+  type AIToolsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AIToolsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AIToolsCountAggregateInputType | true
+    }
+
+  export interface AIToolsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AITools'], meta: { name: 'AITools' } }
+    /**
+     * Find zero or one AITools that matches the filter.
+     * @param {AIToolsFindUniqueArgs} args - Arguments to find a AITools
+     * @example
+     * // Get one AITools
+     * const aITools = await prisma.aITools.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AIToolsFindUniqueArgs>(args: SelectSubset<T, AIToolsFindUniqueArgs<ExtArgs>>): Prisma__AIToolsClient<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AITools that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AIToolsFindUniqueOrThrowArgs} args - Arguments to find a AITools
+     * @example
+     * // Get one AITools
+     * const aITools = await prisma.aITools.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AIToolsFindUniqueOrThrowArgs>(args: SelectSubset<T, AIToolsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AIToolsClient<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AITools that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIToolsFindFirstArgs} args - Arguments to find a AITools
+     * @example
+     * // Get one AITools
+     * const aITools = await prisma.aITools.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AIToolsFindFirstArgs>(args?: SelectSubset<T, AIToolsFindFirstArgs<ExtArgs>>): Prisma__AIToolsClient<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AITools that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIToolsFindFirstOrThrowArgs} args - Arguments to find a AITools
+     * @example
+     * // Get one AITools
+     * const aITools = await prisma.aITools.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AIToolsFindFirstOrThrowArgs>(args?: SelectSubset<T, AIToolsFindFirstOrThrowArgs<ExtArgs>>): Prisma__AIToolsClient<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AITools that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIToolsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AITools
+     * const aITools = await prisma.aITools.findMany()
+     * 
+     * // Get first 10 AITools
+     * const aITools = await prisma.aITools.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aIToolsWithIdOnly = await prisma.aITools.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AIToolsFindManyArgs>(args?: SelectSubset<T, AIToolsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AITools.
+     * @param {AIToolsCreateArgs} args - Arguments to create a AITools.
+     * @example
+     * // Create one AITools
+     * const AITools = await prisma.aITools.create({
+     *   data: {
+     *     // ... data to create a AITools
+     *   }
+     * })
+     * 
+     */
+    create<T extends AIToolsCreateArgs>(args: SelectSubset<T, AIToolsCreateArgs<ExtArgs>>): Prisma__AIToolsClient<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AITools.
+     * @param {AIToolsCreateManyArgs} args - Arguments to create many AITools.
+     * @example
+     * // Create many AITools
+     * const aITools = await prisma.aITools.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AIToolsCreateManyArgs>(args?: SelectSubset<T, AIToolsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AITools and returns the data saved in the database.
+     * @param {AIToolsCreateManyAndReturnArgs} args - Arguments to create many AITools.
+     * @example
+     * // Create many AITools
+     * const aITools = await prisma.aITools.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AITools and only return the `id`
+     * const aIToolsWithIdOnly = await prisma.aITools.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AIToolsCreateManyAndReturnArgs>(args?: SelectSubset<T, AIToolsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AITools.
+     * @param {AIToolsDeleteArgs} args - Arguments to delete one AITools.
+     * @example
+     * // Delete one AITools
+     * const AITools = await prisma.aITools.delete({
+     *   where: {
+     *     // ... filter to delete one AITools
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AIToolsDeleteArgs>(args: SelectSubset<T, AIToolsDeleteArgs<ExtArgs>>): Prisma__AIToolsClient<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AITools.
+     * @param {AIToolsUpdateArgs} args - Arguments to update one AITools.
+     * @example
+     * // Update one AITools
+     * const aITools = await prisma.aITools.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AIToolsUpdateArgs>(args: SelectSubset<T, AIToolsUpdateArgs<ExtArgs>>): Prisma__AIToolsClient<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AITools.
+     * @param {AIToolsDeleteManyArgs} args - Arguments to filter AITools to delete.
+     * @example
+     * // Delete a few AITools
+     * const { count } = await prisma.aITools.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AIToolsDeleteManyArgs>(args?: SelectSubset<T, AIToolsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AITools.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIToolsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AITools
+     * const aITools = await prisma.aITools.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AIToolsUpdateManyArgs>(args: SelectSubset<T, AIToolsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AITools and returns the data updated in the database.
+     * @param {AIToolsUpdateManyAndReturnArgs} args - Arguments to update many AITools.
+     * @example
+     * // Update many AITools
+     * const aITools = await prisma.aITools.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AITools and only return the `id`
+     * const aIToolsWithIdOnly = await prisma.aITools.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AIToolsUpdateManyAndReturnArgs>(args: SelectSubset<T, AIToolsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AITools.
+     * @param {AIToolsUpsertArgs} args - Arguments to update or create a AITools.
+     * @example
+     * // Update or create a AITools
+     * const aITools = await prisma.aITools.upsert({
+     *   create: {
+     *     // ... data to create a AITools
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AITools we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AIToolsUpsertArgs>(args: SelectSubset<T, AIToolsUpsertArgs<ExtArgs>>): Prisma__AIToolsClient<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AITools.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIToolsCountArgs} args - Arguments to filter AITools to count.
+     * @example
+     * // Count the number of AITools
+     * const count = await prisma.aITools.count({
+     *   where: {
+     *     // ... the filter for the AITools we want to count
+     *   }
+     * })
+    **/
+    count<T extends AIToolsCountArgs>(
+      args?: Subset<T, AIToolsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AIToolsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AITools.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIToolsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AIToolsAggregateArgs>(args: Subset<T, AIToolsAggregateArgs>): Prisma.PrismaPromise<GetAIToolsAggregateType<T>>
+
+    /**
+     * Group by AITools.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIToolsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AIToolsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AIToolsGroupByArgs['orderBy'] }
+        : { orderBy?: AIToolsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AIToolsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAIToolsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AITools model
+   */
+  readonly fields: AIToolsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AITools.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AIToolsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AITools model
+   */
+  interface AIToolsFieldRefs {
+    readonly id: FieldRef<"AITools", 'String'>
+    readonly userId: FieldRef<"AITools", 'String'>
+    readonly toolType: FieldRef<"AITools", 'String'>
+    readonly inputData: FieldRef<"AITools", 'Json'>
+    readonly outputData: FieldRef<"AITools", 'Json'>
+    readonly createdAt: FieldRef<"AITools", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AITools findUnique
+   */
+  export type AIToolsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+    /**
+     * Filter, which AITools to fetch.
+     */
+    where: AIToolsWhereUniqueInput
+  }
+
+  /**
+   * AITools findUniqueOrThrow
+   */
+  export type AIToolsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+    /**
+     * Filter, which AITools to fetch.
+     */
+    where: AIToolsWhereUniqueInput
+  }
+
+  /**
+   * AITools findFirst
+   */
+  export type AIToolsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+    /**
+     * Filter, which AITools to fetch.
+     */
+    where?: AIToolsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AITools to fetch.
+     */
+    orderBy?: AIToolsOrderByWithRelationInput | AIToolsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AITools.
+     */
+    cursor?: AIToolsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AITools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AITools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AITools.
+     */
+    distinct?: AIToolsScalarFieldEnum | AIToolsScalarFieldEnum[]
+  }
+
+  /**
+   * AITools findFirstOrThrow
+   */
+  export type AIToolsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+    /**
+     * Filter, which AITools to fetch.
+     */
+    where?: AIToolsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AITools to fetch.
+     */
+    orderBy?: AIToolsOrderByWithRelationInput | AIToolsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AITools.
+     */
+    cursor?: AIToolsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AITools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AITools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AITools.
+     */
+    distinct?: AIToolsScalarFieldEnum | AIToolsScalarFieldEnum[]
+  }
+
+  /**
+   * AITools findMany
+   */
+  export type AIToolsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+    /**
+     * Filter, which AITools to fetch.
+     */
+    where?: AIToolsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AITools to fetch.
+     */
+    orderBy?: AIToolsOrderByWithRelationInput | AIToolsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AITools.
+     */
+    cursor?: AIToolsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AITools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AITools.
+     */
+    skip?: number
+    distinct?: AIToolsScalarFieldEnum | AIToolsScalarFieldEnum[]
+  }
+
+  /**
+   * AITools create
+   */
+  export type AIToolsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AITools.
+     */
+    data: XOR<AIToolsCreateInput, AIToolsUncheckedCreateInput>
+  }
+
+  /**
+   * AITools createMany
+   */
+  export type AIToolsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AITools.
+     */
+    data: AIToolsCreateManyInput | AIToolsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AITools createManyAndReturn
+   */
+  export type AIToolsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * The data used to create many AITools.
+     */
+    data: AIToolsCreateManyInput | AIToolsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AITools update
+   */
+  export type AIToolsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AITools.
+     */
+    data: XOR<AIToolsUpdateInput, AIToolsUncheckedUpdateInput>
+    /**
+     * Choose, which AITools to update.
+     */
+    where: AIToolsWhereUniqueInput
+  }
+
+  /**
+   * AITools updateMany
+   */
+  export type AIToolsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AITools.
+     */
+    data: XOR<AIToolsUpdateManyMutationInput, AIToolsUncheckedUpdateManyInput>
+    /**
+     * Filter which AITools to update
+     */
+    where?: AIToolsWhereInput
+    /**
+     * Limit how many AITools to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AITools updateManyAndReturn
+   */
+  export type AIToolsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * The data used to update AITools.
+     */
+    data: XOR<AIToolsUpdateManyMutationInput, AIToolsUncheckedUpdateManyInput>
+    /**
+     * Filter which AITools to update
+     */
+    where?: AIToolsWhereInput
+    /**
+     * Limit how many AITools to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AITools upsert
+   */
+  export type AIToolsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AITools to update in case it exists.
+     */
+    where: AIToolsWhereUniqueInput
+    /**
+     * In case the AITools found by the `where` argument doesn't exist, create a new AITools with this data.
+     */
+    create: XOR<AIToolsCreateInput, AIToolsUncheckedCreateInput>
+    /**
+     * In case the AITools was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AIToolsUpdateInput, AIToolsUncheckedUpdateInput>
+  }
+
+  /**
+   * AITools delete
+   */
+  export type AIToolsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+    /**
+     * Filter which AITools to delete.
+     */
+    where: AIToolsWhereUniqueInput
+  }
+
+  /**
+   * AITools deleteMany
+   */
+  export type AIToolsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AITools to delete
+     */
+    where?: AIToolsWhereInput
+    /**
+     * Limit how many AITools to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AITools without action
+   */
+  export type AIToolsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AITools
+     */
+    select?: AIToolsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AITools
+     */
+    omit?: AIToolsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIToolsInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -9240,6 +10431,18 @@ export namespace Prisma {
   };
 
   export type PreferencesScalarFieldEnum = (typeof PreferencesScalarFieldEnum)[keyof typeof PreferencesScalarFieldEnum]
+
+
+  export const AIToolsScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    toolType: 'toolType',
+    inputData: 'inputData',
+    outputData: 'outputData',
+    createdAt: 'createdAt'
+  };
+
+  export type AIToolsScalarFieldEnum = (typeof AIToolsScalarFieldEnum)[keyof typeof AIToolsScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -9373,6 +10576,7 @@ export namespace Prisma {
     sleep?: XOR<SleepLogNullableScalarRelationFilter, SleepLogWhereInput> | null
     behavior?: XOR<BehaviorSummaryNullableScalarRelationFilter, BehaviorSummaryWhereInput> | null
     preferences?: XOR<PreferencesNullableScalarRelationFilter, PreferencesWhereInput> | null
+    actions?: AIToolsListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -9392,6 +10596,7 @@ export namespace Prisma {
     sleep?: SleepLogOrderByWithRelationInput
     behavior?: BehaviorSummaryOrderByWithRelationInput
     preferences?: PreferencesOrderByWithRelationInput
+    actions?: AIToolsOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -9414,6 +10619,7 @@ export namespace Prisma {
     sleep?: XOR<SleepLogNullableScalarRelationFilter, SleepLogWhereInput> | null
     behavior?: XOR<BehaviorSummaryNullableScalarRelationFilter, BehaviorSummaryWhereInput> | null
     preferences?: XOR<PreferencesNullableScalarRelationFilter, PreferencesWhereInput> | null
+    actions?: AIToolsListRelationFilter
   }, "id" | "googleId" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -9800,6 +11006,66 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"Preferences"> | string
   }
 
+  export type AIToolsWhereInput = {
+    AND?: AIToolsWhereInput | AIToolsWhereInput[]
+    OR?: AIToolsWhereInput[]
+    NOT?: AIToolsWhereInput | AIToolsWhereInput[]
+    id?: StringFilter<"AITools"> | string
+    userId?: StringFilter<"AITools"> | string
+    toolType?: StringFilter<"AITools"> | string
+    inputData?: JsonFilter<"AITools">
+    outputData?: JsonFilter<"AITools">
+    createdAt?: DateTimeFilter<"AITools"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type AIToolsOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    toolType?: SortOrder
+    inputData?: SortOrder
+    outputData?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type AIToolsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AIToolsWhereInput | AIToolsWhereInput[]
+    OR?: AIToolsWhereInput[]
+    NOT?: AIToolsWhereInput | AIToolsWhereInput[]
+    userId?: StringFilter<"AITools"> | string
+    toolType?: StringFilter<"AITools"> | string
+    inputData?: JsonFilter<"AITools">
+    outputData?: JsonFilter<"AITools">
+    createdAt?: DateTimeFilter<"AITools"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type AIToolsOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    toolType?: SortOrder
+    inputData?: SortOrder
+    outputData?: SortOrder
+    createdAt?: SortOrder
+    _count?: AIToolsCountOrderByAggregateInput
+    _max?: AIToolsMaxOrderByAggregateInput
+    _min?: AIToolsMinOrderByAggregateInput
+  }
+
+  export type AIToolsScalarWhereWithAggregatesInput = {
+    AND?: AIToolsScalarWhereWithAggregatesInput | AIToolsScalarWhereWithAggregatesInput[]
+    OR?: AIToolsScalarWhereWithAggregatesInput[]
+    NOT?: AIToolsScalarWhereWithAggregatesInput | AIToolsScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AITools"> | string
+    userId?: StringWithAggregatesFilter<"AITools"> | string
+    toolType?: StringWithAggregatesFilter<"AITools"> | string
+    inputData?: JsonWithAggregatesFilter<"AITools">
+    outputData?: JsonWithAggregatesFilter<"AITools">
+    createdAt?: DateTimeWithAggregatesFilter<"AITools"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     googleId?: string | null
@@ -9817,6 +11083,7 @@ export namespace Prisma {
     sleep?: SleepLogCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
+    actions?: AIToolsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -9836,6 +11103,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+    actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -9855,6 +11123,7 @@ export namespace Prisma {
     sleep?: SleepLogUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -9874,6 +11143,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -10273,6 +11543,68 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
   }
 
+  export type AIToolsCreateInput = {
+    id?: string
+    toolType: string
+    inputData: JsonNullValueInput | InputJsonValue
+    outputData: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutActionsInput
+  }
+
+  export type AIToolsUncheckedCreateInput = {
+    id?: string
+    userId: string
+    toolType: string
+    inputData: JsonNullValueInput | InputJsonValue
+    outputData: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AIToolsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    toolType?: StringFieldUpdateOperationsInput | string
+    inputData?: JsonNullValueInput | InputJsonValue
+    outputData?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutActionsNestedInput
+  }
+
+  export type AIToolsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    toolType?: StringFieldUpdateOperationsInput | string
+    inputData?: JsonNullValueInput | InputJsonValue
+    outputData?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIToolsCreateManyInput = {
+    id?: string
+    userId: string
+    toolType: string
+    inputData: JsonNullValueInput | InputJsonValue
+    outputData: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AIToolsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    toolType?: StringFieldUpdateOperationsInput | string
+    inputData?: JsonNullValueInput | InputJsonValue
+    outputData?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIToolsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    toolType?: StringFieldUpdateOperationsInput | string
+    inputData?: JsonNullValueInput | InputJsonValue
+    outputData?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -10347,6 +11679,12 @@ export namespace Prisma {
     isNot?: PreferencesWhereInput | null
   }
 
+  export type AIToolsListRelationFilter = {
+    every?: AIToolsWhereInput
+    some?: AIToolsWhereInput
+    none?: AIToolsWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -10361,6 +11699,10 @@ export namespace Prisma {
   }
 
   export type MoodLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AIToolsOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -10688,6 +12030,29 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
+  export type AIToolsCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    toolType?: SortOrder
+    inputData?: SortOrder
+    outputData?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIToolsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    toolType?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIToolsMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    toolType?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type EventCreateNestedManyWithoutUserInput = {
     create?: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput> | EventCreateWithoutUserInput[] | EventUncheckedCreateWithoutUserInput[]
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
@@ -10727,6 +12092,13 @@ export namespace Prisma {
     connect?: PreferencesWhereUniqueInput
   }
 
+  export type AIToolsCreateNestedManyWithoutUserInput = {
+    create?: XOR<AIToolsCreateWithoutUserInput, AIToolsUncheckedCreateWithoutUserInput> | AIToolsCreateWithoutUserInput[] | AIToolsUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AIToolsCreateOrConnectWithoutUserInput | AIToolsCreateOrConnectWithoutUserInput[]
+    createMany?: AIToolsCreateManyUserInputEnvelope
+    connect?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
+  }
+
   export type EventUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput> | EventCreateWithoutUserInput[] | EventUncheckedCreateWithoutUserInput[]
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
@@ -10764,6 +12136,13 @@ export namespace Prisma {
     create?: XOR<PreferencesCreateWithoutUserInput, PreferencesUncheckedCreateWithoutUserInput>
     connectOrCreate?: PreferencesCreateOrConnectWithoutUserInput
     connect?: PreferencesWhereUniqueInput
+  }
+
+  export type AIToolsUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AIToolsCreateWithoutUserInput, AIToolsUncheckedCreateWithoutUserInput> | AIToolsCreateWithoutUserInput[] | AIToolsUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AIToolsCreateOrConnectWithoutUserInput | AIToolsCreateOrConnectWithoutUserInput[]
+    createMany?: AIToolsCreateManyUserInputEnvelope
+    connect?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -10850,6 +12229,20 @@ export namespace Prisma {
     update?: XOR<XOR<PreferencesUpdateToOneWithWhereWithoutUserInput, PreferencesUpdateWithoutUserInput>, PreferencesUncheckedUpdateWithoutUserInput>
   }
 
+  export type AIToolsUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AIToolsCreateWithoutUserInput, AIToolsUncheckedCreateWithoutUserInput> | AIToolsCreateWithoutUserInput[] | AIToolsUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AIToolsCreateOrConnectWithoutUserInput | AIToolsCreateOrConnectWithoutUserInput[]
+    upsert?: AIToolsUpsertWithWhereUniqueWithoutUserInput | AIToolsUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AIToolsCreateManyUserInputEnvelope
+    set?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
+    disconnect?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
+    delete?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
+    connect?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
+    update?: AIToolsUpdateWithWhereUniqueWithoutUserInput | AIToolsUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AIToolsUpdateManyWithWhereWithoutUserInput | AIToolsUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AIToolsScalarWhereInput | AIToolsScalarWhereInput[]
+  }
+
   export type EventUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput> | EventCreateWithoutUserInput[] | EventUncheckedCreateWithoutUserInput[]
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
@@ -10920,6 +12313,20 @@ export namespace Prisma {
     delete?: PreferencesWhereInput | boolean
     connect?: PreferencesWhereUniqueInput
     update?: XOR<XOR<PreferencesUpdateToOneWithWhereWithoutUserInput, PreferencesUpdateWithoutUserInput>, PreferencesUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AIToolsUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AIToolsCreateWithoutUserInput, AIToolsUncheckedCreateWithoutUserInput> | AIToolsCreateWithoutUserInput[] | AIToolsUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AIToolsCreateOrConnectWithoutUserInput | AIToolsCreateOrConnectWithoutUserInput[]
+    upsert?: AIToolsUpsertWithWhereUniqueWithoutUserInput | AIToolsUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AIToolsCreateManyUserInputEnvelope
+    set?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
+    disconnect?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
+    delete?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
+    connect?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
+    update?: AIToolsUpdateWithWhereUniqueWithoutUserInput | AIToolsUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AIToolsUpdateManyWithWhereWithoutUserInput | AIToolsUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AIToolsScalarWhereInput | AIToolsScalarWhereInput[]
   }
 
   export type EventCreaterecurringDaysInput = {
@@ -11017,6 +12424,20 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutPreferencesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPreferencesInput, UserUpdateWithoutPreferencesInput>, UserUncheckedUpdateWithoutPreferencesInput>
+  }
+
+  export type UserCreateNestedOneWithoutActionsInput = {
+    create?: XOR<UserCreateWithoutActionsInput, UserUncheckedCreateWithoutActionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutActionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutActionsNestedInput = {
+    create?: XOR<UserCreateWithoutActionsInput, UserUncheckedCreateWithoutActionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutActionsInput
+    upsert?: UserUpsertWithoutActionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutActionsInput, UserUpdateWithoutActionsInput>, UserUncheckedUpdateWithoutActionsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -11301,6 +12722,32 @@ export namespace Prisma {
     create: XOR<PreferencesCreateWithoutUserInput, PreferencesUncheckedCreateWithoutUserInput>
   }
 
+  export type AIToolsCreateWithoutUserInput = {
+    id?: string
+    toolType: string
+    inputData: JsonNullValueInput | InputJsonValue
+    outputData: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AIToolsUncheckedCreateWithoutUserInput = {
+    id?: string
+    toolType: string
+    inputData: JsonNullValueInput | InputJsonValue
+    outputData: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AIToolsCreateOrConnectWithoutUserInput = {
+    where: AIToolsWhereUniqueInput
+    create: XOR<AIToolsCreateWithoutUserInput, AIToolsUncheckedCreateWithoutUserInput>
+  }
+
+  export type AIToolsCreateManyUserInputEnvelope = {
+    data: AIToolsCreateManyUserInput | AIToolsCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type EventUpsertWithWhereUniqueWithoutUserInput = {
     where: EventWhereUniqueInput
     update: XOR<EventUpdateWithoutUserInput, EventUncheckedUpdateWithoutUserInput>
@@ -11458,6 +12905,34 @@ export namespace Prisma {
     dateFormat?: StringFieldUpdateOperationsInput | string
   }
 
+  export type AIToolsUpsertWithWhereUniqueWithoutUserInput = {
+    where: AIToolsWhereUniqueInput
+    update: XOR<AIToolsUpdateWithoutUserInput, AIToolsUncheckedUpdateWithoutUserInput>
+    create: XOR<AIToolsCreateWithoutUserInput, AIToolsUncheckedCreateWithoutUserInput>
+  }
+
+  export type AIToolsUpdateWithWhereUniqueWithoutUserInput = {
+    where: AIToolsWhereUniqueInput
+    data: XOR<AIToolsUpdateWithoutUserInput, AIToolsUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AIToolsUpdateManyWithWhereWithoutUserInput = {
+    where: AIToolsScalarWhereInput
+    data: XOR<AIToolsUpdateManyMutationInput, AIToolsUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type AIToolsScalarWhereInput = {
+    AND?: AIToolsScalarWhereInput | AIToolsScalarWhereInput[]
+    OR?: AIToolsScalarWhereInput[]
+    NOT?: AIToolsScalarWhereInput | AIToolsScalarWhereInput[]
+    id?: StringFilter<"AITools"> | string
+    userId?: StringFilter<"AITools"> | string
+    toolType?: StringFilter<"AITools"> | string
+    inputData?: JsonFilter<"AITools">
+    outputData?: JsonFilter<"AITools">
+    createdAt?: DateTimeFilter<"AITools"> | Date | string
+  }
+
   export type UserCreateWithoutEventsInput = {
     id?: string
     googleId?: string | null
@@ -11474,6 +12949,7 @@ export namespace Prisma {
     sleep?: SleepLogCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
+    actions?: AIToolsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventsInput = {
@@ -11492,6 +12968,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+    actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventsInput = {
@@ -11526,6 +13003,7 @@ export namespace Prisma {
     sleep?: SleepLogUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventsInput = {
@@ -11544,6 +13022,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutTasksInput = {
@@ -11562,6 +13041,7 @@ export namespace Prisma {
     sleep?: SleepLogCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
+    actions?: AIToolsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTasksInput = {
@@ -11580,6 +13060,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+    actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTasksInput = {
@@ -11614,6 +13095,7 @@ export namespace Prisma {
     sleep?: SleepLogUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksInput = {
@@ -11632,6 +13114,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutMoodsInput = {
@@ -11650,6 +13133,7 @@ export namespace Prisma {
     sleep?: SleepLogCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
+    actions?: AIToolsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMoodsInput = {
@@ -11668,6 +13152,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+    actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMoodsInput = {
@@ -11702,6 +13187,7 @@ export namespace Prisma {
     sleep?: SleepLogUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMoodsInput = {
@@ -11720,6 +13206,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSleepInput = {
@@ -11738,6 +13225,7 @@ export namespace Prisma {
     moods?: MoodLogCreateNestedManyWithoutUserInput
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
+    actions?: AIToolsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSleepInput = {
@@ -11756,6 +13244,7 @@ export namespace Prisma {
     moods?: MoodLogUncheckedCreateNestedManyWithoutUserInput
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+    actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSleepInput = {
@@ -11790,6 +13279,7 @@ export namespace Prisma {
     moods?: MoodLogUpdateManyWithoutUserNestedInput
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSleepInput = {
@@ -11808,6 +13298,7 @@ export namespace Prisma {
     moods?: MoodLogUncheckedUpdateManyWithoutUserNestedInput
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutBehaviorInput = {
@@ -11826,6 +13317,7 @@ export namespace Prisma {
     moods?: MoodLogCreateNestedManyWithoutUserInput
     sleep?: SleepLogCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
+    actions?: AIToolsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBehaviorInput = {
@@ -11844,6 +13336,7 @@ export namespace Prisma {
     moods?: MoodLogUncheckedCreateNestedManyWithoutUserInput
     sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+    actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBehaviorInput = {
@@ -11878,6 +13371,7 @@ export namespace Prisma {
     moods?: MoodLogUpdateManyWithoutUserNestedInput
     sleep?: SleepLogUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBehaviorInput = {
@@ -11896,6 +13390,7 @@ export namespace Prisma {
     moods?: MoodLogUncheckedUpdateManyWithoutUserNestedInput
     sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPreferencesInput = {
@@ -11914,6 +13409,7 @@ export namespace Prisma {
     moods?: MoodLogCreateNestedManyWithoutUserInput
     sleep?: SleepLogCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
+    actions?: AIToolsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPreferencesInput = {
@@ -11932,6 +13428,7 @@ export namespace Prisma {
     moods?: MoodLogUncheckedCreateNestedManyWithoutUserInput
     sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
+    actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPreferencesInput = {
@@ -11966,6 +13463,7 @@ export namespace Prisma {
     moods?: MoodLogUpdateManyWithoutUserNestedInput
     sleep?: SleepLogUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPreferencesInput = {
@@ -11984,6 +13482,99 @@ export namespace Prisma {
     moods?: MoodLogUncheckedUpdateManyWithoutUserNestedInput
     sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutActionsInput = {
+    id?: string
+    googleId?: string | null
+    password?: string | null
+    avatar?: string | null
+    email: string
+    name?: string | null
+    username?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    events?: EventCreateNestedManyWithoutUserInput
+    tasks?: TaskCreateNestedManyWithoutUserInput
+    moods?: MoodLogCreateNestedManyWithoutUserInput
+    sleep?: SleepLogCreateNestedOneWithoutUserInput
+    behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
+    preferences?: PreferencesCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutActionsInput = {
+    id?: string
+    googleId?: string | null
+    password?: string | null
+    avatar?: string | null
+    email: string
+    name?: string | null
+    username?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    events?: EventUncheckedCreateNestedManyWithoutUserInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    moods?: MoodLogUncheckedCreateNestedManyWithoutUserInput
+    sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
+    behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
+    preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutActionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutActionsInput, UserUncheckedCreateWithoutActionsInput>
+  }
+
+  export type UserUpsertWithoutActionsInput = {
+    update: XOR<UserUpdateWithoutActionsInput, UserUncheckedUpdateWithoutActionsInput>
+    create: XOR<UserCreateWithoutActionsInput, UserUncheckedCreateWithoutActionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutActionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutActionsInput, UserUncheckedUpdateWithoutActionsInput>
+  }
+
+  export type UserUpdateWithoutActionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    events?: EventUpdateManyWithoutUserNestedInput
+    tasks?: TaskUpdateManyWithoutUserNestedInput
+    moods?: MoodLogUpdateManyWithoutUserNestedInput
+    sleep?: SleepLogUpdateOneWithoutUserNestedInput
+    behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
+    preferences?: PreferencesUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutActionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    events?: EventUncheckedUpdateManyWithoutUserNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    moods?: MoodLogUncheckedUpdateManyWithoutUserNestedInput
+    sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
+    behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
+    preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type EventCreateManyUserInput = {
@@ -12011,6 +13602,14 @@ export namespace Prisma {
   export type MoodLogCreateManyUserInput = {
     id?: string
     mood: string
+    createdAt?: Date | string
+  }
+
+  export type AIToolsCreateManyUserInput = {
+    id?: string
+    toolType: string
+    inputData: JsonNullValueInput | InputJsonValue
+    outputData: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -12095,6 +13694,30 @@ export namespace Prisma {
   export type MoodLogUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     mood?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIToolsUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    toolType?: StringFieldUpdateOperationsInput | string
+    inputData?: JsonNullValueInput | InputJsonValue
+    outputData?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIToolsUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    toolType?: StringFieldUpdateOperationsInput | string
+    inputData?: JsonNullValueInput | InputJsonValue
+    outputData?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIToolsUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    toolType?: StringFieldUpdateOperationsInput | string
+    inputData?: JsonNullValueInput | InputJsonValue
+    outputData?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

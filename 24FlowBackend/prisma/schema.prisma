@@ -31,6 +31,8 @@ model User {
   sleep        SleepLog?
   behavior     BehaviorSummary?
   preferences  Preferences?
+
+  actions AITools[]
 }
 
 model Event {
@@ -101,4 +103,14 @@ model Preferences {
   // Relation back to User
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String   @unique
+}
+
+model AITools {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  toolType   String   // e.g., "IMAGE_GEN", "TEXT_SUMMARIZER", "CODE_FIXER"
+  inputData  Json     // Stores what the user sent
+  outputData Json     // Stores the AI response
+  createdAt  DateTime @default(now())
 }
