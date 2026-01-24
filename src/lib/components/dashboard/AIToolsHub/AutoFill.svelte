@@ -49,17 +49,17 @@
 	}
 
 	// Task State
-	let tasks: Task[] = [];
+	let tasks: Task[] = $state([]);
 
 	// Form State
-	let newTaskTitle = '';
-	let newTaskMins: number | null = null;
+	let newTaskTitle = $state('');
+	let newTaskMins: number | null = $state(null);
 
 	// Availability State
-	let startTime = '09:00';
-	let endTime = '17:00';
+	let startTime = $state('09:00');
+	let endTime = $state('17:00');
 
-	let selectedDate = new Date().toISOString().split('T')[0];
+	let selectedDate = $state(new Date().toISOString().split('T')[0]);
 
 	interface NeoColor {
 		border: string;
@@ -114,7 +114,7 @@
 		}
 	}
 
-	let isAddingTask = false;
+	let isAddingTask = $state(false);
 	async function addTask() {
 		if (!newTaskTitle || !newTaskMins) return;
 		isAddingTask = true;
@@ -136,7 +136,7 @@
 		tasks = tasks.filter((t) => t.id !== id);
 	}
 
-	let isGenerating = false;
+	let isGenerating = $state(false);
 	async function handleGenerate() {
 		isGenerating = true; 
 
