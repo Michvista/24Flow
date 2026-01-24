@@ -1,4 +1,3 @@
-// controllers/aiController.mjs
 import prisma from '../db.mjs';
 import { generateAutoFill } from '../services/autoFillService.mjs';
 import { getOverlapFixes, applyOverlapFix } from '../services/overlapFixerService.mjs';
@@ -29,7 +28,14 @@ export const handleAiTool = async (req, res, next) => {
 				if (!proposals || !Array.isArray(proposals)) {
 					return res.status(400).json({
 						status: 'fail',
-						message: 'Invalid proposals format'
+						message: 'Invalid proposals format. Expected an array of proposals.'
+					});
+				}
+
+				if (proposals.length === 0) {
+					return res.status(400).json({
+						status: 'fail',
+						message: 'No proposals provided to apply.'
 					});
 				}
 
@@ -48,26 +54,19 @@ export const handleAiTool = async (req, res, next) => {
 			}
 
 			case 'STUDY_GEN': {
-				// aiResponse = await generateStudyPlan(payload);
+				// Placeholder for future implementation
 				aiResponse = { message: 'Study plan generation coming soon' };
 				break;
 			}
 
 			case 'NATURAL_LANGUAGE': {
-				// aiResponse = await parseNaturalLanguage(payload.text);
+				// Placeholder for future implementation
 				aiResponse = { message: 'Natural language parsing coming soon' };
 				break;
 			}
 
-			case 'GENERATE_TAG': {
+		case 'GENERATE_TAG': {
 				const { title } = payload;
-
-				if (!title) {
-					return res.status(400).json({
-						status: 'fail',
-						message: 'Title is required for tag generation'
-					});
-				}
 
 				const response = await ai.models.generateContent({
 					model: 'gemini-3-flash-preview',
@@ -83,7 +82,7 @@ export const handleAiTool = async (req, res, next) => {
 			default:
 				return res.status(400).json({
 					status: 'fail',
-					message: `Unknown tool type: ${toolType}`
+					message: `Unknown tool type: ${toolType}. Supported types: AUTO_FILL, GET_CONFLICTS, APPLY_FIX, STUDY_GEN, NATURAL_LANGUAGE, GENERATE_TAG`
 				});
 		}
 
@@ -107,13 +106,13 @@ export const handleAiTool = async (req, res, next) => {
 			data: aiResponse
 		});
 	} catch (error) {
-		console.error('CRASH IN AI CONTROLLER:', error);
+		console.error('Error in AI controller:', error);
 
 		// Send detailed error in development, generic in production
 		res.status(500).json({
 			status: 'error',
 			message: error.message || 'An error occurred processing your request',
-			stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+			...(process.env.NODE_ENV === 'development' && { stack: error.stack })
 		});
 	}
 };
