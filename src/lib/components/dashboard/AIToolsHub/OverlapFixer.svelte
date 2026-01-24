@@ -463,5 +463,5 @@
 		to {
 			transform: rotate(360deg);
 		}
-	}
+	} 
 </style>

@@ -7,122 +7,122 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
  * Convert Date to HHMM format (e.g., 1430 for 2:30 PM)
  */
 function dateToHHMM(date) {
-	const hours = date.getHours();
-	const minutes = date.getMinutes();
-	return hours * 100 + minutes;
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    return hours * 100 + minutes;
 }
 
 /**
  * Convert HHMM to minutes since midnight
  */
 function hhmmToMinutes(hhmm) {
-	const h = Math.floor(hhmm / 100);
-	const m = hhmm % 100;
-	return h * 60 + m;
+    const h = Math.floor(hhmm / 100);
+    const m = hhmm % 100;
+    return h * 60 + m;
 }
 
 /**
  * Check if two events overlap
  */
 function eventsOverlap(event1, event2) {
-	return event1.startTime < event2.endTime && event1.endTime > event2.startTime;
+    return event1.startTime < event2.endTime && event1.endTime > event2.startTime;
 }
 
 /**
  * Find all overlapping events in a user's schedule
  */
 function findOverlaps(events) {
-	const conflicts = [];
-	const processed = new Set();
+    const conflicts = [];
+    const processed = new Set();
 
-	for (let i = 0; i < events.length; i++) {
-		for (let j = i + 1; j < events.length; j++) {
-			if (eventsOverlap(events[i], events[j])) {
-				const conflictKey = [events[i].id, events[j].id].sort().join('-');
+    for (let i = 0; i < events.length; i++) {
+        for (let j = i + 1; j < events.length; j++) {
+            if (eventsOverlap(events[i], events[j])) {
+                const conflictKey = [events[i].id, events[j].id].sort().join('-');
 
-				if (!processed.has(conflictKey)) {
-					processed.add(conflictKey);
-					conflicts.push({
-						events: [events[i], events[j]],
-						type: 'pair'
-					});
-				}
-			}
-		}
-	}
+                if (!processed.has(conflictKey)) {
+                    processed.add(conflictKey);
+                    conflicts.push({
+                        events: [events[i], events[j]],
+                        type: 'pair'
+                    });
+                }
+            }
+        }
+    }
 
-	// Merge related conflicts into clusters
-	const merged = [];
-	const used = new Set();
+    // Merge related conflicts into clusters
+    const merged = [];
+    const used = new Set();
 
-	conflicts.forEach((conflict) => {
-		if (used.has(conflict)) return;
+    conflicts.forEach((conflict) => {
+        if (used.has(conflict)) return;
 
-		const cluster = [...conflict.events];
-		const clusterIds = new Set(cluster.map((e) => e.id));
+        const cluster = [...conflict.events];
+        const clusterIds = new Set(cluster.map((e) => e.id));
 
-		// Find other conflicts that share events
-		conflicts.forEach((otherConflict) => {
-			if (otherConflict === conflict) return;
+        // Find other conflicts that share events
+        conflicts.forEach((otherConflict) => {
+            if (otherConflict === conflict) return;
 
-			const hasShared = otherConflict.events.some((e) => clusterIds.has(e.id));
-			if (hasShared) {
-				otherConflict.events.forEach((e) => {
-					if (!clusterIds.has(e.id)) {
-						cluster.push(e);
-						clusterIds.add(e.id);
-					}
-				});
-				used.add(otherConflict);
-			}
-		});
+            const hasShared = otherConflict.events.some((e) => clusterIds.has(e.id));
+            if (hasShared) {
+                otherConflict.events.forEach((e) => {
+                    if (!clusterIds.has(e.id)) {
+                        cluster.push(e);
+                        clusterIds.add(e.id);
+                    }
+                });
+                used.add(otherConflict);
+            }
+        });
 
-		merged.push(cluster);
-		used.add(conflict);
-	});
+        merged.push(cluster);
+        used.add(conflict);
+    });
 
-	return merged;
+    return merged;
 }
 
 /**
  * Use Gemini AI to generate smart rescheduling proposal
  */
 async function generateAIProposal(overlappingEvents, allUserEvents) {
-	try {
-		// Sort by start time
-		const sorted = [...overlappingEvents].sort(
-			(a, b) => a.startTime.getTime() - b.startTime.getTime()
-		);
+    try {
+        // Sort by start time
+        const sorted = [...overlappingEvents].sort(
+            (a, b) => a.startTime.getTime() - b.startTime.getTime()
+        );
 
-		// Prepare context for AI
-		const conflictingEventsInfo = sorted.map((e) => ({
-			id: e.id,
-			title: e.title,
-			description: e.desc || '',
-			startTime: e.startTime.toISOString(),
-			endTime: e.endTime.toISOString(),
-			duration: Math.round((e.endTime - e.startTime) / (1000 * 60)) // minutes
-		}));
+        // Prepare context for AI
+        const conflictingEventsInfo = sorted.map((e) => ({
+            id: e.id,
+            title: e.title,
+            description: e.desc || '',
+            startTime: e.startTime.toISOString(),
+            endTime: e.endTime.toISOString(),
+            duration: Math.round((e.endTime - e.startTime) / (1000 * 60)) // minutes
+        }));
 
-		// Get other events on the same day for context
-		const dayStart = new Date(sorted[0].startTime);
-		dayStart.setHours(0, 0, 0, 0);
-		const dayEnd = new Date(dayStart);
-		dayEnd.setHours(23, 59, 59, 999);
+        // Get other events on the same day for context
+        const dayStart = new Date(sorted[0].startTime);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(dayStart);
+        dayEnd.setHours(23, 59, 59, 999);
 
-		const otherEvents = allUserEvents
-			.filter((e) => {
-				const eventDate = new Date(e.startTime);
-				return eventDate >= dayStart && eventDate <= dayEnd && !sorted.some((s) => s.id === e.id);
-			})
-			.map((e) => ({
-				title: e.title,
-				startTime: e.startTime.toISOString(),
-				endTime: e.endTime.toISOString()
-			}));
+        const otherEvents = allUserEvents
+            .filter((e) => {
+                const eventDate = new Date(e.startTime);
+                return eventDate >= dayStart && eventDate <= dayEnd && !sorted.some((s) => s.id === e.id);
+            })
+            .map((e) => ({
+                title: e.title,
+                startTime: e.startTime.toISOString(),
+                endTime: e.endTime.toISOString()
+            }));
 
-		// Construct AI prompt
-		const prompt = `You are a smart scheduling assistant. Analyze this schedule conflict and suggest optimal rescheduling.
+        // Construct AI prompt
+        const prompt = `You are a smart scheduling assistant. Analyze this schedule conflict and suggest optimal rescheduling.
 
 CONFLICTING EVENTS:
 ${JSON.stringify(conflictingEventsInfo, null, 2)}
@@ -141,249 +141,328 @@ INSTRUCTIONS:
    - Prefer keeping events on the same day if possible
    - Consider work hours (9:00-18:00 for work events)
 
-RESPOND WITH ONLY A JSON ARRAY in this exact format (no markdown, no backticks):
+RESPOND WITH ONLY A JSON ARRAY in this exact format (NO markdown, NO backticks, NO explanation):
 [
   {
-    "id": <event_id>,
-    "title": "<event_title>",
-    "startTime": "<ISO_timestamp>",
-    "endTime": "<ISO_timestamp>",
-    "reasoning": "<brief explanation>"
+    "id": "${sorted[0].id}",
+    "title": "${sorted[0].title}",
+    "startTime": "${sorted[0].startTime.toISOString()}", 
+    "endTime": "${sorted[0].endTime.toISOString()}",
+    "reasoning": "Kept in original time slot"
   }
 ]
 
-Important: Include ALL ${sorted.length} events in your response, even the one that stays in place.`;
+CRITICAL: 
+- Start and end times MUST be valid ISO 8601 date-time strings (YYYY-MM-DDTHH:mm:ss.sssZ)
+- Include ALL ${sorted.length} events in your response
+- Return ONLY the JSON array, nothing else`;
 
-		const response = await ai.models.generateContent({
-			model: 'gemini-3-flash-preview',
-			contents: prompt
-		});
+        console.log('🤖 Calling Gemini API...');
+        
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: prompt,
+            generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 2048,
+            }
+        });
 
-		const aiText = response.text ?? response?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+        console.log('📥 Raw Gemini response:', JSON.stringify(response, null, 2));
 
-		if (!aiText) {
-			throw new Error('Empty AI response');
-		}
+        // Try multiple ways to extract the text
+        let aiText = null;
+        
+        if (response.text) {
+            aiText = response.text;
+        } else if (response.response?.text) {
+            aiText = response.response.text();
+        } else if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
+            aiText = response.candidates[0].content.parts[0].text;
+        }
 
-		// Clean the response - remove markdown code blocks if present
-		let jsonText = aiText.trim();
-		jsonText = jsonText.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+        if (!aiText || aiText.trim() === '') {
+            console.error('❌ Empty AI response. Full response object:', response);
+            throw new Error('Empty AI response - check API key and quota');
+        }
 
-		const aiProposals = JSON.parse(jsonText);
+        console.log('📝 Extracted AI text:', aiText);
 
-		// Validate proposals
-		const validatedProposals = aiProposals.map((proposal) => ({
-			id: proposal.id,
-			title: proposal.title,
-			startTime: proposal.startTime,
-			endTime: proposal.endTime,
-			reasoning: proposal.reasoning || 'AI-optimized scheduling'
-		}));
+        // Clean the response - remove markdown code blocks if present
+        let jsonText = aiText.trim();
+        jsonText = jsonText.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
+        
+        // Remove any leading/trailing text that isn't part of the JSON
+        const jsonMatch = jsonText.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+            jsonText = jsonMatch[0];
+        }
 
-		return validatedProposals;
-	} catch (error) {
-		console.error('AI proposal generation failed, falling back to simple scheduling:', error);
+        console.log('🔧 Cleaned JSON text:', jsonText);
 
-		// Fallback to simple sequential scheduling
-		const sorted = [...overlappingEvents].sort(
-			(a, b) => a.startTime.getTime() - b.startTime.getTime()
-		);
+        const aiProposals = JSON.parse(jsonText);
 
-		const proposals = [];
-		let currentEndTime = sorted[0].endTime;
+        if (!Array.isArray(aiProposals) || aiProposals.length === 0) {
+            throw new Error('AI returned invalid proposals array');
+        }
 
-		proposals.push({
-			id: sorted[0].id,
-			title: sorted[0].title,
-			startTime: sorted[0].startTime.toISOString(),
-			endTime: sorted[0].endTime.toISOString(),
-			reasoning: 'Kept in original time slot'
-		});
+        // Validate proposals
+        const validatedProposals = aiProposals.map((proposal) => {
+            if (!proposal.id || !proposal.startTime || !proposal.endTime) {
+                throw new Error(`Invalid proposal structure: ${JSON.stringify(proposal)}`);
+            }
 
-		for (let i = 1; i < sorted.length; i++) {
-			const event = sorted[i];
-			const duration = event.endTime.getTime() - event.startTime.getTime();
+            // Validate ISO date strings
+            const start = new Date(proposal.startTime);
+            const end = new Date(proposal.endTime);
+            
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                throw new Error(`Invalid date in proposal: ${proposal.startTime} or ${proposal.endTime}`);
+            }
 
-			const bufferMinutes = 15;
-			const bufferMs = bufferMinutes * 60 * 1000;
+            return {
+                id: proposal.id,
+                title: proposal.title,
+                startTime: proposal.startTime,
+                endTime: proposal.endTime,
+                reasoning: proposal.reasoning || 'AI-optimized scheduling'
+            };
+        });
 
-			const newStart = new Date(currentEndTime.getTime() + bufferMs);
-			const newEnd = new Date(newStart.getTime() + duration);
+        console.log('✅ AI proposals validated:', validatedProposals.length);
 
-			proposals.push({
-				id: event.id,
-				title: event.title,
-				startTime: newStart.toISOString(),
-				endTime: newEnd.toISOString(),
-				reasoning: `Rescheduled with ${bufferMinutes} min buffer`
-			});
+        return validatedProposals;
+    } catch (error) {
+        console.error('⚠️ AI proposal generation failed:', error);
+        console.error('Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
 
-			currentEndTime = newEnd;
-		}
+        // Fallback to simple sequential scheduling
+        console.log('🔄 Using fallback sequential scheduling...');
+        
+        const sorted = [...overlappingEvents].sort(
+            (a, b) => a.startTime.getTime() - b.startTime.getTime()
+        );
 
-		return proposals;
-	}
+        const proposals = [];
+        let currentEndTime = sorted[0].endTime;
+
+        proposals.push({
+            id: sorted[0].id,
+            title: sorted[0].title,
+            startTime: sorted[0].startTime.toISOString(),
+            endTime: sorted[0].endTime.toISOString(),
+            reasoning: 'Kept in original time slot'
+        });
+
+        for (let i = 1; i < sorted.length; i++) {
+            const event = sorted[i];
+            const duration = event.endTime.getTime() - event.startTime.getTime();
+
+            const bufferMinutes = 15;
+            const bufferMs = bufferMinutes * 60 * 1000;
+
+            const newStart = new Date(currentEndTime.getTime() + bufferMs);
+            const newEnd = new Date(newStart.getTime() + duration);
+
+            proposals.push({
+                id: event.id,
+                title: event.title,
+                startTime: newStart.toISOString(),
+                endTime: newEnd.toISOString(),
+                reasoning: `Rescheduled with ${bufferMinutes} min buffer (fallback)`
+            });
+
+            currentEndTime = newEnd;
+        }
+
+        console.log('✅ Fallback proposals generated:', proposals.length);
+
+        return proposals;
+    }
 }
 
 /**
  * Generate a conflict ID
  */
 function generateErrorId() {
-	const number = Math.floor(1000 + Math.random() * 9000);
-	return `#ERR-${number}`;
+    const number = Math.floor(1000 + Math.random() * 9000);
+    return `#ERR-${number}`;
 }
 
 /**
  * Main function to get overlap fixes for a user
  */
 export async function getOverlapFixes(userId) {
-	try {
-		const events = await prisma.event.findMany({
-			where: {
-				userId
-			},
-			orderBy: {
-				startTime: 'asc'
-			}
-		});
+    try {
+        console.log(`🔍 Fetching events for user ${userId}...`);
+        
+        const events = await prisma.event.findMany({
+            where: {
+                userId
+            },
+            orderBy: {
+                startTime: 'asc'
+            }
+        });
 
-		if (events.length === 0) {
-			return [];
-		}
+        console.log(`📅 Found ${events.length} events`);
 
-		// Find overlapping event clusters
-		const overlapClusters = findOverlaps(events);
+        if (events.length === 0) {
+            return [];
+        }
 
-		if (overlapClusters.length === 0) {
-			return [];
-		}
+        // Find overlapping event clusters
+        const overlapClusters = findOverlaps(events);
 
-		console.log('Found overlap clusters:', overlapClusters.length);
+        console.log(`⚠️ Found ${overlapClusters.length} overlap clusters`);
 
-		// Generate AI-powered conflict resolutions
-		const conflicts = await Promise.all(
-			overlapClusters.map(async (cluster) => {
-				// Sort cluster by start time
-				const sortedCluster = [...cluster].sort(
-					(a, b) => a.startTime.getTime() - b.startTime.getTime()
-				);
+        if (overlapClusters.length === 0) {
+            return [];
+        }
 
-				// Find the earliest time in the cluster to use as reference (for relative positioning)
-				const earliestHHMM = Math.min(...sortedCluster.map((e) => dateToHHMM(e.startTime)));
-				const earliestMinutes = hhmmToMinutes(earliestHHMM);
+        // Generate AI-powered conflict resolutions
+        const conflicts = await Promise.all(
+            overlapClusters.map(async (cluster, clusterIdx) => {
+                console.log(`\n🔧 Processing cluster ${clusterIdx + 1}/${overlapClusters.length}...`);
+                
+                // Sort cluster by start time
+                const sortedCluster = [...cluster].sort(
+                    (a, b) => a.startTime.getTime() - b.startTime.getTime()
+                );
 
-				// Convert events to the format expected by frontend
-				const tasks = sortedCluster.map((event, idx) => {
-					const startHHMM = dateToHHMM(event.startTime);
-					const endHHMM = dateToHHMM(event.endTime);
+                // Find the earliest time in the cluster to use as reference (for relative positioning)
+                const earliestHHMM = Math.min(...sortedCluster.map((e) => dateToHHMM(e.startTime)));
+                const earliestMinutes = hhmmToMinutes(earliestHHMM);
 
-					return {
-						id: event.id,
-						title: event.title,
+                // Convert events to the format expected by frontend
+                const tasks = sortedCluster.map((event, idx) => {
+                    const startHHMM = dateToHHMM(event.startTime);
+                    const endHHMM = dateToHHMM(event.endTime);
 
-						// RELATIVE minutes from earliest event (for vertical positioning)
-						start: hhmmToMinutes(startHHMM) - earliestMinutes,
-						end: hhmmToMinutes(endHHMM) - earliestMinutes,
+                    return {
+                        id: event.id,
+                        title: event.title,
 
-						// ABSOLUTE time in HHMM format (for display)
-						displayStart: startHHMM,
-						displayEnd: endHHMM,
+                        // RELATIVE minutes from earliest event (for vertical positioning)
+                        start: hhmmToMinutes(startHHMM) - earliestMinutes,
+                        end: hhmmToMinutes(endHHMM) - earliestMinutes,
 
-						type: idx === 0 ? 'static' : 'conflict'
-					};
-				});
+                        // ABSOLUTE time in HHMM format (for display)
+                        displayStart: startHHMM,
+                        displayEnd: endHHMM,
 
-				// Generate AI-powered proposals
-				const rawProposals = await generateAIProposal(sortedCluster, events);
+                        type: idx === 0 ? 'static' : 'conflict'
+                    };
+                });
 
-				// Convert proposals into UI-friendly format
-				const proposals = rawProposals.map((p) => {
-					const proposalStart = new Date(p.startTime);
-					const proposalEnd = new Date(p.endTime);
-					const startHHMM = dateToHHMM(proposalStart);
-					const endHHMM = dateToHHMM(proposalEnd);
+                // Generate AI-powered proposals
+                const rawProposals = await generateAIProposal(sortedCluster, events);
 
-					return {
-						id: p.id,
-						title: p.title,
+                // Convert proposals into UI-friendly format
+                const proposals = rawProposals.map((p) => {
+                    const proposalStart = new Date(p.startTime);
+                    const proposalEnd = new Date(p.endTime);
 
-						// RELATIVE minutes from earliest event (for vertical positioning)
-						start: hhmmToMinutes(startHHMM) - earliestMinutes,
-						end: hhmmToMinutes(endHHMM) - earliestMinutes,
+                    // Validate dates
+                    if (isNaN(proposalStart.getTime()) || isNaN(proposalEnd.getTime())) {
+                        console.error(`❌ Invalid date for ${p.title}: ${p.startTime} - ${p.endTime}`);
+                        throw new Error(`AI returned invalid date for "${p.title}"`);
+                    }
 
-						// ABSOLUTE time in HHMM format (for display)
-						displayStart: startHHMM,
-						displayEnd: endHHMM,
+                    const startHHMM = dateToHHMM(proposalStart);
+                    const endHHMM = dateToHHMM(proposalEnd);
 
-						// Keep ISO timestamps for database update
-						isoStart: p.startTime,
-						isoEnd: p.endTime,
+                    return {
+                        id: p.id,
+                        title: p.title,
+                        start: hhmmToMinutes(startHHMM) - earliestMinutes,
+                        end: hhmmToMinutes(endHHMM) - earliestMinutes,
+                        displayStart: startHHMM,
+                        displayEnd: endHHMM,
+                        // Store ISO strings for database update
+                        isoStart: p.startTime,
+                        isoEnd: p.endTime,
+                        type: p.id === sortedCluster[0].id ? 'static' : 'conflict',
+                        reasoning: p.reasoning
+                    };
+                });
 
-						type: p.id === sortedCluster[0].id ? 'static' : 'conflict',
-						reasoning: p.reasoning
-					};
-				});
+                // Create analysis message using AI reasoning
+                const aiReasonings = proposals
+                    .filter((p) => p.id !== sortedCluster[0].id)
+                    .map((p) => p.reasoning)
+                    .join('. ');
 
-				// Create analysis message using AI reasoning
-				const aiReasonings = proposals
-					.filter((p) => p.id !== sortedCluster[0].id) // Skip first event
-					.map((p) => p.reasoning)
-					.join('. ');
+                const overlapCount = sortedCluster.length - 1;
+                const analysis =
+                    proposals.length > 1 && proposals[1].reasoning
+                        ? aiReasonings
+                        : `Detected ${overlapCount} event${overlapCount > 1 ? 's' : ''} overlapping with '${sortedCluster[0].title}'. Suggesting optimal rescheduling.`;
 
-				const overlapCount = sortedCluster.length - 1;
-				const analysis =
-					proposals.length > 1 && proposals[1].reasoning
-						? `${aiReasonings}`
-						: `Detected ${overlapCount} event${overlapCount > 1 ? 's' : ''} overlapping with '${sortedCluster[0].title}'. Suggesting optimal rescheduling.`;
+                console.log(`✅ Cluster ${clusterIdx + 1} processed`);
 
-				return {
-					id: generateErrorId(),
-					summary: `${sortedCluster.length} Tasks Collision`,
-					tasks,
-					proposals,
-					analysis
-				};
-			})
-		);
+                return {
+                    id: generateErrorId(),
+                    summary: `${sortedCluster.length} Tasks Collision`,
+                    tasks,
+                    proposals,
+                    analysis
+                };
+            })
+        );
 
-		console.log('Generated conflicts:', conflicts.length);
+        console.log(`\n🎉 Generated ${conflicts.length} conflict resolutions`);
 
-		return conflicts;
-	} catch (error) {
-		console.error('Error in getOverlapFixes:', error);
-		throw error;
-	}
+        return conflicts;
+    } catch (error) {
+        console.error('💥 Error in getOverlapFixes:', error);
+        throw error;
+    }
 }
 
 /**
  * Apply the fix by updating events in the database
  */
 export async function applyOverlapFix(proposals) {
-	try {
-		const updates = await Promise.all(
-			proposals.map((proposal) => {
-				// Use the ISO timestamps we stored in the proposal
-				const startTime = proposal.isoStart
-					? new Date(proposal.isoStart)
-					: new Date(proposal.startTime);
-				const endTime = proposal.isoEnd ? new Date(proposal.isoEnd) : new Date(proposal.endTime);
+    try {
+        console.log(`💾 Applying fixes for ${proposals.length} events...`);
+        
+        const updates = await Promise.all(
+            proposals.map((proposal) => {
+                // Use isoStart/isoEnd if available, fallback to startTime/endTime
+                const startStr = proposal.isoStart || proposal.startTime;
+                const endStr = proposal.isoEnd || proposal.endTime;
 
-				return prisma.event.update({
-					where: { id: proposal.id },
-					data: {
-						startTime,
-						endTime
-					}
-				});
-			})
-		);
+                const startTime = new Date(startStr);
+                const endTime = new Date(endStr);
 
-		return {
-			success: true,
-			updatedEvents: updates
-		};
-	} catch (error) {
-		console.error('Error applying overlap fix:', error);
-		throw error;
-	}
+                // Validate dates
+                if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+                    console.error('❌ Invalid date string received:', { startStr, endStr, proposal });
+                    throw new Error(`Invalid date format for "${proposal.title}": start=${startStr}, end=${endStr}`);
+                }
+
+                console.log(`  ✏️ Updating ${proposal.title}: ${startTime.toISOString()} - ${endTime.toISOString()}`);
+
+                return prisma.event.update({
+                    where: { id: proposal.id },
+                    data: {
+                        startTime,
+                        endTime
+                    }
+                });
+            })
+        );
+
+        console.log('✅ All events updated successfully');
+
+        return { success: true, updatedEvents: updates };
+    } catch (error) {
+        console.error('💥 Error applying overlap fix:', error);
+        throw error;
+    }
 }
