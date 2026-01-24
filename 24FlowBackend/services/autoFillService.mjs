@@ -61,7 +61,6 @@ export const generateAutoFill = async (payload, userId) => {
         5. Return ONLY a JSON array: [{"title": string, "startTime": "ISO String", "endTime": "ISO String", "color": string}]
     `;
 
-	// Updated SDK Call Pattern
 	const response = await ai.models.generateContent({
 		model: 'gemini-3-flash-preview',
 		contents: prompt
