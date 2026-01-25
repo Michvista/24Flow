@@ -17,8 +17,12 @@ app.use(cors({
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
 }));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+
+// app.use(express.json({ limit: '10mb' })); // Adjust size as needed
+// app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+app.use(bodyParser.json({ limit: '10mb' }));
 
 // Initialize passport (configured in passport-config.mjs)
 app.use(passport.initialize());
