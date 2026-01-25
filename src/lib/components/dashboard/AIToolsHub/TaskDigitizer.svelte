@@ -57,9 +57,19 @@
 		currentFile ? (currentFile.file.size / (1024 * 1024)).toFixed(2) + ' MB' : '2.4 MB'
 	);
 	let dimensions = $derived(currentFile ? currentFile.dimensions : '2048x1536');
+let isProcessing = $state(false);
+
+
+	// Helper to convert File to Base64 
+    const toBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onerror = (error) => reject(error);
+    });
 
 	// --- Actions ---
-	const processFile = (file: File) => {
+	const processFile = async(file: File) => {
 		const url = URL.createObjectURL(file);
 		const img = new Image();
 		img.onload = () => {
@@ -71,6 +81,44 @@
 			activeImageIndex = images.length - 1;
 		};
 		img.src = url;
+
+
+		isProcessing = true;
+        try {
+            const base64String = await toBase64(file);
+            
+            const response = await fetch('http://localhost:3000/ai/tool', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    toolType: 'DIGITIZE_OCR',
+                    payload: { 
+                        image: base64String, 
+                        mimeType: file.type 
+                    } 
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                const newTasks = result.data.tasks.map((t: any, i: number) => ({
+                    id: Date.now() + Math.random(), 
+                    text: t.text,
+                    time: t.time || '',
+                    tag: t.tag || '',
+                    checked: true,
+                    lowConfidence: t.lowConfidence || false
+                }));
+                
+                // Append tasks to the existing list
+                tasks = [...tasks, ...newTasks];
+            }
+        } catch (err) {
+            console.error("Auto-OCR Failed", err);
+        } finally {
+            isProcessing = false;
+        }
 	};
 
 	const handleFileUpload = (e: Event) => {
@@ -100,6 +148,35 @@
 				'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=1000',
 			'_blank'
 		);
+
+
+
+    // 2. Function to save the confirmed tasks to the DB
+    const confirmAndSchedule = async () => {
+        const selectedTasks = tasks.filter(t => t.checked);
+        if (selectedTasks.length === 0) return;
+
+        isProcessing = true;
+        try {
+            const response = await fetch('http://localhost:3000/ai/tool', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    toolType: 'BULK_SAVE_EVENTS',
+                    payload: { events: selectedTasks }
+                })
+            });
+
+            if (response.ok) {
+                alert('Successfully scheduled!');
+                tasks = []; // Clear list on success
+            }
+        } catch (err) {
+            console.error("Save failed", err);
+        } finally {
+            isProcessing = false;
+        }
+    };
 </script>
 
 <Navbar />
@@ -339,6 +416,8 @@
 								<span class="text-white font-bold">{selectedCount}</span> tasks selected for import
 							</p>
 							<button
+							onclick={confirmAndSchedule}
+						    disabled={isProcessing || selectedCount === 0}
 								class="w-full sm:w-auto flex items-center justify-center gap-2 px-8 h-12 bg-primary hover:bg-[#1563d3] text-white font-bold uppercase tracking-wider border-2 border-transparent hover:border-white shadow-neo active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all cursor-pointer"
 							>
 								Confirm & Schedule <ArrowRight size={20} />
