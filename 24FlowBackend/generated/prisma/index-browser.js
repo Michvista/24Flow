@@ -149,6 +149,47 @@ exports.Prisma.EventScalarFieldEnum = {
   userId: 'userId'
 };
 
+exports.Prisma.ConflictScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  errorId: 'errorId',
+  summary: 'summary',
+  analysis: 'analysis',
+  status: 'status',
+  detectedAt: 'detectedAt',
+  resolvedAt: 'resolvedAt'
+};
+
+exports.Prisma.ConflictTaskScalarFieldEnum = {
+  id: 'id',
+  conflictId: 'conflictId',
+  eventId: 'eventId',
+  title: 'title',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  displayStart: 'displayStart',
+  displayEnd: 'displayEnd',
+  relativeStart: 'relativeStart',
+  relativeEnd: 'relativeEnd',
+  taskType: 'taskType',
+  priority: 'priority'
+};
+
+exports.Prisma.ConflictProposalScalarFieldEnum = {
+  id: 'id',
+  conflictId: 'conflictId',
+  eventId: 'eventId',
+  title: 'title',
+  proposedStart: 'proposedStart',
+  proposedEnd: 'proposedEnd',
+  displayStart: 'displayStart',
+  displayEnd: 'displayEnd',
+  relativeStart: 'relativeStart',
+  relativeEnd: 'relativeEnd',
+  taskType: 'taskType',
+  reasoning: 'reasoning'
+};
+
 exports.Prisma.TaskScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -218,11 +259,31 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
+exports.ConflictStatus = exports.$Enums.ConflictStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  DECLINED: 'DECLINED',
+  AUTO_RESOLVED: 'AUTO_RESOLVED'
+};
 
+exports.TaskType = exports.$Enums.TaskType = {
+  STATIC: 'STATIC',
+  CONFLICT: 'CONFLICT'
+};
+
+exports.Priority = exports.$Enums.Priority = {
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',
   Event: 'Event',
+  Conflict: 'Conflict',
+  ConflictTask: 'ConflictTask',
+  ConflictProposal: 'ConflictProposal',
   Task: 'Task',
   MoodLog: 'MoodLog',
   SleepLog: 'SleepLog',
