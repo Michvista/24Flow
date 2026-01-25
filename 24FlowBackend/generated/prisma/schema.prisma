@@ -32,7 +32,8 @@ model User {
   behavior    BehaviorSummary?
   preferences Preferences?
 
-  actions AITools[]
+  actions   AITools[]
+  conflicts Conflict[]
 }
 
 model Event {
@@ -55,6 +56,111 @@ model Event {
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Conflict tracking
+  conflictTasks ConflictTask[]
+
+  @@index([userId, startTime])
+  @@index([userId, endTime])
+}
+
+// Represents a detected schedule conflict cluster
+model Conflict {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  errorId  String // Human-readable ID like "#ERR-1234"
+  summary  String // e.g., "3 Tasks Collision"
+  analysis String @db.Text // AI-generated analysis
+
+  status ConflictStatus @default(PENDING)
+
+  // Metadata
+  detectedAt DateTime  @default(now())
+  resolvedAt DateTime?
+
+  // Relations
+  tasks     ConflictTask[]
+  proposals ConflictProposal[]
+
+  @@index([userId, status])
+  @@index([userId, detectedAt])
+}
+
+enum ConflictStatus {
+  PENDING // Not yet resolved
+  ACCEPTED // User accepted AI proposal
+  DECLINED // User declined AI proposal
+  AUTO_RESOLVED // System resolved automatically
+}
+
+// Represents an event involved in a conflict (snapshot)
+model ConflictTask {
+  id         String   @id @default(uuid())
+  conflictId String
+  conflict   Conflict @relation(fields: [conflictId], references: [id], onDelete: Cascade)
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  // Snapshot of event at time of conflict detection
+  title     String
+  startTime DateTime
+  endTime   DateTime
+
+  // Display properties
+  displayStart Int // HHMM format
+  displayEnd   Int // HHMM format
+
+  // Layout properties (minutes from cluster start)
+  relativeStart Int
+  relativeEnd   Int
+
+  taskType TaskType @default(CONFLICT)
+  priority Priority @default(NORMAL)
+
+  @@index([conflictId])
+  @@index([eventId])
+}
+
+enum TaskType {
+  STATIC // First event in cluster (typically kept in place)
+  CONFLICT // Overlapping event that needs rescheduling
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+// Represents AI-proposed resolution for a conflict
+model ConflictProposal {
+  id         String   @id @default(uuid())
+  conflictId String
+  conflict   Conflict @relation(fields: [conflictId], references: [id], onDelete: Cascade)
+
+  eventId String // Which event this proposal is for
+  title   String
+
+  // Proposed times
+  proposedStart DateTime
+  proposedEnd   DateTime
+
+  // Display properties
+  displayStart Int // HHMM format
+  displayEnd   Int // HHMM format
+
+  // Layout properties (minutes from cluster start)
+  relativeStart Int
+  relativeEnd   Int
+
+  taskType  TaskType
+  reasoning String   @db.Text // AI explanation
+
+  @@index([conflictId])
 }
 
 model Task {

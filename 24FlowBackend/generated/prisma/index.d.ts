@@ -24,6 +24,21 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type Event = $Result.DefaultSelection<Prisma.$EventPayload>
 /**
+ * Model Conflict
+ * 
+ */
+export type Conflict = $Result.DefaultSelection<Prisma.$ConflictPayload>
+/**
+ * Model ConflictTask
+ * 
+ */
+export type ConflictTask = $Result.DefaultSelection<Prisma.$ConflictTaskPayload>
+/**
+ * Model ConflictProposal
+ * 
+ */
+export type ConflictProposal = $Result.DefaultSelection<Prisma.$ConflictProposalPayload>
+/**
  * Model Task
  * 
  */
@@ -53,6 +68,51 @@ export type Preferences = $Result.DefaultSelection<Prisma.$PreferencesPayload>
  * 
  */
 export type AITools = $Result.DefaultSelection<Prisma.$AIToolsPayload>
+
+/**
+ * Enums
+ */
+export namespace $Enums {
+  export const ConflictStatus: {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  DECLINED: 'DECLINED',
+  AUTO_RESOLVED: 'AUTO_RESOLVED'
+};
+
+export type ConflictStatus = (typeof ConflictStatus)[keyof typeof ConflictStatus]
+
+
+export const TaskType: {
+  STATIC: 'STATIC',
+  CONFLICT: 'CONFLICT'
+};
+
+export type TaskType = (typeof TaskType)[keyof typeof TaskType]
+
+
+export const Priority: {
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+};
+
+export type Priority = (typeof Priority)[keyof typeof Priority]
+
+}
+
+export type ConflictStatus = $Enums.ConflictStatus
+
+export const ConflictStatus: typeof $Enums.ConflictStatus
+
+export type TaskType = $Enums.TaskType
+
+export const TaskType: typeof $Enums.TaskType
+
+export type Priority = $Enums.Priority
+
+export const Priority: typeof $Enums.Priority
 
 /**
  * ##  Prisma Client ʲˢ
@@ -190,6 +250,36 @@ export class PrismaClient<
     * ```
     */
   get event(): Prisma.EventDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.conflict`: Exposes CRUD operations for the **Conflict** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Conflicts
+    * const conflicts = await prisma.conflict.findMany()
+    * ```
+    */
+  get conflict(): Prisma.ConflictDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.conflictTask`: Exposes CRUD operations for the **ConflictTask** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ConflictTasks
+    * const conflictTasks = await prisma.conflictTask.findMany()
+    * ```
+    */
+  get conflictTask(): Prisma.ConflictTaskDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.conflictProposal`: Exposes CRUD operations for the **ConflictProposal** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ConflictProposals
+    * const conflictProposals = await prisma.conflictProposal.findMany()
+    * ```
+    */
+  get conflictProposal(): Prisma.ConflictProposalDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.task`: Exposes CRUD operations for the **Task** model.
@@ -686,6 +776,9 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Event: 'Event',
+    Conflict: 'Conflict',
+    ConflictTask: 'ConflictTask',
+    ConflictProposal: 'ConflictProposal',
     Task: 'Task',
     MoodLog: 'MoodLog',
     SleepLog: 'SleepLog',
@@ -707,7 +800,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "event" | "task" | "moodLog" | "sleepLog" | "behaviorSummary" | "preferences" | "aITools"
+      modelProps: "user" | "event" | "conflict" | "conflictTask" | "conflictProposal" | "task" | "moodLog" | "sleepLog" | "behaviorSummary" | "preferences" | "aITools"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -856,6 +949,228 @@ export namespace Prisma {
           count: {
             args: Prisma.EventCountArgs<ExtArgs>
             result: $Utils.Optional<EventCountAggregateOutputType> | number
+          }
+        }
+      }
+      Conflict: {
+        payload: Prisma.$ConflictPayload<ExtArgs>
+        fields: Prisma.ConflictFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ConflictFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ConflictFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload>
+          }
+          findFirst: {
+            args: Prisma.ConflictFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ConflictFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload>
+          }
+          findMany: {
+            args: Prisma.ConflictFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload>[]
+          }
+          create: {
+            args: Prisma.ConflictCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload>
+          }
+          createMany: {
+            args: Prisma.ConflictCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ConflictCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload>[]
+          }
+          delete: {
+            args: Prisma.ConflictDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload>
+          }
+          update: {
+            args: Prisma.ConflictUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload>
+          }
+          deleteMany: {
+            args: Prisma.ConflictDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ConflictUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ConflictUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload>[]
+          }
+          upsert: {
+            args: Prisma.ConflictUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictPayload>
+          }
+          aggregate: {
+            args: Prisma.ConflictAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateConflict>
+          }
+          groupBy: {
+            args: Prisma.ConflictGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ConflictGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ConflictCountArgs<ExtArgs>
+            result: $Utils.Optional<ConflictCountAggregateOutputType> | number
+          }
+        }
+      }
+      ConflictTask: {
+        payload: Prisma.$ConflictTaskPayload<ExtArgs>
+        fields: Prisma.ConflictTaskFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ConflictTaskFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ConflictTaskFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload>
+          }
+          findFirst: {
+            args: Prisma.ConflictTaskFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ConflictTaskFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload>
+          }
+          findMany: {
+            args: Prisma.ConflictTaskFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload>[]
+          }
+          create: {
+            args: Prisma.ConflictTaskCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload>
+          }
+          createMany: {
+            args: Prisma.ConflictTaskCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ConflictTaskCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload>[]
+          }
+          delete: {
+            args: Prisma.ConflictTaskDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload>
+          }
+          update: {
+            args: Prisma.ConflictTaskUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload>
+          }
+          deleteMany: {
+            args: Prisma.ConflictTaskDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ConflictTaskUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ConflictTaskUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload>[]
+          }
+          upsert: {
+            args: Prisma.ConflictTaskUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictTaskPayload>
+          }
+          aggregate: {
+            args: Prisma.ConflictTaskAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateConflictTask>
+          }
+          groupBy: {
+            args: Prisma.ConflictTaskGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ConflictTaskGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ConflictTaskCountArgs<ExtArgs>
+            result: $Utils.Optional<ConflictTaskCountAggregateOutputType> | number
+          }
+        }
+      }
+      ConflictProposal: {
+        payload: Prisma.$ConflictProposalPayload<ExtArgs>
+        fields: Prisma.ConflictProposalFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ConflictProposalFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ConflictProposalFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload>
+          }
+          findFirst: {
+            args: Prisma.ConflictProposalFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ConflictProposalFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload>
+          }
+          findMany: {
+            args: Prisma.ConflictProposalFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload>[]
+          }
+          create: {
+            args: Prisma.ConflictProposalCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload>
+          }
+          createMany: {
+            args: Prisma.ConflictProposalCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ConflictProposalCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload>[]
+          }
+          delete: {
+            args: Prisma.ConflictProposalDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload>
+          }
+          update: {
+            args: Prisma.ConflictProposalUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload>
+          }
+          deleteMany: {
+            args: Prisma.ConflictProposalDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ConflictProposalUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ConflictProposalUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload>[]
+          }
+          upsert: {
+            args: Prisma.ConflictProposalUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConflictProposalPayload>
+          }
+          aggregate: {
+            args: Prisma.ConflictProposalAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateConflictProposal>
+          }
+          groupBy: {
+            args: Prisma.ConflictProposalGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ConflictProposalGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ConflictProposalCountArgs<ExtArgs>
+            result: $Utils.Optional<ConflictProposalCountAggregateOutputType> | number
           }
         }
       }
@@ -1413,6 +1728,9 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     event?: EventOmit
+    conflict?: ConflictOmit
+    conflictTask?: ConflictTaskOmit
+    conflictProposal?: ConflictProposalOmit
     task?: TaskOmit
     moodLog?: MoodLogOmit
     sleepLog?: SleepLogOmit
@@ -1503,6 +1821,7 @@ export namespace Prisma {
     tasks: number
     moods: number
     actions: number
+    conflicts: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1510,6 +1829,7 @@ export namespace Prisma {
     tasks?: boolean | UserCountOutputTypeCountTasksArgs
     moods?: boolean | UserCountOutputTypeCountMoodsArgs
     actions?: boolean | UserCountOutputTypeCountActionsArgs
+    conflicts?: boolean | UserCountOutputTypeCountConflictsArgs
   }
 
   // Custom InputTypes
@@ -1549,6 +1869,84 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountActionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AIToolsWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountConflictsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConflictWhereInput
+  }
+
+
+  /**
+   * Count Type EventCountOutputType
+   */
+
+  export type EventCountOutputType = {
+    conflictTasks: number
+  }
+
+  export type EventCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conflictTasks?: boolean | EventCountOutputTypeCountConflictTasksArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * EventCountOutputType without action
+   */
+  export type EventCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventCountOutputType
+     */
+    select?: EventCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * EventCountOutputType without action
+   */
+  export type EventCountOutputTypeCountConflictTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConflictTaskWhereInput
+  }
+
+
+  /**
+   * Count Type ConflictCountOutputType
+   */
+
+  export type ConflictCountOutputType = {
+    tasks: number
+    proposals: number
+  }
+
+  export type ConflictCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tasks?: boolean | ConflictCountOutputTypeCountTasksArgs
+    proposals?: boolean | ConflictCountOutputTypeCountProposalsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ConflictCountOutputType without action
+   */
+  export type ConflictCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictCountOutputType
+     */
+    select?: ConflictCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ConflictCountOutputType without action
+   */
+  export type ConflictCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConflictTaskWhereInput
+  }
+
+  /**
+   * ConflictCountOutputType without action
+   */
+  export type ConflictCountOutputTypeCountProposalsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConflictProposalWhereInput
   }
 
 
@@ -1767,6 +2165,7 @@ export namespace Prisma {
     behavior?: boolean | User$behaviorArgs<ExtArgs>
     preferences?: boolean | User$preferencesArgs<ExtArgs>
     actions?: boolean | User$actionsArgs<ExtArgs>
+    conflicts?: boolean | User$conflictsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1818,6 +2217,7 @@ export namespace Prisma {
     behavior?: boolean | User$behaviorArgs<ExtArgs>
     preferences?: boolean | User$preferencesArgs<ExtArgs>
     actions?: boolean | User$actionsArgs<ExtArgs>
+    conflicts?: boolean | User$conflictsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1833,6 +2233,7 @@ export namespace Prisma {
       behavior: Prisma.$BehaviorSummaryPayload<ExtArgs> | null
       preferences: Prisma.$PreferencesPayload<ExtArgs> | null
       actions: Prisma.$AIToolsPayload<ExtArgs>[]
+      conflicts: Prisma.$ConflictPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2246,6 +2647,7 @@ export namespace Prisma {
     behavior<T extends User$behaviorArgs<ExtArgs> = {}>(args?: Subset<T, User$behaviorArgs<ExtArgs>>): Prisma__BehaviorSummaryClient<$Result.GetResult<Prisma.$BehaviorSummaryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     preferences<T extends User$preferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$preferencesArgs<ExtArgs>>): Prisma__PreferencesClient<$Result.GetResult<Prisma.$PreferencesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     actions<T extends User$actionsArgs<ExtArgs> = {}>(args?: Subset<T, User$actionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    conflicts<T extends User$conflictsArgs<ExtArgs> = {}>(args?: Subset<T, User$conflictsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2826,6 +3228,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.conflicts
+   */
+  export type User$conflictsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+    where?: ConflictWhereInput
+    orderBy?: ConflictOrderByWithRelationInput | ConflictOrderByWithRelationInput[]
+    cursor?: ConflictWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ConflictScalarFieldEnum | ConflictScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3103,6 +3529,8 @@ export namespace Prisma {
     textColor?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    conflictTasks?: boolean | Event$conflictTasksArgs<ExtArgs>
+    _count?: boolean | EventCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["event"]>
 
   export type EventSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3158,6 +3586,8 @@ export namespace Prisma {
   export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "location" | "desc" | "startTime" | "endTime" | "recurringDays" | "createdAt" | "updatedAt" | "color" | "colorName" | "textColor" | "userId", ExtArgs["result"]["event"]>
   export type EventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    conflictTasks?: boolean | Event$conflictTasksArgs<ExtArgs>
+    _count?: boolean | EventCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EventIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3170,6 +3600,7 @@ export namespace Prisma {
     name: "Event"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      conflictTasks: Prisma.$ConflictTaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3580,6 +4011,7 @@ export namespace Prisma {
   export interface Prisma__EventClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    conflictTasks<T extends Event$conflictTasksArgs<ExtArgs> = {}>(args?: Subset<T, Event$conflictTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4018,6 +4450,30 @@ export namespace Prisma {
   }
 
   /**
+   * Event.conflictTasks
+   */
+  export type Event$conflictTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    where?: ConflictTaskWhereInput
+    orderBy?: ConflictTaskOrderByWithRelationInput | ConflictTaskOrderByWithRelationInput[]
+    cursor?: ConflictTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ConflictTaskScalarFieldEnum | ConflictTaskScalarFieldEnum[]
+  }
+
+  /**
    * Event without action
    */
   export type EventDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4033,6 +4489,3559 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: EventInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Conflict
+   */
+
+  export type AggregateConflict = {
+    _count: ConflictCountAggregateOutputType | null
+    _min: ConflictMinAggregateOutputType | null
+    _max: ConflictMaxAggregateOutputType | null
+  }
+
+  export type ConflictMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    errorId: string | null
+    summary: string | null
+    analysis: string | null
+    status: $Enums.ConflictStatus | null
+    detectedAt: Date | null
+    resolvedAt: Date | null
+  }
+
+  export type ConflictMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    errorId: string | null
+    summary: string | null
+    analysis: string | null
+    status: $Enums.ConflictStatus | null
+    detectedAt: Date | null
+    resolvedAt: Date | null
+  }
+
+  export type ConflictCountAggregateOutputType = {
+    id: number
+    userId: number
+    errorId: number
+    summary: number
+    analysis: number
+    status: number
+    detectedAt: number
+    resolvedAt: number
+    _all: number
+  }
+
+
+  export type ConflictMinAggregateInputType = {
+    id?: true
+    userId?: true
+    errorId?: true
+    summary?: true
+    analysis?: true
+    status?: true
+    detectedAt?: true
+    resolvedAt?: true
+  }
+
+  export type ConflictMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    errorId?: true
+    summary?: true
+    analysis?: true
+    status?: true
+    detectedAt?: true
+    resolvedAt?: true
+  }
+
+  export type ConflictCountAggregateInputType = {
+    id?: true
+    userId?: true
+    errorId?: true
+    summary?: true
+    analysis?: true
+    status?: true
+    detectedAt?: true
+    resolvedAt?: true
+    _all?: true
+  }
+
+  export type ConflictAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Conflict to aggregate.
+     */
+    where?: ConflictWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Conflicts to fetch.
+     */
+    orderBy?: ConflictOrderByWithRelationInput | ConflictOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ConflictWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Conflicts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Conflicts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Conflicts
+    **/
+    _count?: true | ConflictCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ConflictMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ConflictMaxAggregateInputType
+  }
+
+  export type GetConflictAggregateType<T extends ConflictAggregateArgs> = {
+        [P in keyof T & keyof AggregateConflict]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateConflict[P]>
+      : GetScalarType<T[P], AggregateConflict[P]>
+  }
+
+
+
+
+  export type ConflictGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConflictWhereInput
+    orderBy?: ConflictOrderByWithAggregationInput | ConflictOrderByWithAggregationInput[]
+    by: ConflictScalarFieldEnum[] | ConflictScalarFieldEnum
+    having?: ConflictScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ConflictCountAggregateInputType | true
+    _min?: ConflictMinAggregateInputType
+    _max?: ConflictMaxAggregateInputType
+  }
+
+  export type ConflictGroupByOutputType = {
+    id: string
+    userId: string
+    errorId: string
+    summary: string
+    analysis: string
+    status: $Enums.ConflictStatus
+    detectedAt: Date
+    resolvedAt: Date | null
+    _count: ConflictCountAggregateOutputType | null
+    _min: ConflictMinAggregateOutputType | null
+    _max: ConflictMaxAggregateOutputType | null
+  }
+
+  type GetConflictGroupByPayload<T extends ConflictGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ConflictGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ConflictGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ConflictGroupByOutputType[P]>
+            : GetScalarType<T[P], ConflictGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ConflictSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    errorId?: boolean
+    summary?: boolean
+    analysis?: boolean
+    status?: boolean
+    detectedAt?: boolean
+    resolvedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    tasks?: boolean | Conflict$tasksArgs<ExtArgs>
+    proposals?: boolean | Conflict$proposalsArgs<ExtArgs>
+    _count?: boolean | ConflictCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["conflict"]>
+
+  export type ConflictSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    errorId?: boolean
+    summary?: boolean
+    analysis?: boolean
+    status?: boolean
+    detectedAt?: boolean
+    resolvedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["conflict"]>
+
+  export type ConflictSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    errorId?: boolean
+    summary?: boolean
+    analysis?: boolean
+    status?: boolean
+    detectedAt?: boolean
+    resolvedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["conflict"]>
+
+  export type ConflictSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    errorId?: boolean
+    summary?: boolean
+    analysis?: boolean
+    status?: boolean
+    detectedAt?: boolean
+    resolvedAt?: boolean
+  }
+
+  export type ConflictOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "errorId" | "summary" | "analysis" | "status" | "detectedAt" | "resolvedAt", ExtArgs["result"]["conflict"]>
+  export type ConflictInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    tasks?: boolean | Conflict$tasksArgs<ExtArgs>
+    proposals?: boolean | Conflict$proposalsArgs<ExtArgs>
+    _count?: boolean | ConflictCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ConflictIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ConflictIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ConflictPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Conflict"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      tasks: Prisma.$ConflictTaskPayload<ExtArgs>[]
+      proposals: Prisma.$ConflictProposalPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      errorId: string
+      summary: string
+      analysis: string
+      status: $Enums.ConflictStatus
+      detectedAt: Date
+      resolvedAt: Date | null
+    }, ExtArgs["result"]["conflict"]>
+    composites: {}
+  }
+
+  type ConflictGetPayload<S extends boolean | null | undefined | ConflictDefaultArgs> = $Result.GetResult<Prisma.$ConflictPayload, S>
+
+  type ConflictCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ConflictFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ConflictCountAggregateInputType | true
+    }
+
+  export interface ConflictDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Conflict'], meta: { name: 'Conflict' } }
+    /**
+     * Find zero or one Conflict that matches the filter.
+     * @param {ConflictFindUniqueArgs} args - Arguments to find a Conflict
+     * @example
+     * // Get one Conflict
+     * const conflict = await prisma.conflict.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ConflictFindUniqueArgs>(args: SelectSubset<T, ConflictFindUniqueArgs<ExtArgs>>): Prisma__ConflictClient<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Conflict that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ConflictFindUniqueOrThrowArgs} args - Arguments to find a Conflict
+     * @example
+     * // Get one Conflict
+     * const conflict = await prisma.conflict.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ConflictFindUniqueOrThrowArgs>(args: SelectSubset<T, ConflictFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ConflictClient<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Conflict that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictFindFirstArgs} args - Arguments to find a Conflict
+     * @example
+     * // Get one Conflict
+     * const conflict = await prisma.conflict.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ConflictFindFirstArgs>(args?: SelectSubset<T, ConflictFindFirstArgs<ExtArgs>>): Prisma__ConflictClient<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Conflict that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictFindFirstOrThrowArgs} args - Arguments to find a Conflict
+     * @example
+     * // Get one Conflict
+     * const conflict = await prisma.conflict.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ConflictFindFirstOrThrowArgs>(args?: SelectSubset<T, ConflictFindFirstOrThrowArgs<ExtArgs>>): Prisma__ConflictClient<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Conflicts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Conflicts
+     * const conflicts = await prisma.conflict.findMany()
+     * 
+     * // Get first 10 Conflicts
+     * const conflicts = await prisma.conflict.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const conflictWithIdOnly = await prisma.conflict.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ConflictFindManyArgs>(args?: SelectSubset<T, ConflictFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Conflict.
+     * @param {ConflictCreateArgs} args - Arguments to create a Conflict.
+     * @example
+     * // Create one Conflict
+     * const Conflict = await prisma.conflict.create({
+     *   data: {
+     *     // ... data to create a Conflict
+     *   }
+     * })
+     * 
+     */
+    create<T extends ConflictCreateArgs>(args: SelectSubset<T, ConflictCreateArgs<ExtArgs>>): Prisma__ConflictClient<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Conflicts.
+     * @param {ConflictCreateManyArgs} args - Arguments to create many Conflicts.
+     * @example
+     * // Create many Conflicts
+     * const conflict = await prisma.conflict.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ConflictCreateManyArgs>(args?: SelectSubset<T, ConflictCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Conflicts and returns the data saved in the database.
+     * @param {ConflictCreateManyAndReturnArgs} args - Arguments to create many Conflicts.
+     * @example
+     * // Create many Conflicts
+     * const conflict = await prisma.conflict.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Conflicts and only return the `id`
+     * const conflictWithIdOnly = await prisma.conflict.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ConflictCreateManyAndReturnArgs>(args?: SelectSubset<T, ConflictCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Conflict.
+     * @param {ConflictDeleteArgs} args - Arguments to delete one Conflict.
+     * @example
+     * // Delete one Conflict
+     * const Conflict = await prisma.conflict.delete({
+     *   where: {
+     *     // ... filter to delete one Conflict
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ConflictDeleteArgs>(args: SelectSubset<T, ConflictDeleteArgs<ExtArgs>>): Prisma__ConflictClient<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Conflict.
+     * @param {ConflictUpdateArgs} args - Arguments to update one Conflict.
+     * @example
+     * // Update one Conflict
+     * const conflict = await prisma.conflict.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ConflictUpdateArgs>(args: SelectSubset<T, ConflictUpdateArgs<ExtArgs>>): Prisma__ConflictClient<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Conflicts.
+     * @param {ConflictDeleteManyArgs} args - Arguments to filter Conflicts to delete.
+     * @example
+     * // Delete a few Conflicts
+     * const { count } = await prisma.conflict.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ConflictDeleteManyArgs>(args?: SelectSubset<T, ConflictDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Conflicts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Conflicts
+     * const conflict = await prisma.conflict.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ConflictUpdateManyArgs>(args: SelectSubset<T, ConflictUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Conflicts and returns the data updated in the database.
+     * @param {ConflictUpdateManyAndReturnArgs} args - Arguments to update many Conflicts.
+     * @example
+     * // Update many Conflicts
+     * const conflict = await prisma.conflict.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Conflicts and only return the `id`
+     * const conflictWithIdOnly = await prisma.conflict.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ConflictUpdateManyAndReturnArgs>(args: SelectSubset<T, ConflictUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Conflict.
+     * @param {ConflictUpsertArgs} args - Arguments to update or create a Conflict.
+     * @example
+     * // Update or create a Conflict
+     * const conflict = await prisma.conflict.upsert({
+     *   create: {
+     *     // ... data to create a Conflict
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Conflict we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ConflictUpsertArgs>(args: SelectSubset<T, ConflictUpsertArgs<ExtArgs>>): Prisma__ConflictClient<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Conflicts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictCountArgs} args - Arguments to filter Conflicts to count.
+     * @example
+     * // Count the number of Conflicts
+     * const count = await prisma.conflict.count({
+     *   where: {
+     *     // ... the filter for the Conflicts we want to count
+     *   }
+     * })
+    **/
+    count<T extends ConflictCountArgs>(
+      args?: Subset<T, ConflictCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ConflictCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Conflict.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ConflictAggregateArgs>(args: Subset<T, ConflictAggregateArgs>): Prisma.PrismaPromise<GetConflictAggregateType<T>>
+
+    /**
+     * Group by Conflict.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ConflictGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ConflictGroupByArgs['orderBy'] }
+        : { orderBy?: ConflictGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ConflictGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetConflictGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Conflict model
+   */
+  readonly fields: ConflictFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Conflict.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ConflictClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    tasks<T extends Conflict$tasksArgs<ExtArgs> = {}>(args?: Subset<T, Conflict$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    proposals<T extends Conflict$proposalsArgs<ExtArgs> = {}>(args?: Subset<T, Conflict$proposalsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Conflict model
+   */
+  interface ConflictFieldRefs {
+    readonly id: FieldRef<"Conflict", 'String'>
+    readonly userId: FieldRef<"Conflict", 'String'>
+    readonly errorId: FieldRef<"Conflict", 'String'>
+    readonly summary: FieldRef<"Conflict", 'String'>
+    readonly analysis: FieldRef<"Conflict", 'String'>
+    readonly status: FieldRef<"Conflict", 'ConflictStatus'>
+    readonly detectedAt: FieldRef<"Conflict", 'DateTime'>
+    readonly resolvedAt: FieldRef<"Conflict", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Conflict findUnique
+   */
+  export type ConflictFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+    /**
+     * Filter, which Conflict to fetch.
+     */
+    where: ConflictWhereUniqueInput
+  }
+
+  /**
+   * Conflict findUniqueOrThrow
+   */
+  export type ConflictFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+    /**
+     * Filter, which Conflict to fetch.
+     */
+    where: ConflictWhereUniqueInput
+  }
+
+  /**
+   * Conflict findFirst
+   */
+  export type ConflictFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+    /**
+     * Filter, which Conflict to fetch.
+     */
+    where?: ConflictWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Conflicts to fetch.
+     */
+    orderBy?: ConflictOrderByWithRelationInput | ConflictOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Conflicts.
+     */
+    cursor?: ConflictWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Conflicts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Conflicts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Conflicts.
+     */
+    distinct?: ConflictScalarFieldEnum | ConflictScalarFieldEnum[]
+  }
+
+  /**
+   * Conflict findFirstOrThrow
+   */
+  export type ConflictFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+    /**
+     * Filter, which Conflict to fetch.
+     */
+    where?: ConflictWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Conflicts to fetch.
+     */
+    orderBy?: ConflictOrderByWithRelationInput | ConflictOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Conflicts.
+     */
+    cursor?: ConflictWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Conflicts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Conflicts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Conflicts.
+     */
+    distinct?: ConflictScalarFieldEnum | ConflictScalarFieldEnum[]
+  }
+
+  /**
+   * Conflict findMany
+   */
+  export type ConflictFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+    /**
+     * Filter, which Conflicts to fetch.
+     */
+    where?: ConflictWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Conflicts to fetch.
+     */
+    orderBy?: ConflictOrderByWithRelationInput | ConflictOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Conflicts.
+     */
+    cursor?: ConflictWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Conflicts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Conflicts.
+     */
+    skip?: number
+    distinct?: ConflictScalarFieldEnum | ConflictScalarFieldEnum[]
+  }
+
+  /**
+   * Conflict create
+   */
+  export type ConflictCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Conflict.
+     */
+    data: XOR<ConflictCreateInput, ConflictUncheckedCreateInput>
+  }
+
+  /**
+   * Conflict createMany
+   */
+  export type ConflictCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Conflicts.
+     */
+    data: ConflictCreateManyInput | ConflictCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Conflict createManyAndReturn
+   */
+  export type ConflictCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * The data used to create many Conflicts.
+     */
+    data: ConflictCreateManyInput | ConflictCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Conflict update
+   */
+  export type ConflictUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Conflict.
+     */
+    data: XOR<ConflictUpdateInput, ConflictUncheckedUpdateInput>
+    /**
+     * Choose, which Conflict to update.
+     */
+    where: ConflictWhereUniqueInput
+  }
+
+  /**
+   * Conflict updateMany
+   */
+  export type ConflictUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Conflicts.
+     */
+    data: XOR<ConflictUpdateManyMutationInput, ConflictUncheckedUpdateManyInput>
+    /**
+     * Filter which Conflicts to update
+     */
+    where?: ConflictWhereInput
+    /**
+     * Limit how many Conflicts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Conflict updateManyAndReturn
+   */
+  export type ConflictUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * The data used to update Conflicts.
+     */
+    data: XOR<ConflictUpdateManyMutationInput, ConflictUncheckedUpdateManyInput>
+    /**
+     * Filter which Conflicts to update
+     */
+    where?: ConflictWhereInput
+    /**
+     * Limit how many Conflicts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Conflict upsert
+   */
+  export type ConflictUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Conflict to update in case it exists.
+     */
+    where: ConflictWhereUniqueInput
+    /**
+     * In case the Conflict found by the `where` argument doesn't exist, create a new Conflict with this data.
+     */
+    create: XOR<ConflictCreateInput, ConflictUncheckedCreateInput>
+    /**
+     * In case the Conflict was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ConflictUpdateInput, ConflictUncheckedUpdateInput>
+  }
+
+  /**
+   * Conflict delete
+   */
+  export type ConflictDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+    /**
+     * Filter which Conflict to delete.
+     */
+    where: ConflictWhereUniqueInput
+  }
+
+  /**
+   * Conflict deleteMany
+   */
+  export type ConflictDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Conflicts to delete
+     */
+    where?: ConflictWhereInput
+    /**
+     * Limit how many Conflicts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Conflict.tasks
+   */
+  export type Conflict$tasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    where?: ConflictTaskWhereInput
+    orderBy?: ConflictTaskOrderByWithRelationInput | ConflictTaskOrderByWithRelationInput[]
+    cursor?: ConflictTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ConflictTaskScalarFieldEnum | ConflictTaskScalarFieldEnum[]
+  }
+
+  /**
+   * Conflict.proposals
+   */
+  export type Conflict$proposalsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
+    where?: ConflictProposalWhereInput
+    orderBy?: ConflictProposalOrderByWithRelationInput | ConflictProposalOrderByWithRelationInput[]
+    cursor?: ConflictProposalWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ConflictProposalScalarFieldEnum | ConflictProposalScalarFieldEnum[]
+  }
+
+  /**
+   * Conflict without action
+   */
+  export type ConflictDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conflict
+     */
+    select?: ConflictSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conflict
+     */
+    omit?: ConflictOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ConflictTask
+   */
+
+  export type AggregateConflictTask = {
+    _count: ConflictTaskCountAggregateOutputType | null
+    _avg: ConflictTaskAvgAggregateOutputType | null
+    _sum: ConflictTaskSumAggregateOutputType | null
+    _min: ConflictTaskMinAggregateOutputType | null
+    _max: ConflictTaskMaxAggregateOutputType | null
+  }
+
+  export type ConflictTaskAvgAggregateOutputType = {
+    displayStart: number | null
+    displayEnd: number | null
+    relativeStart: number | null
+    relativeEnd: number | null
+  }
+
+  export type ConflictTaskSumAggregateOutputType = {
+    displayStart: number | null
+    displayEnd: number | null
+    relativeStart: number | null
+    relativeEnd: number | null
+  }
+
+  export type ConflictTaskMinAggregateOutputType = {
+    id: string | null
+    conflictId: string | null
+    eventId: string | null
+    title: string | null
+    startTime: Date | null
+    endTime: Date | null
+    displayStart: number | null
+    displayEnd: number | null
+    relativeStart: number | null
+    relativeEnd: number | null
+    taskType: $Enums.TaskType | null
+    priority: $Enums.Priority | null
+  }
+
+  export type ConflictTaskMaxAggregateOutputType = {
+    id: string | null
+    conflictId: string | null
+    eventId: string | null
+    title: string | null
+    startTime: Date | null
+    endTime: Date | null
+    displayStart: number | null
+    displayEnd: number | null
+    relativeStart: number | null
+    relativeEnd: number | null
+    taskType: $Enums.TaskType | null
+    priority: $Enums.Priority | null
+  }
+
+  export type ConflictTaskCountAggregateOutputType = {
+    id: number
+    conflictId: number
+    eventId: number
+    title: number
+    startTime: number
+    endTime: number
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType: number
+    priority: number
+    _all: number
+  }
+
+
+  export type ConflictTaskAvgAggregateInputType = {
+    displayStart?: true
+    displayEnd?: true
+    relativeStart?: true
+    relativeEnd?: true
+  }
+
+  export type ConflictTaskSumAggregateInputType = {
+    displayStart?: true
+    displayEnd?: true
+    relativeStart?: true
+    relativeEnd?: true
+  }
+
+  export type ConflictTaskMinAggregateInputType = {
+    id?: true
+    conflictId?: true
+    eventId?: true
+    title?: true
+    startTime?: true
+    endTime?: true
+    displayStart?: true
+    displayEnd?: true
+    relativeStart?: true
+    relativeEnd?: true
+    taskType?: true
+    priority?: true
+  }
+
+  export type ConflictTaskMaxAggregateInputType = {
+    id?: true
+    conflictId?: true
+    eventId?: true
+    title?: true
+    startTime?: true
+    endTime?: true
+    displayStart?: true
+    displayEnd?: true
+    relativeStart?: true
+    relativeEnd?: true
+    taskType?: true
+    priority?: true
+  }
+
+  export type ConflictTaskCountAggregateInputType = {
+    id?: true
+    conflictId?: true
+    eventId?: true
+    title?: true
+    startTime?: true
+    endTime?: true
+    displayStart?: true
+    displayEnd?: true
+    relativeStart?: true
+    relativeEnd?: true
+    taskType?: true
+    priority?: true
+    _all?: true
+  }
+
+  export type ConflictTaskAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ConflictTask to aggregate.
+     */
+    where?: ConflictTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConflictTasks to fetch.
+     */
+    orderBy?: ConflictTaskOrderByWithRelationInput | ConflictTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ConflictTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConflictTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConflictTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ConflictTasks
+    **/
+    _count?: true | ConflictTaskCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ConflictTaskAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ConflictTaskSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ConflictTaskMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ConflictTaskMaxAggregateInputType
+  }
+
+  export type GetConflictTaskAggregateType<T extends ConflictTaskAggregateArgs> = {
+        [P in keyof T & keyof AggregateConflictTask]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateConflictTask[P]>
+      : GetScalarType<T[P], AggregateConflictTask[P]>
+  }
+
+
+
+
+  export type ConflictTaskGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConflictTaskWhereInput
+    orderBy?: ConflictTaskOrderByWithAggregationInput | ConflictTaskOrderByWithAggregationInput[]
+    by: ConflictTaskScalarFieldEnum[] | ConflictTaskScalarFieldEnum
+    having?: ConflictTaskScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ConflictTaskCountAggregateInputType | true
+    _avg?: ConflictTaskAvgAggregateInputType
+    _sum?: ConflictTaskSumAggregateInputType
+    _min?: ConflictTaskMinAggregateInputType
+    _max?: ConflictTaskMaxAggregateInputType
+  }
+
+  export type ConflictTaskGroupByOutputType = {
+    id: string
+    conflictId: string
+    eventId: string
+    title: string
+    startTime: Date
+    endTime: Date
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType: $Enums.TaskType
+    priority: $Enums.Priority
+    _count: ConflictTaskCountAggregateOutputType | null
+    _avg: ConflictTaskAvgAggregateOutputType | null
+    _sum: ConflictTaskSumAggregateOutputType | null
+    _min: ConflictTaskMinAggregateOutputType | null
+    _max: ConflictTaskMaxAggregateOutputType | null
+  }
+
+  type GetConflictTaskGroupByPayload<T extends ConflictTaskGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ConflictTaskGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ConflictTaskGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ConflictTaskGroupByOutputType[P]>
+            : GetScalarType<T[P], ConflictTaskGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ConflictTaskSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conflictId?: boolean
+    eventId?: boolean
+    title?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    displayStart?: boolean
+    displayEnd?: boolean
+    relativeStart?: boolean
+    relativeEnd?: boolean
+    taskType?: boolean
+    priority?: boolean
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["conflictTask"]>
+
+  export type ConflictTaskSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conflictId?: boolean
+    eventId?: boolean
+    title?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    displayStart?: boolean
+    displayEnd?: boolean
+    relativeStart?: boolean
+    relativeEnd?: boolean
+    taskType?: boolean
+    priority?: boolean
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["conflictTask"]>
+
+  export type ConflictTaskSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conflictId?: boolean
+    eventId?: boolean
+    title?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    displayStart?: boolean
+    displayEnd?: boolean
+    relativeStart?: boolean
+    relativeEnd?: boolean
+    taskType?: boolean
+    priority?: boolean
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["conflictTask"]>
+
+  export type ConflictTaskSelectScalar = {
+    id?: boolean
+    conflictId?: boolean
+    eventId?: boolean
+    title?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    displayStart?: boolean
+    displayEnd?: boolean
+    relativeStart?: boolean
+    relativeEnd?: boolean
+    taskType?: boolean
+    priority?: boolean
+  }
+
+  export type ConflictTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conflictId" | "eventId" | "title" | "startTime" | "endTime" | "displayStart" | "displayEnd" | "relativeStart" | "relativeEnd" | "taskType" | "priority", ExtArgs["result"]["conflictTask"]>
+  export type ConflictTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }
+  export type ConflictTaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }
+  export type ConflictTaskIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+    event?: boolean | EventDefaultArgs<ExtArgs>
+  }
+
+  export type $ConflictTaskPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ConflictTask"
+    objects: {
+      conflict: Prisma.$ConflictPayload<ExtArgs>
+      event: Prisma.$EventPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      conflictId: string
+      eventId: string
+      title: string
+      startTime: Date
+      endTime: Date
+      displayStart: number
+      displayEnd: number
+      relativeStart: number
+      relativeEnd: number
+      taskType: $Enums.TaskType
+      priority: $Enums.Priority
+    }, ExtArgs["result"]["conflictTask"]>
+    composites: {}
+  }
+
+  type ConflictTaskGetPayload<S extends boolean | null | undefined | ConflictTaskDefaultArgs> = $Result.GetResult<Prisma.$ConflictTaskPayload, S>
+
+  type ConflictTaskCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ConflictTaskFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ConflictTaskCountAggregateInputType | true
+    }
+
+  export interface ConflictTaskDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ConflictTask'], meta: { name: 'ConflictTask' } }
+    /**
+     * Find zero or one ConflictTask that matches the filter.
+     * @param {ConflictTaskFindUniqueArgs} args - Arguments to find a ConflictTask
+     * @example
+     * // Get one ConflictTask
+     * const conflictTask = await prisma.conflictTask.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ConflictTaskFindUniqueArgs>(args: SelectSubset<T, ConflictTaskFindUniqueArgs<ExtArgs>>): Prisma__ConflictTaskClient<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ConflictTask that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ConflictTaskFindUniqueOrThrowArgs} args - Arguments to find a ConflictTask
+     * @example
+     * // Get one ConflictTask
+     * const conflictTask = await prisma.conflictTask.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ConflictTaskFindUniqueOrThrowArgs>(args: SelectSubset<T, ConflictTaskFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ConflictTaskClient<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ConflictTask that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictTaskFindFirstArgs} args - Arguments to find a ConflictTask
+     * @example
+     * // Get one ConflictTask
+     * const conflictTask = await prisma.conflictTask.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ConflictTaskFindFirstArgs>(args?: SelectSubset<T, ConflictTaskFindFirstArgs<ExtArgs>>): Prisma__ConflictTaskClient<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ConflictTask that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictTaskFindFirstOrThrowArgs} args - Arguments to find a ConflictTask
+     * @example
+     * // Get one ConflictTask
+     * const conflictTask = await prisma.conflictTask.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ConflictTaskFindFirstOrThrowArgs>(args?: SelectSubset<T, ConflictTaskFindFirstOrThrowArgs<ExtArgs>>): Prisma__ConflictTaskClient<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ConflictTasks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictTaskFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ConflictTasks
+     * const conflictTasks = await prisma.conflictTask.findMany()
+     * 
+     * // Get first 10 ConflictTasks
+     * const conflictTasks = await prisma.conflictTask.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const conflictTaskWithIdOnly = await prisma.conflictTask.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ConflictTaskFindManyArgs>(args?: SelectSubset<T, ConflictTaskFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ConflictTask.
+     * @param {ConflictTaskCreateArgs} args - Arguments to create a ConflictTask.
+     * @example
+     * // Create one ConflictTask
+     * const ConflictTask = await prisma.conflictTask.create({
+     *   data: {
+     *     // ... data to create a ConflictTask
+     *   }
+     * })
+     * 
+     */
+    create<T extends ConflictTaskCreateArgs>(args: SelectSubset<T, ConflictTaskCreateArgs<ExtArgs>>): Prisma__ConflictTaskClient<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ConflictTasks.
+     * @param {ConflictTaskCreateManyArgs} args - Arguments to create many ConflictTasks.
+     * @example
+     * // Create many ConflictTasks
+     * const conflictTask = await prisma.conflictTask.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ConflictTaskCreateManyArgs>(args?: SelectSubset<T, ConflictTaskCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ConflictTasks and returns the data saved in the database.
+     * @param {ConflictTaskCreateManyAndReturnArgs} args - Arguments to create many ConflictTasks.
+     * @example
+     * // Create many ConflictTasks
+     * const conflictTask = await prisma.conflictTask.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ConflictTasks and only return the `id`
+     * const conflictTaskWithIdOnly = await prisma.conflictTask.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ConflictTaskCreateManyAndReturnArgs>(args?: SelectSubset<T, ConflictTaskCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ConflictTask.
+     * @param {ConflictTaskDeleteArgs} args - Arguments to delete one ConflictTask.
+     * @example
+     * // Delete one ConflictTask
+     * const ConflictTask = await prisma.conflictTask.delete({
+     *   where: {
+     *     // ... filter to delete one ConflictTask
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ConflictTaskDeleteArgs>(args: SelectSubset<T, ConflictTaskDeleteArgs<ExtArgs>>): Prisma__ConflictTaskClient<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ConflictTask.
+     * @param {ConflictTaskUpdateArgs} args - Arguments to update one ConflictTask.
+     * @example
+     * // Update one ConflictTask
+     * const conflictTask = await prisma.conflictTask.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ConflictTaskUpdateArgs>(args: SelectSubset<T, ConflictTaskUpdateArgs<ExtArgs>>): Prisma__ConflictTaskClient<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ConflictTasks.
+     * @param {ConflictTaskDeleteManyArgs} args - Arguments to filter ConflictTasks to delete.
+     * @example
+     * // Delete a few ConflictTasks
+     * const { count } = await prisma.conflictTask.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ConflictTaskDeleteManyArgs>(args?: SelectSubset<T, ConflictTaskDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ConflictTasks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictTaskUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ConflictTasks
+     * const conflictTask = await prisma.conflictTask.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ConflictTaskUpdateManyArgs>(args: SelectSubset<T, ConflictTaskUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ConflictTasks and returns the data updated in the database.
+     * @param {ConflictTaskUpdateManyAndReturnArgs} args - Arguments to update many ConflictTasks.
+     * @example
+     * // Update many ConflictTasks
+     * const conflictTask = await prisma.conflictTask.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ConflictTasks and only return the `id`
+     * const conflictTaskWithIdOnly = await prisma.conflictTask.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ConflictTaskUpdateManyAndReturnArgs>(args: SelectSubset<T, ConflictTaskUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ConflictTask.
+     * @param {ConflictTaskUpsertArgs} args - Arguments to update or create a ConflictTask.
+     * @example
+     * // Update or create a ConflictTask
+     * const conflictTask = await prisma.conflictTask.upsert({
+     *   create: {
+     *     // ... data to create a ConflictTask
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ConflictTask we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ConflictTaskUpsertArgs>(args: SelectSubset<T, ConflictTaskUpsertArgs<ExtArgs>>): Prisma__ConflictTaskClient<$Result.GetResult<Prisma.$ConflictTaskPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ConflictTasks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictTaskCountArgs} args - Arguments to filter ConflictTasks to count.
+     * @example
+     * // Count the number of ConflictTasks
+     * const count = await prisma.conflictTask.count({
+     *   where: {
+     *     // ... the filter for the ConflictTasks we want to count
+     *   }
+     * })
+    **/
+    count<T extends ConflictTaskCountArgs>(
+      args?: Subset<T, ConflictTaskCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ConflictTaskCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ConflictTask.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictTaskAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ConflictTaskAggregateArgs>(args: Subset<T, ConflictTaskAggregateArgs>): Prisma.PrismaPromise<GetConflictTaskAggregateType<T>>
+
+    /**
+     * Group by ConflictTask.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictTaskGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ConflictTaskGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ConflictTaskGroupByArgs['orderBy'] }
+        : { orderBy?: ConflictTaskGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ConflictTaskGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetConflictTaskGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ConflictTask model
+   */
+  readonly fields: ConflictTaskFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ConflictTask.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ConflictTaskClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    conflict<T extends ConflictDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ConflictDefaultArgs<ExtArgs>>): Prisma__ConflictClient<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    event<T extends EventDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EventDefaultArgs<ExtArgs>>): Prisma__EventClient<$Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ConflictTask model
+   */
+  interface ConflictTaskFieldRefs {
+    readonly id: FieldRef<"ConflictTask", 'String'>
+    readonly conflictId: FieldRef<"ConflictTask", 'String'>
+    readonly eventId: FieldRef<"ConflictTask", 'String'>
+    readonly title: FieldRef<"ConflictTask", 'String'>
+    readonly startTime: FieldRef<"ConflictTask", 'DateTime'>
+    readonly endTime: FieldRef<"ConflictTask", 'DateTime'>
+    readonly displayStart: FieldRef<"ConflictTask", 'Int'>
+    readonly displayEnd: FieldRef<"ConflictTask", 'Int'>
+    readonly relativeStart: FieldRef<"ConflictTask", 'Int'>
+    readonly relativeEnd: FieldRef<"ConflictTask", 'Int'>
+    readonly taskType: FieldRef<"ConflictTask", 'TaskType'>
+    readonly priority: FieldRef<"ConflictTask", 'Priority'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ConflictTask findUnique
+   */
+  export type ConflictTaskFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which ConflictTask to fetch.
+     */
+    where: ConflictTaskWhereUniqueInput
+  }
+
+  /**
+   * ConflictTask findUniqueOrThrow
+   */
+  export type ConflictTaskFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which ConflictTask to fetch.
+     */
+    where: ConflictTaskWhereUniqueInput
+  }
+
+  /**
+   * ConflictTask findFirst
+   */
+  export type ConflictTaskFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which ConflictTask to fetch.
+     */
+    where?: ConflictTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConflictTasks to fetch.
+     */
+    orderBy?: ConflictTaskOrderByWithRelationInput | ConflictTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ConflictTasks.
+     */
+    cursor?: ConflictTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConflictTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConflictTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConflictTasks.
+     */
+    distinct?: ConflictTaskScalarFieldEnum | ConflictTaskScalarFieldEnum[]
+  }
+
+  /**
+   * ConflictTask findFirstOrThrow
+   */
+  export type ConflictTaskFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which ConflictTask to fetch.
+     */
+    where?: ConflictTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConflictTasks to fetch.
+     */
+    orderBy?: ConflictTaskOrderByWithRelationInput | ConflictTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ConflictTasks.
+     */
+    cursor?: ConflictTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConflictTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConflictTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConflictTasks.
+     */
+    distinct?: ConflictTaskScalarFieldEnum | ConflictTaskScalarFieldEnum[]
+  }
+
+  /**
+   * ConflictTask findMany
+   */
+  export type ConflictTaskFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which ConflictTasks to fetch.
+     */
+    where?: ConflictTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConflictTasks to fetch.
+     */
+    orderBy?: ConflictTaskOrderByWithRelationInput | ConflictTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ConflictTasks.
+     */
+    cursor?: ConflictTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConflictTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConflictTasks.
+     */
+    skip?: number
+    distinct?: ConflictTaskScalarFieldEnum | ConflictTaskScalarFieldEnum[]
+  }
+
+  /**
+   * ConflictTask create
+   */
+  export type ConflictTaskCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ConflictTask.
+     */
+    data: XOR<ConflictTaskCreateInput, ConflictTaskUncheckedCreateInput>
+  }
+
+  /**
+   * ConflictTask createMany
+   */
+  export type ConflictTaskCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ConflictTasks.
+     */
+    data: ConflictTaskCreateManyInput | ConflictTaskCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ConflictTask createManyAndReturn
+   */
+  export type ConflictTaskCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * The data used to create many ConflictTasks.
+     */
+    data: ConflictTaskCreateManyInput | ConflictTaskCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ConflictTask update
+   */
+  export type ConflictTaskUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ConflictTask.
+     */
+    data: XOR<ConflictTaskUpdateInput, ConflictTaskUncheckedUpdateInput>
+    /**
+     * Choose, which ConflictTask to update.
+     */
+    where: ConflictTaskWhereUniqueInput
+  }
+
+  /**
+   * ConflictTask updateMany
+   */
+  export type ConflictTaskUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ConflictTasks.
+     */
+    data: XOR<ConflictTaskUpdateManyMutationInput, ConflictTaskUncheckedUpdateManyInput>
+    /**
+     * Filter which ConflictTasks to update
+     */
+    where?: ConflictTaskWhereInput
+    /**
+     * Limit how many ConflictTasks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConflictTask updateManyAndReturn
+   */
+  export type ConflictTaskUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * The data used to update ConflictTasks.
+     */
+    data: XOR<ConflictTaskUpdateManyMutationInput, ConflictTaskUncheckedUpdateManyInput>
+    /**
+     * Filter which ConflictTasks to update
+     */
+    where?: ConflictTaskWhereInput
+    /**
+     * Limit how many ConflictTasks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ConflictTask upsert
+   */
+  export type ConflictTaskUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ConflictTask to update in case it exists.
+     */
+    where: ConflictTaskWhereUniqueInput
+    /**
+     * In case the ConflictTask found by the `where` argument doesn't exist, create a new ConflictTask with this data.
+     */
+    create: XOR<ConflictTaskCreateInput, ConflictTaskUncheckedCreateInput>
+    /**
+     * In case the ConflictTask was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ConflictTaskUpdateInput, ConflictTaskUncheckedUpdateInput>
+  }
+
+  /**
+   * ConflictTask delete
+   */
+  export type ConflictTaskDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+    /**
+     * Filter which ConflictTask to delete.
+     */
+    where: ConflictTaskWhereUniqueInput
+  }
+
+  /**
+   * ConflictTask deleteMany
+   */
+  export type ConflictTaskDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ConflictTasks to delete
+     */
+    where?: ConflictTaskWhereInput
+    /**
+     * Limit how many ConflictTasks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConflictTask without action
+   */
+  export type ConflictTaskDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictTask
+     */
+    select?: ConflictTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictTask
+     */
+    omit?: ConflictTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictTaskInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ConflictProposal
+   */
+
+  export type AggregateConflictProposal = {
+    _count: ConflictProposalCountAggregateOutputType | null
+    _avg: ConflictProposalAvgAggregateOutputType | null
+    _sum: ConflictProposalSumAggregateOutputType | null
+    _min: ConflictProposalMinAggregateOutputType | null
+    _max: ConflictProposalMaxAggregateOutputType | null
+  }
+
+  export type ConflictProposalAvgAggregateOutputType = {
+    displayStart: number | null
+    displayEnd: number | null
+    relativeStart: number | null
+    relativeEnd: number | null
+  }
+
+  export type ConflictProposalSumAggregateOutputType = {
+    displayStart: number | null
+    displayEnd: number | null
+    relativeStart: number | null
+    relativeEnd: number | null
+  }
+
+  export type ConflictProposalMinAggregateOutputType = {
+    id: string | null
+    conflictId: string | null
+    eventId: string | null
+    title: string | null
+    proposedStart: Date | null
+    proposedEnd: Date | null
+    displayStart: number | null
+    displayEnd: number | null
+    relativeStart: number | null
+    relativeEnd: number | null
+    taskType: $Enums.TaskType | null
+    reasoning: string | null
+  }
+
+  export type ConflictProposalMaxAggregateOutputType = {
+    id: string | null
+    conflictId: string | null
+    eventId: string | null
+    title: string | null
+    proposedStart: Date | null
+    proposedEnd: Date | null
+    displayStart: number | null
+    displayEnd: number | null
+    relativeStart: number | null
+    relativeEnd: number | null
+    taskType: $Enums.TaskType | null
+    reasoning: string | null
+  }
+
+  export type ConflictProposalCountAggregateOutputType = {
+    id: number
+    conflictId: number
+    eventId: number
+    title: number
+    proposedStart: number
+    proposedEnd: number
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType: number
+    reasoning: number
+    _all: number
+  }
+
+
+  export type ConflictProposalAvgAggregateInputType = {
+    displayStart?: true
+    displayEnd?: true
+    relativeStart?: true
+    relativeEnd?: true
+  }
+
+  export type ConflictProposalSumAggregateInputType = {
+    displayStart?: true
+    displayEnd?: true
+    relativeStart?: true
+    relativeEnd?: true
+  }
+
+  export type ConflictProposalMinAggregateInputType = {
+    id?: true
+    conflictId?: true
+    eventId?: true
+    title?: true
+    proposedStart?: true
+    proposedEnd?: true
+    displayStart?: true
+    displayEnd?: true
+    relativeStart?: true
+    relativeEnd?: true
+    taskType?: true
+    reasoning?: true
+  }
+
+  export type ConflictProposalMaxAggregateInputType = {
+    id?: true
+    conflictId?: true
+    eventId?: true
+    title?: true
+    proposedStart?: true
+    proposedEnd?: true
+    displayStart?: true
+    displayEnd?: true
+    relativeStart?: true
+    relativeEnd?: true
+    taskType?: true
+    reasoning?: true
+  }
+
+  export type ConflictProposalCountAggregateInputType = {
+    id?: true
+    conflictId?: true
+    eventId?: true
+    title?: true
+    proposedStart?: true
+    proposedEnd?: true
+    displayStart?: true
+    displayEnd?: true
+    relativeStart?: true
+    relativeEnd?: true
+    taskType?: true
+    reasoning?: true
+    _all?: true
+  }
+
+  export type ConflictProposalAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ConflictProposal to aggregate.
+     */
+    where?: ConflictProposalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConflictProposals to fetch.
+     */
+    orderBy?: ConflictProposalOrderByWithRelationInput | ConflictProposalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ConflictProposalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConflictProposals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConflictProposals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ConflictProposals
+    **/
+    _count?: true | ConflictProposalCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ConflictProposalAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ConflictProposalSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ConflictProposalMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ConflictProposalMaxAggregateInputType
+  }
+
+  export type GetConflictProposalAggregateType<T extends ConflictProposalAggregateArgs> = {
+        [P in keyof T & keyof AggregateConflictProposal]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateConflictProposal[P]>
+      : GetScalarType<T[P], AggregateConflictProposal[P]>
+  }
+
+
+
+
+  export type ConflictProposalGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConflictProposalWhereInput
+    orderBy?: ConflictProposalOrderByWithAggregationInput | ConflictProposalOrderByWithAggregationInput[]
+    by: ConflictProposalScalarFieldEnum[] | ConflictProposalScalarFieldEnum
+    having?: ConflictProposalScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ConflictProposalCountAggregateInputType | true
+    _avg?: ConflictProposalAvgAggregateInputType
+    _sum?: ConflictProposalSumAggregateInputType
+    _min?: ConflictProposalMinAggregateInputType
+    _max?: ConflictProposalMaxAggregateInputType
+  }
+
+  export type ConflictProposalGroupByOutputType = {
+    id: string
+    conflictId: string
+    eventId: string
+    title: string
+    proposedStart: Date
+    proposedEnd: Date
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType: $Enums.TaskType
+    reasoning: string
+    _count: ConflictProposalCountAggregateOutputType | null
+    _avg: ConflictProposalAvgAggregateOutputType | null
+    _sum: ConflictProposalSumAggregateOutputType | null
+    _min: ConflictProposalMinAggregateOutputType | null
+    _max: ConflictProposalMaxAggregateOutputType | null
+  }
+
+  type GetConflictProposalGroupByPayload<T extends ConflictProposalGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ConflictProposalGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ConflictProposalGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ConflictProposalGroupByOutputType[P]>
+            : GetScalarType<T[P], ConflictProposalGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ConflictProposalSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conflictId?: boolean
+    eventId?: boolean
+    title?: boolean
+    proposedStart?: boolean
+    proposedEnd?: boolean
+    displayStart?: boolean
+    displayEnd?: boolean
+    relativeStart?: boolean
+    relativeEnd?: boolean
+    taskType?: boolean
+    reasoning?: boolean
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["conflictProposal"]>
+
+  export type ConflictProposalSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conflictId?: boolean
+    eventId?: boolean
+    title?: boolean
+    proposedStart?: boolean
+    proposedEnd?: boolean
+    displayStart?: boolean
+    displayEnd?: boolean
+    relativeStart?: boolean
+    relativeEnd?: boolean
+    taskType?: boolean
+    reasoning?: boolean
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["conflictProposal"]>
+
+  export type ConflictProposalSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conflictId?: boolean
+    eventId?: boolean
+    title?: boolean
+    proposedStart?: boolean
+    proposedEnd?: boolean
+    displayStart?: boolean
+    displayEnd?: boolean
+    relativeStart?: boolean
+    relativeEnd?: boolean
+    taskType?: boolean
+    reasoning?: boolean
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["conflictProposal"]>
+
+  export type ConflictProposalSelectScalar = {
+    id?: boolean
+    conflictId?: boolean
+    eventId?: boolean
+    title?: boolean
+    proposedStart?: boolean
+    proposedEnd?: boolean
+    displayStart?: boolean
+    displayEnd?: boolean
+    relativeStart?: boolean
+    relativeEnd?: boolean
+    taskType?: boolean
+    reasoning?: boolean
+  }
+
+  export type ConflictProposalOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conflictId" | "eventId" | "title" | "proposedStart" | "proposedEnd" | "displayStart" | "displayEnd" | "relativeStart" | "relativeEnd" | "taskType" | "reasoning", ExtArgs["result"]["conflictProposal"]>
+  export type ConflictProposalInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+  }
+  export type ConflictProposalIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+  }
+  export type ConflictProposalIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conflict?: boolean | ConflictDefaultArgs<ExtArgs>
+  }
+
+  export type $ConflictProposalPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ConflictProposal"
+    objects: {
+      conflict: Prisma.$ConflictPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      conflictId: string
+      eventId: string
+      title: string
+      proposedStart: Date
+      proposedEnd: Date
+      displayStart: number
+      displayEnd: number
+      relativeStart: number
+      relativeEnd: number
+      taskType: $Enums.TaskType
+      reasoning: string
+    }, ExtArgs["result"]["conflictProposal"]>
+    composites: {}
+  }
+
+  type ConflictProposalGetPayload<S extends boolean | null | undefined | ConflictProposalDefaultArgs> = $Result.GetResult<Prisma.$ConflictProposalPayload, S>
+
+  type ConflictProposalCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ConflictProposalFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ConflictProposalCountAggregateInputType | true
+    }
+
+  export interface ConflictProposalDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ConflictProposal'], meta: { name: 'ConflictProposal' } }
+    /**
+     * Find zero or one ConflictProposal that matches the filter.
+     * @param {ConflictProposalFindUniqueArgs} args - Arguments to find a ConflictProposal
+     * @example
+     * // Get one ConflictProposal
+     * const conflictProposal = await prisma.conflictProposal.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ConflictProposalFindUniqueArgs>(args: SelectSubset<T, ConflictProposalFindUniqueArgs<ExtArgs>>): Prisma__ConflictProposalClient<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ConflictProposal that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ConflictProposalFindUniqueOrThrowArgs} args - Arguments to find a ConflictProposal
+     * @example
+     * // Get one ConflictProposal
+     * const conflictProposal = await prisma.conflictProposal.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ConflictProposalFindUniqueOrThrowArgs>(args: SelectSubset<T, ConflictProposalFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ConflictProposalClient<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ConflictProposal that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictProposalFindFirstArgs} args - Arguments to find a ConflictProposal
+     * @example
+     * // Get one ConflictProposal
+     * const conflictProposal = await prisma.conflictProposal.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ConflictProposalFindFirstArgs>(args?: SelectSubset<T, ConflictProposalFindFirstArgs<ExtArgs>>): Prisma__ConflictProposalClient<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ConflictProposal that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictProposalFindFirstOrThrowArgs} args - Arguments to find a ConflictProposal
+     * @example
+     * // Get one ConflictProposal
+     * const conflictProposal = await prisma.conflictProposal.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ConflictProposalFindFirstOrThrowArgs>(args?: SelectSubset<T, ConflictProposalFindFirstOrThrowArgs<ExtArgs>>): Prisma__ConflictProposalClient<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ConflictProposals that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictProposalFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ConflictProposals
+     * const conflictProposals = await prisma.conflictProposal.findMany()
+     * 
+     * // Get first 10 ConflictProposals
+     * const conflictProposals = await prisma.conflictProposal.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const conflictProposalWithIdOnly = await prisma.conflictProposal.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ConflictProposalFindManyArgs>(args?: SelectSubset<T, ConflictProposalFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ConflictProposal.
+     * @param {ConflictProposalCreateArgs} args - Arguments to create a ConflictProposal.
+     * @example
+     * // Create one ConflictProposal
+     * const ConflictProposal = await prisma.conflictProposal.create({
+     *   data: {
+     *     // ... data to create a ConflictProposal
+     *   }
+     * })
+     * 
+     */
+    create<T extends ConflictProposalCreateArgs>(args: SelectSubset<T, ConflictProposalCreateArgs<ExtArgs>>): Prisma__ConflictProposalClient<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ConflictProposals.
+     * @param {ConflictProposalCreateManyArgs} args - Arguments to create many ConflictProposals.
+     * @example
+     * // Create many ConflictProposals
+     * const conflictProposal = await prisma.conflictProposal.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ConflictProposalCreateManyArgs>(args?: SelectSubset<T, ConflictProposalCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ConflictProposals and returns the data saved in the database.
+     * @param {ConflictProposalCreateManyAndReturnArgs} args - Arguments to create many ConflictProposals.
+     * @example
+     * // Create many ConflictProposals
+     * const conflictProposal = await prisma.conflictProposal.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ConflictProposals and only return the `id`
+     * const conflictProposalWithIdOnly = await prisma.conflictProposal.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ConflictProposalCreateManyAndReturnArgs>(args?: SelectSubset<T, ConflictProposalCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ConflictProposal.
+     * @param {ConflictProposalDeleteArgs} args - Arguments to delete one ConflictProposal.
+     * @example
+     * // Delete one ConflictProposal
+     * const ConflictProposal = await prisma.conflictProposal.delete({
+     *   where: {
+     *     // ... filter to delete one ConflictProposal
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ConflictProposalDeleteArgs>(args: SelectSubset<T, ConflictProposalDeleteArgs<ExtArgs>>): Prisma__ConflictProposalClient<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ConflictProposal.
+     * @param {ConflictProposalUpdateArgs} args - Arguments to update one ConflictProposal.
+     * @example
+     * // Update one ConflictProposal
+     * const conflictProposal = await prisma.conflictProposal.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ConflictProposalUpdateArgs>(args: SelectSubset<T, ConflictProposalUpdateArgs<ExtArgs>>): Prisma__ConflictProposalClient<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ConflictProposals.
+     * @param {ConflictProposalDeleteManyArgs} args - Arguments to filter ConflictProposals to delete.
+     * @example
+     * // Delete a few ConflictProposals
+     * const { count } = await prisma.conflictProposal.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ConflictProposalDeleteManyArgs>(args?: SelectSubset<T, ConflictProposalDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ConflictProposals.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictProposalUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ConflictProposals
+     * const conflictProposal = await prisma.conflictProposal.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ConflictProposalUpdateManyArgs>(args: SelectSubset<T, ConflictProposalUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ConflictProposals and returns the data updated in the database.
+     * @param {ConflictProposalUpdateManyAndReturnArgs} args - Arguments to update many ConflictProposals.
+     * @example
+     * // Update many ConflictProposals
+     * const conflictProposal = await prisma.conflictProposal.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ConflictProposals and only return the `id`
+     * const conflictProposalWithIdOnly = await prisma.conflictProposal.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ConflictProposalUpdateManyAndReturnArgs>(args: SelectSubset<T, ConflictProposalUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ConflictProposal.
+     * @param {ConflictProposalUpsertArgs} args - Arguments to update or create a ConflictProposal.
+     * @example
+     * // Update or create a ConflictProposal
+     * const conflictProposal = await prisma.conflictProposal.upsert({
+     *   create: {
+     *     // ... data to create a ConflictProposal
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ConflictProposal we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ConflictProposalUpsertArgs>(args: SelectSubset<T, ConflictProposalUpsertArgs<ExtArgs>>): Prisma__ConflictProposalClient<$Result.GetResult<Prisma.$ConflictProposalPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ConflictProposals.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictProposalCountArgs} args - Arguments to filter ConflictProposals to count.
+     * @example
+     * // Count the number of ConflictProposals
+     * const count = await prisma.conflictProposal.count({
+     *   where: {
+     *     // ... the filter for the ConflictProposals we want to count
+     *   }
+     * })
+    **/
+    count<T extends ConflictProposalCountArgs>(
+      args?: Subset<T, ConflictProposalCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ConflictProposalCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ConflictProposal.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictProposalAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ConflictProposalAggregateArgs>(args: Subset<T, ConflictProposalAggregateArgs>): Prisma.PrismaPromise<GetConflictProposalAggregateType<T>>
+
+    /**
+     * Group by ConflictProposal.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConflictProposalGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ConflictProposalGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ConflictProposalGroupByArgs['orderBy'] }
+        : { orderBy?: ConflictProposalGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ConflictProposalGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetConflictProposalGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ConflictProposal model
+   */
+  readonly fields: ConflictProposalFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ConflictProposal.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ConflictProposalClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    conflict<T extends ConflictDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ConflictDefaultArgs<ExtArgs>>): Prisma__ConflictClient<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ConflictProposal model
+   */
+  interface ConflictProposalFieldRefs {
+    readonly id: FieldRef<"ConflictProposal", 'String'>
+    readonly conflictId: FieldRef<"ConflictProposal", 'String'>
+    readonly eventId: FieldRef<"ConflictProposal", 'String'>
+    readonly title: FieldRef<"ConflictProposal", 'String'>
+    readonly proposedStart: FieldRef<"ConflictProposal", 'DateTime'>
+    readonly proposedEnd: FieldRef<"ConflictProposal", 'DateTime'>
+    readonly displayStart: FieldRef<"ConflictProposal", 'Int'>
+    readonly displayEnd: FieldRef<"ConflictProposal", 'Int'>
+    readonly relativeStart: FieldRef<"ConflictProposal", 'Int'>
+    readonly relativeEnd: FieldRef<"ConflictProposal", 'Int'>
+    readonly taskType: FieldRef<"ConflictProposal", 'TaskType'>
+    readonly reasoning: FieldRef<"ConflictProposal", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ConflictProposal findUnique
+   */
+  export type ConflictProposalFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
+    /**
+     * Filter, which ConflictProposal to fetch.
+     */
+    where: ConflictProposalWhereUniqueInput
+  }
+
+  /**
+   * ConflictProposal findUniqueOrThrow
+   */
+  export type ConflictProposalFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
+    /**
+     * Filter, which ConflictProposal to fetch.
+     */
+    where: ConflictProposalWhereUniqueInput
+  }
+
+  /**
+   * ConflictProposal findFirst
+   */
+  export type ConflictProposalFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
+    /**
+     * Filter, which ConflictProposal to fetch.
+     */
+    where?: ConflictProposalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConflictProposals to fetch.
+     */
+    orderBy?: ConflictProposalOrderByWithRelationInput | ConflictProposalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ConflictProposals.
+     */
+    cursor?: ConflictProposalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConflictProposals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConflictProposals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConflictProposals.
+     */
+    distinct?: ConflictProposalScalarFieldEnum | ConflictProposalScalarFieldEnum[]
+  }
+
+  /**
+   * ConflictProposal findFirstOrThrow
+   */
+  export type ConflictProposalFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
+    /**
+     * Filter, which ConflictProposal to fetch.
+     */
+    where?: ConflictProposalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConflictProposals to fetch.
+     */
+    orderBy?: ConflictProposalOrderByWithRelationInput | ConflictProposalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ConflictProposals.
+     */
+    cursor?: ConflictProposalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConflictProposals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConflictProposals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConflictProposals.
+     */
+    distinct?: ConflictProposalScalarFieldEnum | ConflictProposalScalarFieldEnum[]
+  }
+
+  /**
+   * ConflictProposal findMany
+   */
+  export type ConflictProposalFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
+    /**
+     * Filter, which ConflictProposals to fetch.
+     */
+    where?: ConflictProposalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConflictProposals to fetch.
+     */
+    orderBy?: ConflictProposalOrderByWithRelationInput | ConflictProposalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ConflictProposals.
+     */
+    cursor?: ConflictProposalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConflictProposals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConflictProposals.
+     */
+    skip?: number
+    distinct?: ConflictProposalScalarFieldEnum | ConflictProposalScalarFieldEnum[]
+  }
+
+  /**
+   * ConflictProposal create
+   */
+  export type ConflictProposalCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ConflictProposal.
+     */
+    data: XOR<ConflictProposalCreateInput, ConflictProposalUncheckedCreateInput>
+  }
+
+  /**
+   * ConflictProposal createMany
+   */
+  export type ConflictProposalCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ConflictProposals.
+     */
+    data: ConflictProposalCreateManyInput | ConflictProposalCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ConflictProposal createManyAndReturn
+   */
+  export type ConflictProposalCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * The data used to create many ConflictProposals.
+     */
+    data: ConflictProposalCreateManyInput | ConflictProposalCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ConflictProposal update
+   */
+  export type ConflictProposalUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ConflictProposal.
+     */
+    data: XOR<ConflictProposalUpdateInput, ConflictProposalUncheckedUpdateInput>
+    /**
+     * Choose, which ConflictProposal to update.
+     */
+    where: ConflictProposalWhereUniqueInput
+  }
+
+  /**
+   * ConflictProposal updateMany
+   */
+  export type ConflictProposalUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ConflictProposals.
+     */
+    data: XOR<ConflictProposalUpdateManyMutationInput, ConflictProposalUncheckedUpdateManyInput>
+    /**
+     * Filter which ConflictProposals to update
+     */
+    where?: ConflictProposalWhereInput
+    /**
+     * Limit how many ConflictProposals to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConflictProposal updateManyAndReturn
+   */
+  export type ConflictProposalUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * The data used to update ConflictProposals.
+     */
+    data: XOR<ConflictProposalUpdateManyMutationInput, ConflictProposalUncheckedUpdateManyInput>
+    /**
+     * Filter which ConflictProposals to update
+     */
+    where?: ConflictProposalWhereInput
+    /**
+     * Limit how many ConflictProposals to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ConflictProposal upsert
+   */
+  export type ConflictProposalUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ConflictProposal to update in case it exists.
+     */
+    where: ConflictProposalWhereUniqueInput
+    /**
+     * In case the ConflictProposal found by the `where` argument doesn't exist, create a new ConflictProposal with this data.
+     */
+    create: XOR<ConflictProposalCreateInput, ConflictProposalUncheckedCreateInput>
+    /**
+     * In case the ConflictProposal was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ConflictProposalUpdateInput, ConflictProposalUncheckedUpdateInput>
+  }
+
+  /**
+   * ConflictProposal delete
+   */
+  export type ConflictProposalDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
+    /**
+     * Filter which ConflictProposal to delete.
+     */
+    where: ConflictProposalWhereUniqueInput
+  }
+
+  /**
+   * ConflictProposal deleteMany
+   */
+  export type ConflictProposalDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ConflictProposals to delete
+     */
+    where?: ConflictProposalWhereInput
+    /**
+     * Limit how many ConflictProposals to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConflictProposal without action
+   */
+  export type ConflictProposalDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConflictProposal
+     */
+    select?: ConflictProposalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConflictProposal
+     */
+    omit?: ConflictProposalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConflictProposalInclude<ExtArgs> | null
   }
 
 
@@ -10382,6 +14391,56 @@ export namespace Prisma {
   export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
 
 
+  export const ConflictScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    errorId: 'errorId',
+    summary: 'summary',
+    analysis: 'analysis',
+    status: 'status',
+    detectedAt: 'detectedAt',
+    resolvedAt: 'resolvedAt'
+  };
+
+  export type ConflictScalarFieldEnum = (typeof ConflictScalarFieldEnum)[keyof typeof ConflictScalarFieldEnum]
+
+
+  export const ConflictTaskScalarFieldEnum: {
+    id: 'id',
+    conflictId: 'conflictId',
+    eventId: 'eventId',
+    title: 'title',
+    startTime: 'startTime',
+    endTime: 'endTime',
+    displayStart: 'displayStart',
+    displayEnd: 'displayEnd',
+    relativeStart: 'relativeStart',
+    relativeEnd: 'relativeEnd',
+    taskType: 'taskType',
+    priority: 'priority'
+  };
+
+  export type ConflictTaskScalarFieldEnum = (typeof ConflictTaskScalarFieldEnum)[keyof typeof ConflictTaskScalarFieldEnum]
+
+
+  export const ConflictProposalScalarFieldEnum: {
+    id: 'id',
+    conflictId: 'conflictId',
+    eventId: 'eventId',
+    title: 'title',
+    proposedStart: 'proposedStart',
+    proposedEnd: 'proposedEnd',
+    displayStart: 'displayStart',
+    displayEnd: 'displayEnd',
+    relativeStart: 'relativeStart',
+    relativeEnd: 'relativeEnd',
+    taskType: 'taskType',
+    reasoning: 'reasoning'
+  };
+
+  export type ConflictProposalScalarFieldEnum = (typeof ConflictProposalScalarFieldEnum)[keyof typeof ConflictProposalScalarFieldEnum]
+
+
   export const TaskScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -10533,6 +14592,48 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ConflictStatus'
+   */
+  export type EnumConflictStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConflictStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ConflictStatus[]'
+   */
+  export type ListEnumConflictStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConflictStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'TaskType'
+   */
+  export type EnumTaskTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskType'>
+    
+
+
+  /**
+   * Reference to a field of type 'TaskType[]'
+   */
+  export type ListEnumTaskTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Priority'
+   */
+  export type EnumPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Priority'>
+    
+
+
+  /**
+   * Reference to a field of type 'Priority[]'
+   */
+  export type ListEnumPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Priority[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -10550,6 +14651,20 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -10577,6 +14692,7 @@ export namespace Prisma {
     behavior?: XOR<BehaviorSummaryNullableScalarRelationFilter, BehaviorSummaryWhereInput> | null
     preferences?: XOR<PreferencesNullableScalarRelationFilter, PreferencesWhereInput> | null
     actions?: AIToolsListRelationFilter
+    conflicts?: ConflictListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -10597,6 +14713,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryOrderByWithRelationInput
     preferences?: PreferencesOrderByWithRelationInput
     actions?: AIToolsOrderByRelationAggregateInput
+    conflicts?: ConflictOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -10620,6 +14737,7 @@ export namespace Prisma {
     behavior?: XOR<BehaviorSummaryNullableScalarRelationFilter, BehaviorSummaryWhereInput> | null
     preferences?: XOR<PreferencesNullableScalarRelationFilter, PreferencesWhereInput> | null
     actions?: AIToolsListRelationFilter
+    conflicts?: ConflictListRelationFilter
   }, "id" | "googleId" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -10672,6 +14790,7 @@ export namespace Prisma {
     textColor?: StringFilter<"Event"> | string
     userId?: StringFilter<"Event"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    conflictTasks?: ConflictTaskListRelationFilter
   }
 
   export type EventOrderByWithRelationInput = {
@@ -10689,6 +14808,7 @@ export namespace Prisma {
     textColor?: SortOrder
     userId?: SortOrder
     user?: UserOrderByWithRelationInput
+    conflictTasks?: ConflictTaskOrderByRelationAggregateInput
   }
 
   export type EventWhereUniqueInput = Prisma.AtLeast<{
@@ -10709,6 +14829,7 @@ export namespace Prisma {
     textColor?: StringFilter<"Event"> | string
     userId?: StringFilter<"Event"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    conflictTasks?: ConflictTaskListRelationFilter
   }, "id">
 
   export type EventOrderByWithAggregationInput = {
@@ -10749,6 +14870,269 @@ export namespace Prisma {
     colorName?: StringWithAggregatesFilter<"Event"> | string
     textColor?: StringWithAggregatesFilter<"Event"> | string
     userId?: StringWithAggregatesFilter<"Event"> | string
+  }
+
+  export type ConflictWhereInput = {
+    AND?: ConflictWhereInput | ConflictWhereInput[]
+    OR?: ConflictWhereInput[]
+    NOT?: ConflictWhereInput | ConflictWhereInput[]
+    id?: StringFilter<"Conflict"> | string
+    userId?: StringFilter<"Conflict"> | string
+    errorId?: StringFilter<"Conflict"> | string
+    summary?: StringFilter<"Conflict"> | string
+    analysis?: StringFilter<"Conflict"> | string
+    status?: EnumConflictStatusFilter<"Conflict"> | $Enums.ConflictStatus
+    detectedAt?: DateTimeFilter<"Conflict"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"Conflict"> | Date | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    tasks?: ConflictTaskListRelationFilter
+    proposals?: ConflictProposalListRelationFilter
+  }
+
+  export type ConflictOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    errorId?: SortOrder
+    summary?: SortOrder
+    analysis?: SortOrder
+    status?: SortOrder
+    detectedAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+    tasks?: ConflictTaskOrderByRelationAggregateInput
+    proposals?: ConflictProposalOrderByRelationAggregateInput
+  }
+
+  export type ConflictWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ConflictWhereInput | ConflictWhereInput[]
+    OR?: ConflictWhereInput[]
+    NOT?: ConflictWhereInput | ConflictWhereInput[]
+    userId?: StringFilter<"Conflict"> | string
+    errorId?: StringFilter<"Conflict"> | string
+    summary?: StringFilter<"Conflict"> | string
+    analysis?: StringFilter<"Conflict"> | string
+    status?: EnumConflictStatusFilter<"Conflict"> | $Enums.ConflictStatus
+    detectedAt?: DateTimeFilter<"Conflict"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"Conflict"> | Date | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    tasks?: ConflictTaskListRelationFilter
+    proposals?: ConflictProposalListRelationFilter
+  }, "id">
+
+  export type ConflictOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    errorId?: SortOrder
+    summary?: SortOrder
+    analysis?: SortOrder
+    status?: SortOrder
+    detectedAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    _count?: ConflictCountOrderByAggregateInput
+    _max?: ConflictMaxOrderByAggregateInput
+    _min?: ConflictMinOrderByAggregateInput
+  }
+
+  export type ConflictScalarWhereWithAggregatesInput = {
+    AND?: ConflictScalarWhereWithAggregatesInput | ConflictScalarWhereWithAggregatesInput[]
+    OR?: ConflictScalarWhereWithAggregatesInput[]
+    NOT?: ConflictScalarWhereWithAggregatesInput | ConflictScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Conflict"> | string
+    userId?: StringWithAggregatesFilter<"Conflict"> | string
+    errorId?: StringWithAggregatesFilter<"Conflict"> | string
+    summary?: StringWithAggregatesFilter<"Conflict"> | string
+    analysis?: StringWithAggregatesFilter<"Conflict"> | string
+    status?: EnumConflictStatusWithAggregatesFilter<"Conflict"> | $Enums.ConflictStatus
+    detectedAt?: DateTimeWithAggregatesFilter<"Conflict"> | Date | string
+    resolvedAt?: DateTimeNullableWithAggregatesFilter<"Conflict"> | Date | string | null
+  }
+
+  export type ConflictTaskWhereInput = {
+    AND?: ConflictTaskWhereInput | ConflictTaskWhereInput[]
+    OR?: ConflictTaskWhereInput[]
+    NOT?: ConflictTaskWhereInput | ConflictTaskWhereInput[]
+    id?: StringFilter<"ConflictTask"> | string
+    conflictId?: StringFilter<"ConflictTask"> | string
+    eventId?: StringFilter<"ConflictTask"> | string
+    title?: StringFilter<"ConflictTask"> | string
+    startTime?: DateTimeFilter<"ConflictTask"> | Date | string
+    endTime?: DateTimeFilter<"ConflictTask"> | Date | string
+    displayStart?: IntFilter<"ConflictTask"> | number
+    displayEnd?: IntFilter<"ConflictTask"> | number
+    relativeStart?: IntFilter<"ConflictTask"> | number
+    relativeEnd?: IntFilter<"ConflictTask"> | number
+    taskType?: EnumTaskTypeFilter<"ConflictTask"> | $Enums.TaskType
+    priority?: EnumPriorityFilter<"ConflictTask"> | $Enums.Priority
+    conflict?: XOR<ConflictScalarRelationFilter, ConflictWhereInput>
+    event?: XOR<EventScalarRelationFilter, EventWhereInput>
+  }
+
+  export type ConflictTaskOrderByWithRelationInput = {
+    id?: SortOrder
+    conflictId?: SortOrder
+    eventId?: SortOrder
+    title?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+    taskType?: SortOrder
+    priority?: SortOrder
+    conflict?: ConflictOrderByWithRelationInput
+    event?: EventOrderByWithRelationInput
+  }
+
+  export type ConflictTaskWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ConflictTaskWhereInput | ConflictTaskWhereInput[]
+    OR?: ConflictTaskWhereInput[]
+    NOT?: ConflictTaskWhereInput | ConflictTaskWhereInput[]
+    conflictId?: StringFilter<"ConflictTask"> | string
+    eventId?: StringFilter<"ConflictTask"> | string
+    title?: StringFilter<"ConflictTask"> | string
+    startTime?: DateTimeFilter<"ConflictTask"> | Date | string
+    endTime?: DateTimeFilter<"ConflictTask"> | Date | string
+    displayStart?: IntFilter<"ConflictTask"> | number
+    displayEnd?: IntFilter<"ConflictTask"> | number
+    relativeStart?: IntFilter<"ConflictTask"> | number
+    relativeEnd?: IntFilter<"ConflictTask"> | number
+    taskType?: EnumTaskTypeFilter<"ConflictTask"> | $Enums.TaskType
+    priority?: EnumPriorityFilter<"ConflictTask"> | $Enums.Priority
+    conflict?: XOR<ConflictScalarRelationFilter, ConflictWhereInput>
+    event?: XOR<EventScalarRelationFilter, EventWhereInput>
+  }, "id">
+
+  export type ConflictTaskOrderByWithAggregationInput = {
+    id?: SortOrder
+    conflictId?: SortOrder
+    eventId?: SortOrder
+    title?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+    taskType?: SortOrder
+    priority?: SortOrder
+    _count?: ConflictTaskCountOrderByAggregateInput
+    _avg?: ConflictTaskAvgOrderByAggregateInput
+    _max?: ConflictTaskMaxOrderByAggregateInput
+    _min?: ConflictTaskMinOrderByAggregateInput
+    _sum?: ConflictTaskSumOrderByAggregateInput
+  }
+
+  export type ConflictTaskScalarWhereWithAggregatesInput = {
+    AND?: ConflictTaskScalarWhereWithAggregatesInput | ConflictTaskScalarWhereWithAggregatesInput[]
+    OR?: ConflictTaskScalarWhereWithAggregatesInput[]
+    NOT?: ConflictTaskScalarWhereWithAggregatesInput | ConflictTaskScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ConflictTask"> | string
+    conflictId?: StringWithAggregatesFilter<"ConflictTask"> | string
+    eventId?: StringWithAggregatesFilter<"ConflictTask"> | string
+    title?: StringWithAggregatesFilter<"ConflictTask"> | string
+    startTime?: DateTimeWithAggregatesFilter<"ConflictTask"> | Date | string
+    endTime?: DateTimeWithAggregatesFilter<"ConflictTask"> | Date | string
+    displayStart?: IntWithAggregatesFilter<"ConflictTask"> | number
+    displayEnd?: IntWithAggregatesFilter<"ConflictTask"> | number
+    relativeStart?: IntWithAggregatesFilter<"ConflictTask"> | number
+    relativeEnd?: IntWithAggregatesFilter<"ConflictTask"> | number
+    taskType?: EnumTaskTypeWithAggregatesFilter<"ConflictTask"> | $Enums.TaskType
+    priority?: EnumPriorityWithAggregatesFilter<"ConflictTask"> | $Enums.Priority
+  }
+
+  export type ConflictProposalWhereInput = {
+    AND?: ConflictProposalWhereInput | ConflictProposalWhereInput[]
+    OR?: ConflictProposalWhereInput[]
+    NOT?: ConflictProposalWhereInput | ConflictProposalWhereInput[]
+    id?: StringFilter<"ConflictProposal"> | string
+    conflictId?: StringFilter<"ConflictProposal"> | string
+    eventId?: StringFilter<"ConflictProposal"> | string
+    title?: StringFilter<"ConflictProposal"> | string
+    proposedStart?: DateTimeFilter<"ConflictProposal"> | Date | string
+    proposedEnd?: DateTimeFilter<"ConflictProposal"> | Date | string
+    displayStart?: IntFilter<"ConflictProposal"> | number
+    displayEnd?: IntFilter<"ConflictProposal"> | number
+    relativeStart?: IntFilter<"ConflictProposal"> | number
+    relativeEnd?: IntFilter<"ConflictProposal"> | number
+    taskType?: EnumTaskTypeFilter<"ConflictProposal"> | $Enums.TaskType
+    reasoning?: StringFilter<"ConflictProposal"> | string
+    conflict?: XOR<ConflictScalarRelationFilter, ConflictWhereInput>
+  }
+
+  export type ConflictProposalOrderByWithRelationInput = {
+    id?: SortOrder
+    conflictId?: SortOrder
+    eventId?: SortOrder
+    title?: SortOrder
+    proposedStart?: SortOrder
+    proposedEnd?: SortOrder
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+    taskType?: SortOrder
+    reasoning?: SortOrder
+    conflict?: ConflictOrderByWithRelationInput
+  }
+
+  export type ConflictProposalWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ConflictProposalWhereInput | ConflictProposalWhereInput[]
+    OR?: ConflictProposalWhereInput[]
+    NOT?: ConflictProposalWhereInput | ConflictProposalWhereInput[]
+    conflictId?: StringFilter<"ConflictProposal"> | string
+    eventId?: StringFilter<"ConflictProposal"> | string
+    title?: StringFilter<"ConflictProposal"> | string
+    proposedStart?: DateTimeFilter<"ConflictProposal"> | Date | string
+    proposedEnd?: DateTimeFilter<"ConflictProposal"> | Date | string
+    displayStart?: IntFilter<"ConflictProposal"> | number
+    displayEnd?: IntFilter<"ConflictProposal"> | number
+    relativeStart?: IntFilter<"ConflictProposal"> | number
+    relativeEnd?: IntFilter<"ConflictProposal"> | number
+    taskType?: EnumTaskTypeFilter<"ConflictProposal"> | $Enums.TaskType
+    reasoning?: StringFilter<"ConflictProposal"> | string
+    conflict?: XOR<ConflictScalarRelationFilter, ConflictWhereInput>
+  }, "id">
+
+  export type ConflictProposalOrderByWithAggregationInput = {
+    id?: SortOrder
+    conflictId?: SortOrder
+    eventId?: SortOrder
+    title?: SortOrder
+    proposedStart?: SortOrder
+    proposedEnd?: SortOrder
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+    taskType?: SortOrder
+    reasoning?: SortOrder
+    _count?: ConflictProposalCountOrderByAggregateInput
+    _avg?: ConflictProposalAvgOrderByAggregateInput
+    _max?: ConflictProposalMaxOrderByAggregateInput
+    _min?: ConflictProposalMinOrderByAggregateInput
+    _sum?: ConflictProposalSumOrderByAggregateInput
+  }
+
+  export type ConflictProposalScalarWhereWithAggregatesInput = {
+    AND?: ConflictProposalScalarWhereWithAggregatesInput | ConflictProposalScalarWhereWithAggregatesInput[]
+    OR?: ConflictProposalScalarWhereWithAggregatesInput[]
+    NOT?: ConflictProposalScalarWhereWithAggregatesInput | ConflictProposalScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ConflictProposal"> | string
+    conflictId?: StringWithAggregatesFilter<"ConflictProposal"> | string
+    eventId?: StringWithAggregatesFilter<"ConflictProposal"> | string
+    title?: StringWithAggregatesFilter<"ConflictProposal"> | string
+    proposedStart?: DateTimeWithAggregatesFilter<"ConflictProposal"> | Date | string
+    proposedEnd?: DateTimeWithAggregatesFilter<"ConflictProposal"> | Date | string
+    displayStart?: IntWithAggregatesFilter<"ConflictProposal"> | number
+    displayEnd?: IntWithAggregatesFilter<"ConflictProposal"> | number
+    relativeStart?: IntWithAggregatesFilter<"ConflictProposal"> | number
+    relativeEnd?: IntWithAggregatesFilter<"ConflictProposal"> | number
+    taskType?: EnumTaskTypeWithAggregatesFilter<"ConflictProposal"> | $Enums.TaskType
+    reasoning?: StringWithAggregatesFilter<"ConflictProposal"> | string
   }
 
   export type TaskWhereInput = {
@@ -11084,6 +15468,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
+    conflicts?: ConflictCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -11104,6 +15489,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+    conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -11124,6 +15510,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -11144,6 +15531,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -11199,6 +15587,7 @@ export namespace Prisma {
     colorName: string
     textColor: string
     user: UserCreateNestedOneWithoutEventsInput
+    conflictTasks?: ConflictTaskCreateNestedManyWithoutEventInput
   }
 
   export type EventUncheckedCreateInput = {
@@ -11215,6 +15604,7 @@ export namespace Prisma {
     colorName: string
     textColor: string
     userId: string
+    conflictTasks?: ConflictTaskUncheckedCreateNestedManyWithoutEventInput
   }
 
   export type EventUpdateInput = {
@@ -11231,6 +15621,7 @@ export namespace Prisma {
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
     user?: UserUpdateOneRequiredWithoutEventsNestedInput
+    conflictTasks?: ConflictTaskUpdateManyWithoutEventNestedInput
   }
 
   export type EventUncheckedUpdateInput = {
@@ -11247,6 +15638,7 @@ export namespace Prisma {
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    conflictTasks?: ConflictTaskUncheckedUpdateManyWithoutEventNestedInput
   }
 
   export type EventCreateManyInput = {
@@ -11294,6 +15686,297 @@ export namespace Prisma {
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ConflictCreateInput = {
+    id?: string
+    errorId: string
+    summary: string
+    analysis: string
+    status?: $Enums.ConflictStatus
+    detectedAt?: Date | string
+    resolvedAt?: Date | string | null
+    user: UserCreateNestedOneWithoutConflictsInput
+    tasks?: ConflictTaskCreateNestedManyWithoutConflictInput
+    proposals?: ConflictProposalCreateNestedManyWithoutConflictInput
+  }
+
+  export type ConflictUncheckedCreateInput = {
+    id?: string
+    userId: string
+    errorId: string
+    summary: string
+    analysis: string
+    status?: $Enums.ConflictStatus
+    detectedAt?: Date | string
+    resolvedAt?: Date | string | null
+    tasks?: ConflictTaskUncheckedCreateNestedManyWithoutConflictInput
+    proposals?: ConflictProposalUncheckedCreateNestedManyWithoutConflictInput
+  }
+
+  export type ConflictUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutConflictsNestedInput
+    tasks?: ConflictTaskUpdateManyWithoutConflictNestedInput
+    proposals?: ConflictProposalUpdateManyWithoutConflictNestedInput
+  }
+
+  export type ConflictUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tasks?: ConflictTaskUncheckedUpdateManyWithoutConflictNestedInput
+    proposals?: ConflictProposalUncheckedUpdateManyWithoutConflictNestedInput
+  }
+
+  export type ConflictCreateManyInput = {
+    id?: string
+    userId: string
+    errorId: string
+    summary: string
+    analysis: string
+    status?: $Enums.ConflictStatus
+    detectedAt?: Date | string
+    resolvedAt?: Date | string | null
+  }
+
+  export type ConflictUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ConflictUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ConflictTaskCreateInput = {
+    id?: string
+    title: string
+    startTime: Date | string
+    endTime: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType?: $Enums.TaskType
+    priority?: $Enums.Priority
+    conflict: ConflictCreateNestedOneWithoutTasksInput
+    event: EventCreateNestedOneWithoutConflictTasksInput
+  }
+
+  export type ConflictTaskUncheckedCreateInput = {
+    id?: string
+    conflictId: string
+    eventId: string
+    title: string
+    startTime: Date | string
+    endTime: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType?: $Enums.TaskType
+    priority?: $Enums.Priority
+  }
+
+  export type ConflictTaskUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    conflict?: ConflictUpdateOneRequiredWithoutTasksNestedInput
+    event?: EventUpdateOneRequiredWithoutConflictTasksNestedInput
+  }
+
+  export type ConflictTaskUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conflictId?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  }
+
+  export type ConflictTaskCreateManyInput = {
+    id?: string
+    conflictId: string
+    eventId: string
+    title: string
+    startTime: Date | string
+    endTime: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType?: $Enums.TaskType
+    priority?: $Enums.Priority
+  }
+
+  export type ConflictTaskUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  }
+
+  export type ConflictTaskUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conflictId?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  }
+
+  export type ConflictProposalCreateInput = {
+    id?: string
+    eventId: string
+    title: string
+    proposedStart: Date | string
+    proposedEnd: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType: $Enums.TaskType
+    reasoning: string
+    conflict: ConflictCreateNestedOneWithoutProposalsInput
+  }
+
+  export type ConflictProposalUncheckedCreateInput = {
+    id?: string
+    conflictId: string
+    eventId: string
+    title: string
+    proposedStart: Date | string
+    proposedEnd: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType: $Enums.TaskType
+    reasoning: string
+  }
+
+  export type ConflictProposalUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    reasoning?: StringFieldUpdateOperationsInput | string
+    conflict?: ConflictUpdateOneRequiredWithoutProposalsNestedInput
+  }
+
+  export type ConflictProposalUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conflictId?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    reasoning?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ConflictProposalCreateManyInput = {
+    id?: string
+    conflictId: string
+    eventId: string
+    title: string
+    proposedStart: Date | string
+    proposedEnd: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType: $Enums.TaskType
+    reasoning: string
+  }
+
+  export type ConflictProposalUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    reasoning?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ConflictProposalUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conflictId?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    reasoning?: StringFieldUpdateOperationsInput | string
   }
 
   export type TaskCreateInput = {
@@ -11685,6 +16368,12 @@ export namespace Prisma {
     none?: AIToolsWhereInput
   }
 
+  export type ConflictListRelationFilter = {
+    every?: ConflictWhereInput
+    some?: ConflictWhereInput
+    none?: ConflictWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -11703,6 +16392,10 @@ export namespace Prisma {
   }
 
   export type AIToolsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ConflictOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -11808,6 +16501,16 @@ export namespace Prisma {
     isNot?: UserWhereInput
   }
 
+  export type ConflictTaskListRelationFilter = {
+    every?: ConflictTaskWhereInput
+    some?: ConflictTaskWhereInput
+    none?: ConflictTaskWhereInput
+  }
+
+  export type ConflictTaskOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type EventCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -11860,6 +16563,280 @@ export namespace Prisma {
 
   export type EventSumOrderByAggregateInput = {
     recurringDays?: SortOrder
+  }
+
+  export type EnumConflictStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ConflictStatus | EnumConflictStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ConflictStatus[] | ListEnumConflictStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ConflictStatus[] | ListEnumConflictStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumConflictStatusFilter<$PrismaModel> | $Enums.ConflictStatus
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type ConflictProposalListRelationFilter = {
+    every?: ConflictProposalWhereInput
+    some?: ConflictProposalWhereInput
+    none?: ConflictProposalWhereInput
+  }
+
+  export type ConflictProposalOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ConflictCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    errorId?: SortOrder
+    summary?: SortOrder
+    analysis?: SortOrder
+    status?: SortOrder
+    detectedAt?: SortOrder
+    resolvedAt?: SortOrder
+  }
+
+  export type ConflictMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    errorId?: SortOrder
+    summary?: SortOrder
+    analysis?: SortOrder
+    status?: SortOrder
+    detectedAt?: SortOrder
+    resolvedAt?: SortOrder
+  }
+
+  export type ConflictMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    errorId?: SortOrder
+    summary?: SortOrder
+    analysis?: SortOrder
+    status?: SortOrder
+    detectedAt?: SortOrder
+    resolvedAt?: SortOrder
+  }
+
+  export type EnumConflictStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ConflictStatus | EnumConflictStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ConflictStatus[] | ListEnumConflictStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ConflictStatus[] | ListEnumConflictStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumConflictStatusWithAggregatesFilter<$PrismaModel> | $Enums.ConflictStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumConflictStatusFilter<$PrismaModel>
+    _max?: NestedEnumConflictStatusFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type EnumTaskTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskType | EnumTaskTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskType[] | ListEnumTaskTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TaskType[] | ListEnumTaskTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTaskTypeFilter<$PrismaModel> | $Enums.TaskType
+  }
+
+  export type EnumPriorityFilter<$PrismaModel = never> = {
+    equals?: $Enums.Priority | EnumPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumPriorityFilter<$PrismaModel> | $Enums.Priority
+  }
+
+  export type ConflictScalarRelationFilter = {
+    is?: ConflictWhereInput
+    isNot?: ConflictWhereInput
+  }
+
+  export type EventScalarRelationFilter = {
+    is?: EventWhereInput
+    isNot?: EventWhereInput
+  }
+
+  export type ConflictTaskCountOrderByAggregateInput = {
+    id?: SortOrder
+    conflictId?: SortOrder
+    eventId?: SortOrder
+    title?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+    taskType?: SortOrder
+    priority?: SortOrder
+  }
+
+  export type ConflictTaskAvgOrderByAggregateInput = {
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+  }
+
+  export type ConflictTaskMaxOrderByAggregateInput = {
+    id?: SortOrder
+    conflictId?: SortOrder
+    eventId?: SortOrder
+    title?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+    taskType?: SortOrder
+    priority?: SortOrder
+  }
+
+  export type ConflictTaskMinOrderByAggregateInput = {
+    id?: SortOrder
+    conflictId?: SortOrder
+    eventId?: SortOrder
+    title?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+    taskType?: SortOrder
+    priority?: SortOrder
+  }
+
+  export type ConflictTaskSumOrderByAggregateInput = {
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type EnumTaskTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskType | EnumTaskTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskType[] | ListEnumTaskTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TaskType[] | ListEnumTaskTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTaskTypeWithAggregatesFilter<$PrismaModel> | $Enums.TaskType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTaskTypeFilter<$PrismaModel>
+    _max?: NestedEnumTaskTypeFilter<$PrismaModel>
+  }
+
+  export type EnumPriorityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Priority | EnumPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumPriorityWithAggregatesFilter<$PrismaModel> | $Enums.Priority
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPriorityFilter<$PrismaModel>
+    _max?: NestedEnumPriorityFilter<$PrismaModel>
+  }
+
+  export type ConflictProposalCountOrderByAggregateInput = {
+    id?: SortOrder
+    conflictId?: SortOrder
+    eventId?: SortOrder
+    title?: SortOrder
+    proposedStart?: SortOrder
+    proposedEnd?: SortOrder
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+    taskType?: SortOrder
+    reasoning?: SortOrder
+  }
+
+  export type ConflictProposalAvgOrderByAggregateInput = {
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+  }
+
+  export type ConflictProposalMaxOrderByAggregateInput = {
+    id?: SortOrder
+    conflictId?: SortOrder
+    eventId?: SortOrder
+    title?: SortOrder
+    proposedStart?: SortOrder
+    proposedEnd?: SortOrder
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+    taskType?: SortOrder
+    reasoning?: SortOrder
+  }
+
+  export type ConflictProposalMinOrderByAggregateInput = {
+    id?: SortOrder
+    conflictId?: SortOrder
+    eventId?: SortOrder
+    title?: SortOrder
+    proposedStart?: SortOrder
+    proposedEnd?: SortOrder
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
+    taskType?: SortOrder
+    reasoning?: SortOrder
+  }
+
+  export type ConflictProposalSumOrderByAggregateInput = {
+    displayStart?: SortOrder
+    displayEnd?: SortOrder
+    relativeStart?: SortOrder
+    relativeEnd?: SortOrder
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -12099,6 +17076,13 @@ export namespace Prisma {
     connect?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
   }
 
+  export type ConflictCreateNestedManyWithoutUserInput = {
+    create?: XOR<ConflictCreateWithoutUserInput, ConflictUncheckedCreateWithoutUserInput> | ConflictCreateWithoutUserInput[] | ConflictUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ConflictCreateOrConnectWithoutUserInput | ConflictCreateOrConnectWithoutUserInput[]
+    createMany?: ConflictCreateManyUserInputEnvelope
+    connect?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
+  }
+
   export type EventUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput> | EventCreateWithoutUserInput[] | EventUncheckedCreateWithoutUserInput[]
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
@@ -12143,6 +17127,13 @@ export namespace Prisma {
     connectOrCreate?: AIToolsCreateOrConnectWithoutUserInput | AIToolsCreateOrConnectWithoutUserInput[]
     createMany?: AIToolsCreateManyUserInputEnvelope
     connect?: AIToolsWhereUniqueInput | AIToolsWhereUniqueInput[]
+  }
+
+  export type ConflictUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ConflictCreateWithoutUserInput, ConflictUncheckedCreateWithoutUserInput> | ConflictCreateWithoutUserInput[] | ConflictUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ConflictCreateOrConnectWithoutUserInput | ConflictCreateOrConnectWithoutUserInput[]
+    createMany?: ConflictCreateManyUserInputEnvelope
+    connect?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -12243,6 +17234,20 @@ export namespace Prisma {
     deleteMany?: AIToolsScalarWhereInput | AIToolsScalarWhereInput[]
   }
 
+  export type ConflictUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ConflictCreateWithoutUserInput, ConflictUncheckedCreateWithoutUserInput> | ConflictCreateWithoutUserInput[] | ConflictUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ConflictCreateOrConnectWithoutUserInput | ConflictCreateOrConnectWithoutUserInput[]
+    upsert?: ConflictUpsertWithWhereUniqueWithoutUserInput | ConflictUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ConflictCreateManyUserInputEnvelope
+    set?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
+    disconnect?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
+    delete?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
+    connect?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
+    update?: ConflictUpdateWithWhereUniqueWithoutUserInput | ConflictUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ConflictUpdateManyWithWhereWithoutUserInput | ConflictUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ConflictScalarWhereInput | ConflictScalarWhereInput[]
+  }
+
   export type EventUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput> | EventCreateWithoutUserInput[] | EventUncheckedCreateWithoutUserInput[]
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
@@ -12329,6 +17334,20 @@ export namespace Prisma {
     deleteMany?: AIToolsScalarWhereInput | AIToolsScalarWhereInput[]
   }
 
+  export type ConflictUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ConflictCreateWithoutUserInput, ConflictUncheckedCreateWithoutUserInput> | ConflictCreateWithoutUserInput[] | ConflictUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ConflictCreateOrConnectWithoutUserInput | ConflictCreateOrConnectWithoutUserInput[]
+    upsert?: ConflictUpsertWithWhereUniqueWithoutUserInput | ConflictUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ConflictCreateManyUserInputEnvelope
+    set?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
+    disconnect?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
+    delete?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
+    connect?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
+    update?: ConflictUpdateWithWhereUniqueWithoutUserInput | ConflictUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ConflictUpdateManyWithWhereWithoutUserInput | ConflictUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ConflictScalarWhereInput | ConflictScalarWhereInput[]
+  }
+
   export type EventCreaterecurringDaysInput = {
     set: number[]
   }
@@ -12337,6 +17356,20 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutEventsInput, UserUncheckedCreateWithoutEventsInput>
     connectOrCreate?: UserCreateOrConnectWithoutEventsInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type ConflictTaskCreateNestedManyWithoutEventInput = {
+    create?: XOR<ConflictTaskCreateWithoutEventInput, ConflictTaskUncheckedCreateWithoutEventInput> | ConflictTaskCreateWithoutEventInput[] | ConflictTaskUncheckedCreateWithoutEventInput[]
+    connectOrCreate?: ConflictTaskCreateOrConnectWithoutEventInput | ConflictTaskCreateOrConnectWithoutEventInput[]
+    createMany?: ConflictTaskCreateManyEventInputEnvelope
+    connect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+  }
+
+  export type ConflictTaskUncheckedCreateNestedManyWithoutEventInput = {
+    create?: XOR<ConflictTaskCreateWithoutEventInput, ConflictTaskUncheckedCreateWithoutEventInput> | ConflictTaskCreateWithoutEventInput[] | ConflictTaskUncheckedCreateWithoutEventInput[]
+    connectOrCreate?: ConflictTaskCreateOrConnectWithoutEventInput | ConflictTaskCreateOrConnectWithoutEventInput[]
+    createMany?: ConflictTaskCreateManyEventInputEnvelope
+    connect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
   }
 
   export type EventUpdaterecurringDaysInput = {
@@ -12350,6 +17383,198 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutEventsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEventsInput, UserUpdateWithoutEventsInput>, UserUncheckedUpdateWithoutEventsInput>
+  }
+
+  export type ConflictTaskUpdateManyWithoutEventNestedInput = {
+    create?: XOR<ConflictTaskCreateWithoutEventInput, ConflictTaskUncheckedCreateWithoutEventInput> | ConflictTaskCreateWithoutEventInput[] | ConflictTaskUncheckedCreateWithoutEventInput[]
+    connectOrCreate?: ConflictTaskCreateOrConnectWithoutEventInput | ConflictTaskCreateOrConnectWithoutEventInput[]
+    upsert?: ConflictTaskUpsertWithWhereUniqueWithoutEventInput | ConflictTaskUpsertWithWhereUniqueWithoutEventInput[]
+    createMany?: ConflictTaskCreateManyEventInputEnvelope
+    set?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    disconnect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    delete?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    connect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    update?: ConflictTaskUpdateWithWhereUniqueWithoutEventInput | ConflictTaskUpdateWithWhereUniqueWithoutEventInput[]
+    updateMany?: ConflictTaskUpdateManyWithWhereWithoutEventInput | ConflictTaskUpdateManyWithWhereWithoutEventInput[]
+    deleteMany?: ConflictTaskScalarWhereInput | ConflictTaskScalarWhereInput[]
+  }
+
+  export type ConflictTaskUncheckedUpdateManyWithoutEventNestedInput = {
+    create?: XOR<ConflictTaskCreateWithoutEventInput, ConflictTaskUncheckedCreateWithoutEventInput> | ConflictTaskCreateWithoutEventInput[] | ConflictTaskUncheckedCreateWithoutEventInput[]
+    connectOrCreate?: ConflictTaskCreateOrConnectWithoutEventInput | ConflictTaskCreateOrConnectWithoutEventInput[]
+    upsert?: ConflictTaskUpsertWithWhereUniqueWithoutEventInput | ConflictTaskUpsertWithWhereUniqueWithoutEventInput[]
+    createMany?: ConflictTaskCreateManyEventInputEnvelope
+    set?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    disconnect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    delete?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    connect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    update?: ConflictTaskUpdateWithWhereUniqueWithoutEventInput | ConflictTaskUpdateWithWhereUniqueWithoutEventInput[]
+    updateMany?: ConflictTaskUpdateManyWithWhereWithoutEventInput | ConflictTaskUpdateManyWithWhereWithoutEventInput[]
+    deleteMany?: ConflictTaskScalarWhereInput | ConflictTaskScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutConflictsInput = {
+    create?: XOR<UserCreateWithoutConflictsInput, UserUncheckedCreateWithoutConflictsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutConflictsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ConflictTaskCreateNestedManyWithoutConflictInput = {
+    create?: XOR<ConflictTaskCreateWithoutConflictInput, ConflictTaskUncheckedCreateWithoutConflictInput> | ConflictTaskCreateWithoutConflictInput[] | ConflictTaskUncheckedCreateWithoutConflictInput[]
+    connectOrCreate?: ConflictTaskCreateOrConnectWithoutConflictInput | ConflictTaskCreateOrConnectWithoutConflictInput[]
+    createMany?: ConflictTaskCreateManyConflictInputEnvelope
+    connect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+  }
+
+  export type ConflictProposalCreateNestedManyWithoutConflictInput = {
+    create?: XOR<ConflictProposalCreateWithoutConflictInput, ConflictProposalUncheckedCreateWithoutConflictInput> | ConflictProposalCreateWithoutConflictInput[] | ConflictProposalUncheckedCreateWithoutConflictInput[]
+    connectOrCreate?: ConflictProposalCreateOrConnectWithoutConflictInput | ConflictProposalCreateOrConnectWithoutConflictInput[]
+    createMany?: ConflictProposalCreateManyConflictInputEnvelope
+    connect?: ConflictProposalWhereUniqueInput | ConflictProposalWhereUniqueInput[]
+  }
+
+  export type ConflictTaskUncheckedCreateNestedManyWithoutConflictInput = {
+    create?: XOR<ConflictTaskCreateWithoutConflictInput, ConflictTaskUncheckedCreateWithoutConflictInput> | ConflictTaskCreateWithoutConflictInput[] | ConflictTaskUncheckedCreateWithoutConflictInput[]
+    connectOrCreate?: ConflictTaskCreateOrConnectWithoutConflictInput | ConflictTaskCreateOrConnectWithoutConflictInput[]
+    createMany?: ConflictTaskCreateManyConflictInputEnvelope
+    connect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+  }
+
+  export type ConflictProposalUncheckedCreateNestedManyWithoutConflictInput = {
+    create?: XOR<ConflictProposalCreateWithoutConflictInput, ConflictProposalUncheckedCreateWithoutConflictInput> | ConflictProposalCreateWithoutConflictInput[] | ConflictProposalUncheckedCreateWithoutConflictInput[]
+    connectOrCreate?: ConflictProposalCreateOrConnectWithoutConflictInput | ConflictProposalCreateOrConnectWithoutConflictInput[]
+    createMany?: ConflictProposalCreateManyConflictInputEnvelope
+    connect?: ConflictProposalWhereUniqueInput | ConflictProposalWhereUniqueInput[]
+  }
+
+  export type EnumConflictStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ConflictStatus
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type UserUpdateOneRequiredWithoutConflictsNestedInput = {
+    create?: XOR<UserCreateWithoutConflictsInput, UserUncheckedCreateWithoutConflictsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutConflictsInput
+    upsert?: UserUpsertWithoutConflictsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutConflictsInput, UserUpdateWithoutConflictsInput>, UserUncheckedUpdateWithoutConflictsInput>
+  }
+
+  export type ConflictTaskUpdateManyWithoutConflictNestedInput = {
+    create?: XOR<ConflictTaskCreateWithoutConflictInput, ConflictTaskUncheckedCreateWithoutConflictInput> | ConflictTaskCreateWithoutConflictInput[] | ConflictTaskUncheckedCreateWithoutConflictInput[]
+    connectOrCreate?: ConflictTaskCreateOrConnectWithoutConflictInput | ConflictTaskCreateOrConnectWithoutConflictInput[]
+    upsert?: ConflictTaskUpsertWithWhereUniqueWithoutConflictInput | ConflictTaskUpsertWithWhereUniqueWithoutConflictInput[]
+    createMany?: ConflictTaskCreateManyConflictInputEnvelope
+    set?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    disconnect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    delete?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    connect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    update?: ConflictTaskUpdateWithWhereUniqueWithoutConflictInput | ConflictTaskUpdateWithWhereUniqueWithoutConflictInput[]
+    updateMany?: ConflictTaskUpdateManyWithWhereWithoutConflictInput | ConflictTaskUpdateManyWithWhereWithoutConflictInput[]
+    deleteMany?: ConflictTaskScalarWhereInput | ConflictTaskScalarWhereInput[]
+  }
+
+  export type ConflictProposalUpdateManyWithoutConflictNestedInput = {
+    create?: XOR<ConflictProposalCreateWithoutConflictInput, ConflictProposalUncheckedCreateWithoutConflictInput> | ConflictProposalCreateWithoutConflictInput[] | ConflictProposalUncheckedCreateWithoutConflictInput[]
+    connectOrCreate?: ConflictProposalCreateOrConnectWithoutConflictInput | ConflictProposalCreateOrConnectWithoutConflictInput[]
+    upsert?: ConflictProposalUpsertWithWhereUniqueWithoutConflictInput | ConflictProposalUpsertWithWhereUniqueWithoutConflictInput[]
+    createMany?: ConflictProposalCreateManyConflictInputEnvelope
+    set?: ConflictProposalWhereUniqueInput | ConflictProposalWhereUniqueInput[]
+    disconnect?: ConflictProposalWhereUniqueInput | ConflictProposalWhereUniqueInput[]
+    delete?: ConflictProposalWhereUniqueInput | ConflictProposalWhereUniqueInput[]
+    connect?: ConflictProposalWhereUniqueInput | ConflictProposalWhereUniqueInput[]
+    update?: ConflictProposalUpdateWithWhereUniqueWithoutConflictInput | ConflictProposalUpdateWithWhereUniqueWithoutConflictInput[]
+    updateMany?: ConflictProposalUpdateManyWithWhereWithoutConflictInput | ConflictProposalUpdateManyWithWhereWithoutConflictInput[]
+    deleteMany?: ConflictProposalScalarWhereInput | ConflictProposalScalarWhereInput[]
+  }
+
+  export type ConflictTaskUncheckedUpdateManyWithoutConflictNestedInput = {
+    create?: XOR<ConflictTaskCreateWithoutConflictInput, ConflictTaskUncheckedCreateWithoutConflictInput> | ConflictTaskCreateWithoutConflictInput[] | ConflictTaskUncheckedCreateWithoutConflictInput[]
+    connectOrCreate?: ConflictTaskCreateOrConnectWithoutConflictInput | ConflictTaskCreateOrConnectWithoutConflictInput[]
+    upsert?: ConflictTaskUpsertWithWhereUniqueWithoutConflictInput | ConflictTaskUpsertWithWhereUniqueWithoutConflictInput[]
+    createMany?: ConflictTaskCreateManyConflictInputEnvelope
+    set?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    disconnect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    delete?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    connect?: ConflictTaskWhereUniqueInput | ConflictTaskWhereUniqueInput[]
+    update?: ConflictTaskUpdateWithWhereUniqueWithoutConflictInput | ConflictTaskUpdateWithWhereUniqueWithoutConflictInput[]
+    updateMany?: ConflictTaskUpdateManyWithWhereWithoutConflictInput | ConflictTaskUpdateManyWithWhereWithoutConflictInput[]
+    deleteMany?: ConflictTaskScalarWhereInput | ConflictTaskScalarWhereInput[]
+  }
+
+  export type ConflictProposalUncheckedUpdateManyWithoutConflictNestedInput = {
+    create?: XOR<ConflictProposalCreateWithoutConflictInput, ConflictProposalUncheckedCreateWithoutConflictInput> | ConflictProposalCreateWithoutConflictInput[] | ConflictProposalUncheckedCreateWithoutConflictInput[]
+    connectOrCreate?: ConflictProposalCreateOrConnectWithoutConflictInput | ConflictProposalCreateOrConnectWithoutConflictInput[]
+    upsert?: ConflictProposalUpsertWithWhereUniqueWithoutConflictInput | ConflictProposalUpsertWithWhereUniqueWithoutConflictInput[]
+    createMany?: ConflictProposalCreateManyConflictInputEnvelope
+    set?: ConflictProposalWhereUniqueInput | ConflictProposalWhereUniqueInput[]
+    disconnect?: ConflictProposalWhereUniqueInput | ConflictProposalWhereUniqueInput[]
+    delete?: ConflictProposalWhereUniqueInput | ConflictProposalWhereUniqueInput[]
+    connect?: ConflictProposalWhereUniqueInput | ConflictProposalWhereUniqueInput[]
+    update?: ConflictProposalUpdateWithWhereUniqueWithoutConflictInput | ConflictProposalUpdateWithWhereUniqueWithoutConflictInput[]
+    updateMany?: ConflictProposalUpdateManyWithWhereWithoutConflictInput | ConflictProposalUpdateManyWithWhereWithoutConflictInput[]
+    deleteMany?: ConflictProposalScalarWhereInput | ConflictProposalScalarWhereInput[]
+  }
+
+  export type ConflictCreateNestedOneWithoutTasksInput = {
+    create?: XOR<ConflictCreateWithoutTasksInput, ConflictUncheckedCreateWithoutTasksInput>
+    connectOrCreate?: ConflictCreateOrConnectWithoutTasksInput
+    connect?: ConflictWhereUniqueInput
+  }
+
+  export type EventCreateNestedOneWithoutConflictTasksInput = {
+    create?: XOR<EventCreateWithoutConflictTasksInput, EventUncheckedCreateWithoutConflictTasksInput>
+    connectOrCreate?: EventCreateOrConnectWithoutConflictTasksInput
+    connect?: EventWhereUniqueInput
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type EnumTaskTypeFieldUpdateOperationsInput = {
+    set?: $Enums.TaskType
+  }
+
+  export type EnumPriorityFieldUpdateOperationsInput = {
+    set?: $Enums.Priority
+  }
+
+  export type ConflictUpdateOneRequiredWithoutTasksNestedInput = {
+    create?: XOR<ConflictCreateWithoutTasksInput, ConflictUncheckedCreateWithoutTasksInput>
+    connectOrCreate?: ConflictCreateOrConnectWithoutTasksInput
+    upsert?: ConflictUpsertWithoutTasksInput
+    connect?: ConflictWhereUniqueInput
+    update?: XOR<XOR<ConflictUpdateToOneWithWhereWithoutTasksInput, ConflictUpdateWithoutTasksInput>, ConflictUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type EventUpdateOneRequiredWithoutConflictTasksNestedInput = {
+    create?: XOR<EventCreateWithoutConflictTasksInput, EventUncheckedCreateWithoutConflictTasksInput>
+    connectOrCreate?: EventCreateOrConnectWithoutConflictTasksInput
+    upsert?: EventUpsertWithoutConflictTasksInput
+    connect?: EventWhereUniqueInput
+    update?: XOR<XOR<EventUpdateToOneWithWhereWithoutConflictTasksInput, EventUpdateWithoutConflictTasksInput>, EventUncheckedUpdateWithoutConflictTasksInput>
+  }
+
+  export type ConflictCreateNestedOneWithoutProposalsInput = {
+    create?: XOR<ConflictCreateWithoutProposalsInput, ConflictUncheckedCreateWithoutProposalsInput>
+    connectOrCreate?: ConflictCreateOrConnectWithoutProposalsInput
+    connect?: ConflictWhereUniqueInput
+  }
+
+  export type ConflictUpdateOneRequiredWithoutProposalsNestedInput = {
+    create?: XOR<ConflictCreateWithoutProposalsInput, ConflictUncheckedCreateWithoutProposalsInput>
+    connectOrCreate?: ConflictCreateOrConnectWithoutProposalsInput
+    upsert?: ConflictUpsertWithoutProposalsInput
+    connect?: ConflictWhereUniqueInput
+    update?: XOR<XOR<ConflictUpdateToOneWithWhereWithoutProposalsInput, ConflictUpdateWithoutProposalsInput>, ConflictUncheckedUpdateWithoutProposalsInput>
   }
 
   export type UserCreateNestedOneWithoutTasksInput = {
@@ -12549,6 +17774,109 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedEnumConflictStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ConflictStatus | EnumConflictStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ConflictStatus[] | ListEnumConflictStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ConflictStatus[] | ListEnumConflictStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumConflictStatusFilter<$PrismaModel> | $Enums.ConflictStatus
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedEnumConflictStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ConflictStatus | EnumConflictStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ConflictStatus[] | ListEnumConflictStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ConflictStatus[] | ListEnumConflictStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumConflictStatusWithAggregatesFilter<$PrismaModel> | $Enums.ConflictStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumConflictStatusFilter<$PrismaModel>
+    _max?: NestedEnumConflictStatusFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTaskTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskType | EnumTaskTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskType[] | ListEnumTaskTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TaskType[] | ListEnumTaskTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTaskTypeFilter<$PrismaModel> | $Enums.TaskType
+  }
+
+  export type NestedEnumPriorityFilter<$PrismaModel = never> = {
+    equals?: $Enums.Priority | EnumPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumPriorityFilter<$PrismaModel> | $Enums.Priority
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedEnumTaskTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskType | EnumTaskTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskType[] | ListEnumTaskTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TaskType[] | ListEnumTaskTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTaskTypeWithAggregatesFilter<$PrismaModel> | $Enums.TaskType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTaskTypeFilter<$PrismaModel>
+    _max?: NestedEnumTaskTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPriorityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Priority | EnumPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Priority[] | ListEnumPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumPriorityWithAggregatesFilter<$PrismaModel> | $Enums.Priority
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPriorityFilter<$PrismaModel>
+    _max?: NestedEnumPriorityFilter<$PrismaModel>
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -12598,6 +17926,7 @@ export namespace Prisma {
     color: string
     colorName: string
     textColor: string
+    conflictTasks?: ConflictTaskCreateNestedManyWithoutEventInput
   }
 
   export type EventUncheckedCreateWithoutUserInput = {
@@ -12613,6 +17942,7 @@ export namespace Prisma {
     color: string
     colorName: string
     textColor: string
+    conflictTasks?: ConflictTaskUncheckedCreateNestedManyWithoutEventInput
   }
 
   export type EventCreateOrConnectWithoutUserInput = {
@@ -12745,6 +18075,40 @@ export namespace Prisma {
 
   export type AIToolsCreateManyUserInputEnvelope = {
     data: AIToolsCreateManyUserInput | AIToolsCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ConflictCreateWithoutUserInput = {
+    id?: string
+    errorId: string
+    summary: string
+    analysis: string
+    status?: $Enums.ConflictStatus
+    detectedAt?: Date | string
+    resolvedAt?: Date | string | null
+    tasks?: ConflictTaskCreateNestedManyWithoutConflictInput
+    proposals?: ConflictProposalCreateNestedManyWithoutConflictInput
+  }
+
+  export type ConflictUncheckedCreateWithoutUserInput = {
+    id?: string
+    errorId: string
+    summary: string
+    analysis: string
+    status?: $Enums.ConflictStatus
+    detectedAt?: Date | string
+    resolvedAt?: Date | string | null
+    tasks?: ConflictTaskUncheckedCreateNestedManyWithoutConflictInput
+    proposals?: ConflictProposalUncheckedCreateNestedManyWithoutConflictInput
+  }
+
+  export type ConflictCreateOrConnectWithoutUserInput = {
+    where: ConflictWhereUniqueInput
+    create: XOR<ConflictCreateWithoutUserInput, ConflictUncheckedCreateWithoutUserInput>
+  }
+
+  export type ConflictCreateManyUserInputEnvelope = {
+    data: ConflictCreateManyUserInput | ConflictCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -12933,6 +18297,36 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AITools"> | Date | string
   }
 
+  export type ConflictUpsertWithWhereUniqueWithoutUserInput = {
+    where: ConflictWhereUniqueInput
+    update: XOR<ConflictUpdateWithoutUserInput, ConflictUncheckedUpdateWithoutUserInput>
+    create: XOR<ConflictCreateWithoutUserInput, ConflictUncheckedCreateWithoutUserInput>
+  }
+
+  export type ConflictUpdateWithWhereUniqueWithoutUserInput = {
+    where: ConflictWhereUniqueInput
+    data: XOR<ConflictUpdateWithoutUserInput, ConflictUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ConflictUpdateManyWithWhereWithoutUserInput = {
+    where: ConflictScalarWhereInput
+    data: XOR<ConflictUpdateManyMutationInput, ConflictUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ConflictScalarWhereInput = {
+    AND?: ConflictScalarWhereInput | ConflictScalarWhereInput[]
+    OR?: ConflictScalarWhereInput[]
+    NOT?: ConflictScalarWhereInput | ConflictScalarWhereInput[]
+    id?: StringFilter<"Conflict"> | string
+    userId?: StringFilter<"Conflict"> | string
+    errorId?: StringFilter<"Conflict"> | string
+    summary?: StringFilter<"Conflict"> | string
+    analysis?: StringFilter<"Conflict"> | string
+    status?: EnumConflictStatusFilter<"Conflict"> | $Enums.ConflictStatus
+    detectedAt?: DateTimeFilter<"Conflict"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"Conflict"> | Date | string | null
+  }
+
   export type UserCreateWithoutEventsInput = {
     id?: string
     googleId?: string | null
@@ -12950,6 +18344,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
+    conflicts?: ConflictCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventsInput = {
@@ -12969,11 +18364,50 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+    conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutEventsInput, UserUncheckedCreateWithoutEventsInput>
+  }
+
+  export type ConflictTaskCreateWithoutEventInput = {
+    id?: string
+    title: string
+    startTime: Date | string
+    endTime: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType?: $Enums.TaskType
+    priority?: $Enums.Priority
+    conflict: ConflictCreateNestedOneWithoutTasksInput
+  }
+
+  export type ConflictTaskUncheckedCreateWithoutEventInput = {
+    id?: string
+    conflictId: string
+    title: string
+    startTime: Date | string
+    endTime: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType?: $Enums.TaskType
+    priority?: $Enums.Priority
+  }
+
+  export type ConflictTaskCreateOrConnectWithoutEventInput = {
+    where: ConflictTaskWhereUniqueInput
+    create: XOR<ConflictTaskCreateWithoutEventInput, ConflictTaskUncheckedCreateWithoutEventInput>
+  }
+
+  export type ConflictTaskCreateManyEventInputEnvelope = {
+    data: ConflictTaskCreateManyEventInput | ConflictTaskCreateManyEventInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutEventsInput = {
@@ -13004,6 +18438,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventsInput = {
@@ -13023,6 +18458,471 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ConflictTaskUpsertWithWhereUniqueWithoutEventInput = {
+    where: ConflictTaskWhereUniqueInput
+    update: XOR<ConflictTaskUpdateWithoutEventInput, ConflictTaskUncheckedUpdateWithoutEventInput>
+    create: XOR<ConflictTaskCreateWithoutEventInput, ConflictTaskUncheckedCreateWithoutEventInput>
+  }
+
+  export type ConflictTaskUpdateWithWhereUniqueWithoutEventInput = {
+    where: ConflictTaskWhereUniqueInput
+    data: XOR<ConflictTaskUpdateWithoutEventInput, ConflictTaskUncheckedUpdateWithoutEventInput>
+  }
+
+  export type ConflictTaskUpdateManyWithWhereWithoutEventInput = {
+    where: ConflictTaskScalarWhereInput
+    data: XOR<ConflictTaskUpdateManyMutationInput, ConflictTaskUncheckedUpdateManyWithoutEventInput>
+  }
+
+  export type ConflictTaskScalarWhereInput = {
+    AND?: ConflictTaskScalarWhereInput | ConflictTaskScalarWhereInput[]
+    OR?: ConflictTaskScalarWhereInput[]
+    NOT?: ConflictTaskScalarWhereInput | ConflictTaskScalarWhereInput[]
+    id?: StringFilter<"ConflictTask"> | string
+    conflictId?: StringFilter<"ConflictTask"> | string
+    eventId?: StringFilter<"ConflictTask"> | string
+    title?: StringFilter<"ConflictTask"> | string
+    startTime?: DateTimeFilter<"ConflictTask"> | Date | string
+    endTime?: DateTimeFilter<"ConflictTask"> | Date | string
+    displayStart?: IntFilter<"ConflictTask"> | number
+    displayEnd?: IntFilter<"ConflictTask"> | number
+    relativeStart?: IntFilter<"ConflictTask"> | number
+    relativeEnd?: IntFilter<"ConflictTask"> | number
+    taskType?: EnumTaskTypeFilter<"ConflictTask"> | $Enums.TaskType
+    priority?: EnumPriorityFilter<"ConflictTask"> | $Enums.Priority
+  }
+
+  export type UserCreateWithoutConflictsInput = {
+    id?: string
+    googleId?: string | null
+    password?: string | null
+    avatar?: string | null
+    email: string
+    name?: string | null
+    username?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    events?: EventCreateNestedManyWithoutUserInput
+    tasks?: TaskCreateNestedManyWithoutUserInput
+    moods?: MoodLogCreateNestedManyWithoutUserInput
+    sleep?: SleepLogCreateNestedOneWithoutUserInput
+    behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
+    preferences?: PreferencesCreateNestedOneWithoutUserInput
+    actions?: AIToolsCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutConflictsInput = {
+    id?: string
+    googleId?: string | null
+    password?: string | null
+    avatar?: string | null
+    email: string
+    name?: string | null
+    username?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    events?: EventUncheckedCreateNestedManyWithoutUserInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    moods?: MoodLogUncheckedCreateNestedManyWithoutUserInput
+    sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
+    behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
+    preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+    actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutConflictsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutConflictsInput, UserUncheckedCreateWithoutConflictsInput>
+  }
+
+  export type ConflictTaskCreateWithoutConflictInput = {
+    id?: string
+    title: string
+    startTime: Date | string
+    endTime: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType?: $Enums.TaskType
+    priority?: $Enums.Priority
+    event: EventCreateNestedOneWithoutConflictTasksInput
+  }
+
+  export type ConflictTaskUncheckedCreateWithoutConflictInput = {
+    id?: string
+    eventId: string
+    title: string
+    startTime: Date | string
+    endTime: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType?: $Enums.TaskType
+    priority?: $Enums.Priority
+  }
+
+  export type ConflictTaskCreateOrConnectWithoutConflictInput = {
+    where: ConflictTaskWhereUniqueInput
+    create: XOR<ConflictTaskCreateWithoutConflictInput, ConflictTaskUncheckedCreateWithoutConflictInput>
+  }
+
+  export type ConflictTaskCreateManyConflictInputEnvelope = {
+    data: ConflictTaskCreateManyConflictInput | ConflictTaskCreateManyConflictInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ConflictProposalCreateWithoutConflictInput = {
+    id?: string
+    eventId: string
+    title: string
+    proposedStart: Date | string
+    proposedEnd: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType: $Enums.TaskType
+    reasoning: string
+  }
+
+  export type ConflictProposalUncheckedCreateWithoutConflictInput = {
+    id?: string
+    eventId: string
+    title: string
+    proposedStart: Date | string
+    proposedEnd: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType: $Enums.TaskType
+    reasoning: string
+  }
+
+  export type ConflictProposalCreateOrConnectWithoutConflictInput = {
+    where: ConflictProposalWhereUniqueInput
+    create: XOR<ConflictProposalCreateWithoutConflictInput, ConflictProposalUncheckedCreateWithoutConflictInput>
+  }
+
+  export type ConflictProposalCreateManyConflictInputEnvelope = {
+    data: ConflictProposalCreateManyConflictInput | ConflictProposalCreateManyConflictInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutConflictsInput = {
+    update: XOR<UserUpdateWithoutConflictsInput, UserUncheckedUpdateWithoutConflictsInput>
+    create: XOR<UserCreateWithoutConflictsInput, UserUncheckedCreateWithoutConflictsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutConflictsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutConflictsInput, UserUncheckedUpdateWithoutConflictsInput>
+  }
+
+  export type UserUpdateWithoutConflictsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    events?: EventUpdateManyWithoutUserNestedInput
+    tasks?: TaskUpdateManyWithoutUserNestedInput
+    moods?: MoodLogUpdateManyWithoutUserNestedInput
+    sleep?: SleepLogUpdateOneWithoutUserNestedInput
+    behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
+    preferences?: PreferencesUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutConflictsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    events?: EventUncheckedUpdateManyWithoutUserNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    moods?: MoodLogUncheckedUpdateManyWithoutUserNestedInput
+    sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
+    behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
+    preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ConflictTaskUpsertWithWhereUniqueWithoutConflictInput = {
+    where: ConflictTaskWhereUniqueInput
+    update: XOR<ConflictTaskUpdateWithoutConflictInput, ConflictTaskUncheckedUpdateWithoutConflictInput>
+    create: XOR<ConflictTaskCreateWithoutConflictInput, ConflictTaskUncheckedCreateWithoutConflictInput>
+  }
+
+  export type ConflictTaskUpdateWithWhereUniqueWithoutConflictInput = {
+    where: ConflictTaskWhereUniqueInput
+    data: XOR<ConflictTaskUpdateWithoutConflictInput, ConflictTaskUncheckedUpdateWithoutConflictInput>
+  }
+
+  export type ConflictTaskUpdateManyWithWhereWithoutConflictInput = {
+    where: ConflictTaskScalarWhereInput
+    data: XOR<ConflictTaskUpdateManyMutationInput, ConflictTaskUncheckedUpdateManyWithoutConflictInput>
+  }
+
+  export type ConflictProposalUpsertWithWhereUniqueWithoutConflictInput = {
+    where: ConflictProposalWhereUniqueInput
+    update: XOR<ConflictProposalUpdateWithoutConflictInput, ConflictProposalUncheckedUpdateWithoutConflictInput>
+    create: XOR<ConflictProposalCreateWithoutConflictInput, ConflictProposalUncheckedCreateWithoutConflictInput>
+  }
+
+  export type ConflictProposalUpdateWithWhereUniqueWithoutConflictInput = {
+    where: ConflictProposalWhereUniqueInput
+    data: XOR<ConflictProposalUpdateWithoutConflictInput, ConflictProposalUncheckedUpdateWithoutConflictInput>
+  }
+
+  export type ConflictProposalUpdateManyWithWhereWithoutConflictInput = {
+    where: ConflictProposalScalarWhereInput
+    data: XOR<ConflictProposalUpdateManyMutationInput, ConflictProposalUncheckedUpdateManyWithoutConflictInput>
+  }
+
+  export type ConflictProposalScalarWhereInput = {
+    AND?: ConflictProposalScalarWhereInput | ConflictProposalScalarWhereInput[]
+    OR?: ConflictProposalScalarWhereInput[]
+    NOT?: ConflictProposalScalarWhereInput | ConflictProposalScalarWhereInput[]
+    id?: StringFilter<"ConflictProposal"> | string
+    conflictId?: StringFilter<"ConflictProposal"> | string
+    eventId?: StringFilter<"ConflictProposal"> | string
+    title?: StringFilter<"ConflictProposal"> | string
+    proposedStart?: DateTimeFilter<"ConflictProposal"> | Date | string
+    proposedEnd?: DateTimeFilter<"ConflictProposal"> | Date | string
+    displayStart?: IntFilter<"ConflictProposal"> | number
+    displayEnd?: IntFilter<"ConflictProposal"> | number
+    relativeStart?: IntFilter<"ConflictProposal"> | number
+    relativeEnd?: IntFilter<"ConflictProposal"> | number
+    taskType?: EnumTaskTypeFilter<"ConflictProposal"> | $Enums.TaskType
+    reasoning?: StringFilter<"ConflictProposal"> | string
+  }
+
+  export type ConflictCreateWithoutTasksInput = {
+    id?: string
+    errorId: string
+    summary: string
+    analysis: string
+    status?: $Enums.ConflictStatus
+    detectedAt?: Date | string
+    resolvedAt?: Date | string | null
+    user: UserCreateNestedOneWithoutConflictsInput
+    proposals?: ConflictProposalCreateNestedManyWithoutConflictInput
+  }
+
+  export type ConflictUncheckedCreateWithoutTasksInput = {
+    id?: string
+    userId: string
+    errorId: string
+    summary: string
+    analysis: string
+    status?: $Enums.ConflictStatus
+    detectedAt?: Date | string
+    resolvedAt?: Date | string | null
+    proposals?: ConflictProposalUncheckedCreateNestedManyWithoutConflictInput
+  }
+
+  export type ConflictCreateOrConnectWithoutTasksInput = {
+    where: ConflictWhereUniqueInput
+    create: XOR<ConflictCreateWithoutTasksInput, ConflictUncheckedCreateWithoutTasksInput>
+  }
+
+  export type EventCreateWithoutConflictTasksInput = {
+    id?: string
+    title: string
+    location?: string | null
+    desc?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    recurringDays?: EventCreaterecurringDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    color: string
+    colorName: string
+    textColor: string
+    user: UserCreateNestedOneWithoutEventsInput
+  }
+
+  export type EventUncheckedCreateWithoutConflictTasksInput = {
+    id?: string
+    title: string
+    location?: string | null
+    desc?: string | null
+    startTime: Date | string
+    endTime: Date | string
+    recurringDays?: EventCreaterecurringDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    color: string
+    colorName: string
+    textColor: string
+    userId: string
+  }
+
+  export type EventCreateOrConnectWithoutConflictTasksInput = {
+    where: EventWhereUniqueInput
+    create: XOR<EventCreateWithoutConflictTasksInput, EventUncheckedCreateWithoutConflictTasksInput>
+  }
+
+  export type ConflictUpsertWithoutTasksInput = {
+    update: XOR<ConflictUpdateWithoutTasksInput, ConflictUncheckedUpdateWithoutTasksInput>
+    create: XOR<ConflictCreateWithoutTasksInput, ConflictUncheckedCreateWithoutTasksInput>
+    where?: ConflictWhereInput
+  }
+
+  export type ConflictUpdateToOneWithWhereWithoutTasksInput = {
+    where?: ConflictWhereInput
+    data: XOR<ConflictUpdateWithoutTasksInput, ConflictUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type ConflictUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutConflictsNestedInput
+    proposals?: ConflictProposalUpdateManyWithoutConflictNestedInput
+  }
+
+  export type ConflictUncheckedUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    proposals?: ConflictProposalUncheckedUpdateManyWithoutConflictNestedInput
+  }
+
+  export type EventUpsertWithoutConflictTasksInput = {
+    update: XOR<EventUpdateWithoutConflictTasksInput, EventUncheckedUpdateWithoutConflictTasksInput>
+    create: XOR<EventCreateWithoutConflictTasksInput, EventUncheckedCreateWithoutConflictTasksInput>
+    where?: EventWhereInput
+  }
+
+  export type EventUpdateToOneWithWhereWithoutConflictTasksInput = {
+    where?: EventWhereInput
+    data: XOR<EventUpdateWithoutConflictTasksInput, EventUncheckedUpdateWithoutConflictTasksInput>
+  }
+
+  export type EventUpdateWithoutConflictTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    desc?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    recurringDays?: EventUpdaterecurringDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    color?: StringFieldUpdateOperationsInput | string
+    colorName?: StringFieldUpdateOperationsInput | string
+    textColor?: StringFieldUpdateOperationsInput | string
+    user?: UserUpdateOneRequiredWithoutEventsNestedInput
+  }
+
+  export type EventUncheckedUpdateWithoutConflictTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    desc?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    recurringDays?: EventUpdaterecurringDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    color?: StringFieldUpdateOperationsInput | string
+    colorName?: StringFieldUpdateOperationsInput | string
+    textColor?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ConflictCreateWithoutProposalsInput = {
+    id?: string
+    errorId: string
+    summary: string
+    analysis: string
+    status?: $Enums.ConflictStatus
+    detectedAt?: Date | string
+    resolvedAt?: Date | string | null
+    user: UserCreateNestedOneWithoutConflictsInput
+    tasks?: ConflictTaskCreateNestedManyWithoutConflictInput
+  }
+
+  export type ConflictUncheckedCreateWithoutProposalsInput = {
+    id?: string
+    userId: string
+    errorId: string
+    summary: string
+    analysis: string
+    status?: $Enums.ConflictStatus
+    detectedAt?: Date | string
+    resolvedAt?: Date | string | null
+    tasks?: ConflictTaskUncheckedCreateNestedManyWithoutConflictInput
+  }
+
+  export type ConflictCreateOrConnectWithoutProposalsInput = {
+    where: ConflictWhereUniqueInput
+    create: XOR<ConflictCreateWithoutProposalsInput, ConflictUncheckedCreateWithoutProposalsInput>
+  }
+
+  export type ConflictUpsertWithoutProposalsInput = {
+    update: XOR<ConflictUpdateWithoutProposalsInput, ConflictUncheckedUpdateWithoutProposalsInput>
+    create: XOR<ConflictCreateWithoutProposalsInput, ConflictUncheckedCreateWithoutProposalsInput>
+    where?: ConflictWhereInput
+  }
+
+  export type ConflictUpdateToOneWithWhereWithoutProposalsInput = {
+    where?: ConflictWhereInput
+    data: XOR<ConflictUpdateWithoutProposalsInput, ConflictUncheckedUpdateWithoutProposalsInput>
+  }
+
+  export type ConflictUpdateWithoutProposalsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutConflictsNestedInput
+    tasks?: ConflictTaskUpdateManyWithoutConflictNestedInput
+  }
+
+  export type ConflictUncheckedUpdateWithoutProposalsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tasks?: ConflictTaskUncheckedUpdateManyWithoutConflictNestedInput
   }
 
   export type UserCreateWithoutTasksInput = {
@@ -13042,6 +18942,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
+    conflicts?: ConflictCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTasksInput = {
@@ -13061,6 +18962,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+    conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTasksInput = {
@@ -13096,6 +18998,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksInput = {
@@ -13115,6 +19018,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutMoodsInput = {
@@ -13134,6 +19038,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
+    conflicts?: ConflictCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMoodsInput = {
@@ -13153,6 +19058,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+    conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMoodsInput = {
@@ -13188,6 +19094,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMoodsInput = {
@@ -13207,6 +19114,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSleepInput = {
@@ -13226,6 +19134,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
+    conflicts?: ConflictCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSleepInput = {
@@ -13245,6 +19154,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+    conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSleepInput = {
@@ -13280,6 +19190,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSleepInput = {
@@ -13299,6 +19210,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutBehaviorInput = {
@@ -13318,6 +19230,7 @@ export namespace Prisma {
     sleep?: SleepLogCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
+    conflicts?: ConflictCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBehaviorInput = {
@@ -13337,6 +19250,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+    conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBehaviorInput = {
@@ -13372,6 +19286,7 @@ export namespace Prisma {
     sleep?: SleepLogUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBehaviorInput = {
@@ -13391,6 +19306,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPreferencesInput = {
@@ -13410,6 +19326,7 @@ export namespace Prisma {
     sleep?: SleepLogCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
+    conflicts?: ConflictCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPreferencesInput = {
@@ -13429,6 +19346,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+    conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPreferencesInput = {
@@ -13464,6 +19382,7 @@ export namespace Prisma {
     sleep?: SleepLogUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPreferencesInput = {
@@ -13483,6 +19402,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutActionsInput = {
@@ -13502,6 +19422,7 @@ export namespace Prisma {
     sleep?: SleepLogCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
+    conflicts?: ConflictCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActionsInput = {
@@ -13521,6 +19442,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+    conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActionsInput = {
@@ -13556,6 +19478,7 @@ export namespace Prisma {
     sleep?: SleepLogUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
+    conflicts?: ConflictUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActionsInput = {
@@ -13575,6 +19498,7 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EventCreateManyUserInput = {
@@ -13613,6 +19537,16 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type ConflictCreateManyUserInput = {
+    id?: string
+    errorId: string
+    summary: string
+    analysis: string
+    status?: $Enums.ConflictStatus
+    detectedAt?: Date | string
+    resolvedAt?: Date | string | null
+  }
+
   export type EventUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
@@ -13626,6 +19560,7 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
+    conflictTasks?: ConflictTaskUpdateManyWithoutEventNestedInput
   }
 
   export type EventUncheckedUpdateWithoutUserInput = {
@@ -13641,6 +19576,7 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
+    conflictTasks?: ConflictTaskUncheckedUpdateManyWithoutEventNestedInput
   }
 
   export type EventUncheckedUpdateManyWithoutUserInput = {
@@ -13719,6 +19655,208 @@ export namespace Prisma {
     inputData?: JsonNullValueInput | InputJsonValue
     outputData?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ConflictUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tasks?: ConflictTaskUpdateManyWithoutConflictNestedInput
+    proposals?: ConflictProposalUpdateManyWithoutConflictNestedInput
+  }
+
+  export type ConflictUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tasks?: ConflictTaskUncheckedUpdateManyWithoutConflictNestedInput
+    proposals?: ConflictProposalUncheckedUpdateManyWithoutConflictNestedInput
+  }
+
+  export type ConflictUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    errorId?: StringFieldUpdateOperationsInput | string
+    summary?: StringFieldUpdateOperationsInput | string
+    analysis?: StringFieldUpdateOperationsInput | string
+    status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
+    detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ConflictTaskCreateManyEventInput = {
+    id?: string
+    conflictId: string
+    title: string
+    startTime: Date | string
+    endTime: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType?: $Enums.TaskType
+    priority?: $Enums.Priority
+  }
+
+  export type ConflictTaskUpdateWithoutEventInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    conflict?: ConflictUpdateOneRequiredWithoutTasksNestedInput
+  }
+
+  export type ConflictTaskUncheckedUpdateWithoutEventInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conflictId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  }
+
+  export type ConflictTaskUncheckedUpdateManyWithoutEventInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conflictId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  }
+
+  export type ConflictTaskCreateManyConflictInput = {
+    id?: string
+    eventId: string
+    title: string
+    startTime: Date | string
+    endTime: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType?: $Enums.TaskType
+    priority?: $Enums.Priority
+  }
+
+  export type ConflictProposalCreateManyConflictInput = {
+    id?: string
+    eventId: string
+    title: string
+    proposedStart: Date | string
+    proposedEnd: Date | string
+    displayStart: number
+    displayEnd: number
+    relativeStart: number
+    relativeEnd: number
+    taskType: $Enums.TaskType
+    reasoning: string
+  }
+
+  export type ConflictTaskUpdateWithoutConflictInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    event?: EventUpdateOneRequiredWithoutConflictTasksNestedInput
+  }
+
+  export type ConflictTaskUncheckedUpdateWithoutConflictInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  }
+
+  export type ConflictTaskUncheckedUpdateManyWithoutConflictInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  }
+
+  export type ConflictProposalUpdateWithoutConflictInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    reasoning?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ConflictProposalUncheckedUpdateWithoutConflictInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    reasoning?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ConflictProposalUncheckedUpdateManyWithoutConflictInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    displayStart?: IntFieldUpdateOperationsInput | number
+    displayEnd?: IntFieldUpdateOperationsInput | number
+    relativeStart?: IntFieldUpdateOperationsInput | number
+    relativeEnd?: IntFieldUpdateOperationsInput | number
+    taskType?: EnumTaskTypeFieldUpdateOperationsInput | $Enums.TaskType
+    reasoning?: StringFieldUpdateOperationsInput | string
   }
 
 

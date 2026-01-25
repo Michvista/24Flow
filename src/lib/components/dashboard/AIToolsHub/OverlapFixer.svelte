@@ -7,29 +7,57 @@
 		ChevronLeft,
 		ChevronRight,
 		Loader2,
-		AlertCircle
+		AlertCircle,
+		RefreshCw
 	} from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 	import Navbar from '../../../../components/dashboard/Navbar.svelte';
 	import { onMount } from 'svelte';
 
+		import { Toaster, toast } from 'svelte-sonner';
+	import SonnerToast from '../../../../components/SonnerToast.svelte';
+	import { no } from 'zod/v4/locales';
+
+	function notifySuccess(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'success'
+			},
+			duration: 5000
+		});
+	}
+
+	function notifyError(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'error'
+			},
+			duration: 5000
+		});
+	}
+
 	// Type definitions
 	interface Task {
 		id?: number;
 		title: string;
-
-		// layout (minutes since cluster start)
 		start: number;
 		end: number;
-
-		// display (HHMM)
 		displayStart: number;
 		displayEnd: number;
-
-		// ISO timestamps (for applying fixes)
 		isoStart?: string;
 		isoEnd?: string;
-
 		type?: 'static' | 'conflict';
 	}
 
@@ -48,6 +76,7 @@
 	let allConflicts: Conflict[] = [];
 	let isLoading = true;
 	let errorMessage = '';
+	let isDetecting = false;
 
 	$: activeConflict = allConflicts[currentConflictIdx];
 	$: hasConflicts = allConflicts.length > 0;
@@ -56,19 +85,18 @@
 		await fetchConflicts();
 	});
 
+	/**
+	 * Fetch existing conflicts from database
+	 */
 	async function fetchConflicts() {
 		isLoading = true;
 		errorMessage = '';
 
 		try {
-			const res = await fetch('http://localhost:3000/ai/tool', {
-				method: 'POST',
+			const res = await fetch('http://localhost:3000/conflicts', {
+				method: 'GET',
 				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
-					toolType: 'GET_CONFLICTS',
-					payload: {}
-				})
+				credentials: 'include'
 			});
 
 			if (!res.ok) {
@@ -78,12 +106,9 @@
 			const result = await res.json();
 
 			if (result.status === 'success' && result.data) {
-				// Handle both array and single conflict object
 				const conflicts = Array.isArray(result.data) ? result.data : [result.data];
-
-				// Filter out any invalid conflicts
 				allConflicts = conflicts.filter((c: Conflict) => c && c.tasks && c.tasks.length > 0);
-
+				notifySuccess('Conflicts Loaded', 'Successfully fetched existing conflicts.');
 				if (allConflicts.length > 0) {
 					currentConflictIdx = 0;
 				}
@@ -96,17 +121,47 @@
 			}
 		} catch (err) {
 			console.error('Failed to load conflicts', err);
+			notifyError('Error Loading Conflicts', err instanceof Error ? err.message : 'Failed to load conflicts.');
 			errorMessage = err instanceof Error ? err.message : 'Failed to load conflicts';
 		} finally {
 			isLoading = false;
 		}
 	}
 
+	/**
+	 * Detect new conflicts (scans schedule and creates conflict records)
+	 */
+	async function detectNewConflicts() {
+		isDetecting = true;
+
+		try {
+			const res = await fetch('http://localhost:3000/conflicts/detect', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include'
+			});
+
+			const result = await res.json();
+
+			if (result.status === 'success') {
+				// Refresh the conflict list
+				await fetchConflicts();
+			} else {
+				errorMessage = result.message || 'Failed to detect conflicts';
+				notifyError('Error Detecting Conflicts', errorMessage);
+			}
+		} catch (err) {
+			console.error('Failed to detect conflicts', err);
+			errorMessage = err instanceof Error ? err.message : 'Failed to detect conflicts';
+			notifyError('Failed to detect conflicts', errorMessage);
+		} finally {
+			isDetecting = false;
+		}
+	}
+
 	// Dynamic position calculator
 	function calculatePosition(task: Task, index: number, totalTasks: number) {
 		const pixelsPerMinute = 1.5;
-
-		// Stack cards horizontally
 		const horizontalOffset = index * 20;
 		const widthAdjustment = index * -5;
 
@@ -119,13 +174,12 @@
 		};
 	}
 
-	// Generate time labels for the timeline based on display times
+	// Generate time labels for the timeline
 	function getTimeLabels(tasks: Task[]) {
 		if (!tasks?.length) {
 			return ['08:00', '09:00', '10:00', '11:00'];
 		}
 
-		// Use DISPLAY times (HHMM format)
 		const starts = tasks.map((t) => t.displayStart);
 		const ends = tasks.map((t) => t.displayEnd);
 
@@ -151,49 +205,110 @@
 	}
 
 	async function handleAccept() {
-		if (!activeConflict?.proposals) {
-			console.error('No proposals to apply');
+		if (!activeConflict) {
+			console.error('No active conflict');
 			return;
 		}
 
 		isLoading = true;
 		try {
-			const res = await fetch('http://localhost:3000/ai/tool', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
-					toolType: 'APPLY_FIX',
-					payload: { proposals: activeConflict.proposals }
-				})
-			});
+			// URL encode the conflict ID to handle # character
+			const encodedConflictId = encodeURIComponent(activeConflict.id);
+			
+			console.log('Accepting conflict:', activeConflict.id);
+			console.log('Encoded ID:', encodedConflictId);
+			
+			const res = await fetch(
+				`http://localhost:3000/conflicts/${encodedConflictId}/accept`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include'
+				}
+			);
+
+			if (!res.ok) {
+				const errorText = await res.text();
+				console.error('Server response:', res.status, errorText);
+				notifyError('Error Applying Resolution', `Failed to apply resolution: ${res.status} ${errorText}`);
+				throw new Error(`Failed to apply resolution: ${res.status} ${errorText}`);
+			}
 
 			const result = await res.json();
 
 			if (result.status === 'success') {
 				isResolved = true;
-				// Refresh conflicts after 1 second
+
+				// Update with remaining conflicts
+				if (result.data?.remainingConflicts) {
+					allConflicts = result.data.remainingConflicts;
+					currentConflictIdx = 0;
+				}
+				notifySuccess('Conflict Resolved', 'The proposed fix has been applied successfully, please wait a moment');
+				// Show success briefly then refresh
 				setTimeout(() => {
-					fetchConflicts();
 					isResolved = false;
+					if (allConflicts.length === 0) {
+						errorMessage = 'All conflicts resolved! 🎉';
+					}
 				}, 1000);
 			}
 		} catch (err) {
 			console.error('Failed to apply fix', err);
-			errorMessage = 'Failed to apply fix. Please try again.';
+			notifyError('Error Applying Fix', err instanceof Error ? err.message : 'Failed to apply fix. Please try again.');	
+			errorMessage = err instanceof Error ? err.message : 'Failed to apply fix. Please try again.';
 		} finally {
 			isLoading = false;
 		}
 	}
 
-	function handleDecline() {
-		console.log('Fix declined');
-		// Move to next conflict
-		if (currentConflictIdx < allConflicts.length - 1) {
-			currentConflictIdx++;
-		} else {
-			// If last conflict, refresh to check for new ones
-			fetchConflicts();
+	async function handleDecline() {
+		if (!activeConflict) {
+			console.error('No active conflict');
+			return;
+		}
+
+		try {
+			// URL encode the conflict ID to handle # character
+			const encodedConflictId = encodeURIComponent(activeConflict.id);
+			
+			console.log('Declining conflict:', activeConflict.id);
+			console.log('Encoded ID:', encodedConflictId);
+			
+			const res = await fetch(
+				`http://localhost:3000/conflicts/${encodedConflictId}/decline`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include'
+				}
+			);
+
+			if (!res.ok) {
+				const errorText = await res.text();
+				console.error('Server response:', res.status, errorText);
+				notifyError('Error Declining Resolution', `Failed to decline: ${res.status} ${errorText}`);
+				throw new Error(`Failed to decline: ${res.status} ${errorText}`);
+			}
+
+			const result = await res.json();
+
+			if (result.status === 'success') {
+				// Update with remaining conflicts
+				if (result.data?.remainingConflicts) {
+					allConflicts = result.data.remainingConflicts;
+					currentConflictIdx = 0;
+				}
+
+				if (allConflicts.length === 0) {
+					errorMessage = 'All conflicts reviewed.';
+				}
+				notifySuccess('Resolution Declined', 'The proposed resolution has been declined.');
+			}
+		} catch (err) {
+			console.error('Failed to decline', err);
+			errorMessage = err instanceof Error ? err.message : 'Failed to decline resolution.';
+			notifyError('Error Declining Resolution', err instanceof Error ? err.message : 'Failed to decline resolution.');
 		}
 	}
 
@@ -231,12 +346,27 @@
 			<div class="p-12 flex flex-col items-center justify-center gap-4">
 				<AlertCircle class="text-green-500" size={48} />
 				<p class="text-slate-300 text-lg font-bold">{errorMessage}</p>
-				<button
-					on:click={fetchConflicts}
-					class="mt-4 px-6 py-2 bg-primary text-white rounded font-bold hover:bg-primary/80"
-				>
-					Refresh
-				</button>
+				<div class="flex gap-4 mt-4">
+					<button
+						on:click={fetchConflicts}
+						class="px-6 py-2 bg-primary text-white rounded font-bold hover:bg-primary/80 flex items-center gap-2"
+					>
+						<RefreshCw size={16} />
+						Refresh
+					</button>
+					<button
+						on:click={detectNewConflicts}
+						disabled={isDetecting}
+						class="px-6 py-2 bg-slate-700 text-white rounded font-bold hover:bg-slate-600 flex items-center gap-2 disabled:opacity-50"
+					>
+						{#if isDetecting}
+							<Loader2 size={16} class="animate-spin" />
+						{:else}
+							<BrainCircuit size={16} />
+						{/if}
+						{isDetecting ? 'Detecting...' : 'Scan for Conflicts'}
+					</button>
+				</div>
 			</div>
 		{:else if hasConflicts && activeConflict}
 			<div
@@ -300,20 +430,21 @@
 							<span class="text-red-400/60 text-xs font-mono">Collision Cluster</span>
 						</div>
 
+						<!-- Added max-height and overflow-y-auto for scrolling -->
 						<div
-							class="relative h-64 bg-[#0b1016] border-2 border-red-500/30 border-dashed rounded overflow-hidden"
+							class="relative h-64 max-h-96 bg-[#0b1016] border-2 border-red-500/30 border-dashed rounded overflow-y-auto overflow-x-hidden"
 						>
 							<!-- Time labels -->
 							<div
-								class="absolute left-0 top-0 bottom-0 w-12 border-r border-[#233248]/50 flex flex-col justify-between py-2 text-[10px] text-slate-500 font-mono text-center"
+								class="sticky left-0 top-0 bottom-0 w-12 border-r border-[#233248]/50 flex flex-col justify-between py-2 text-[10px] text-slate-500 font-mono text-center bg-[#0b1016] z-10"
 							>
 								{#each getTimeLabels(activeConflict.tasks) as label}
-									<span>{label}</span>
+									<span class="py-1">{label}</span>
 								{/each}
 							</div>
 
-							<!-- Tasks -->
-							<div class="absolute inset-y-0 left-12 right-0 p-2">
+							<!-- Tasks - now in scrollable container -->
+							<div class="absolute inset-y-0 left-12 right-0 p-2" style="min-height: 300px;">
 								{#each activeConflict.tasks as task, i}
 									{@const pos = calculatePosition(task, i, activeConflict.tasks.length)}
 									<div
@@ -364,14 +495,15 @@
 							</h3>
 						</div>
 
+						<!-- Added max-height and overflow-y-auto for scrolling -->
 						<div
-							class="relative h-64 bg-[#0b1016] border-2 border-primary rounded shadow-[inset_0_0_20px_rgba(14,98,216,0.1)] overflow-hidden"
+							class="relative h-64 max-h-96 bg-[#0b1016] border-2 border-primary rounded shadow-[inset_0_0_20px_rgba(14,98,216,0.1)] overflow-y-auto overflow-x-hidden"
 						>
 							<div
-								class="absolute left-0 top-0 bottom-0 w-12 border-r border-[#233248]/50 flex flex-col justify-between py-2 text-[10px] text-slate-500 font-mono text-center bg-[#111822]"
+								class="sticky left-0 top-0 bottom-0 w-12 border-r border-[#233248]/50 flex flex-col justify-between py-2 text-[10px] text-slate-500 font-mono text-center bg-[#111822] z-10"
 							>
 								{#each getTimeLabels(activeConflict.proposals || []) as label}
-									<span>{label}</span>
+									<span class="py-1">{label}</span>
 								{/each}
 							</div>
 
@@ -383,9 +515,11 @@
 												? 'border-green-500 bg-green-500/10'
 												: ''}"
 										>
-											<div>
-												<span class="text-white text-xs font-bold block">{task.title}</span>
-												<span class="text-[10px] text-primary font-mono">
+											<div class="flex-1 min-w-0">
+												<span class="text-white text-xs font-bold block truncate"
+													>{task.title}</span
+												>
+												<span class="text-[10px] text-primary font-mono block">
 													{isResolved ? 'Scheduled' : 'Optimized Slot'}: {formatTime(
 														task.displayStart
 													)}
@@ -393,7 +527,7 @@
 												</span>
 											</div>
 											<div
-												class="size-6 rounded-full bg-primary flex items-center justify-center {isResolved
+												class="size-6 rounded-full bg-primary flex items-center justify-center shrink-0 ml-2 {isResolved
 													? 'bg-green-500'
 													: ''}"
 											>
@@ -451,6 +585,7 @@
 		{/if}
 	</div>
 </div>
+<Toaster position="bottom-right" expand={false} richColors />
 
 <style>
 	:global(.animate-spin-slow) {
@@ -463,5 +598,24 @@
 		to {
 			transform: rotate(360deg);
 		}
-	} 
+	}
+
+	/* Custom scrollbar styling */
+	:global(.overflow-y-auto::-webkit-scrollbar) {
+		width: 8px;
+	}
+
+	:global(.overflow-y-auto::-webkit-scrollbar-track) {
+		background: #0b1016;
+		border-radius: 4px;
+	}
+
+	:global(.overflow-y-auto::-webkit-scrollbar-thumb) {
+		background: #233248;
+		border-radius: 4px;
+	}
+
+	:global(.overflow-y-auto::-webkit-scrollbar-thumb:hover) {
+		background: #2d3e56;
+	}
 </style>

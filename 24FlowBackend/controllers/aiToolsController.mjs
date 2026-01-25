@@ -16,43 +16,6 @@ export const handleAiTool = async (req, res, next) => {
 				break;
 			}
 
-			case 'GET_CONFLICTS': {
-				const conflicts = await getOverlapFixes(req.user.id);
-				aiResponse = conflicts;
-				break;
-			}
-
-			case 'APPLY_FIX': {
-				const { proposals } = payload;
-
-				if (!proposals || !Array.isArray(proposals)) {
-					return res.status(400).json({
-						status: 'fail',
-						message: 'Invalid proposals format. Expected an array of proposals.'
-					});
-				}
-
-				if (proposals.length === 0) {
-					return res.status(400).json({
-						status: 'fail',
-						message: 'No proposals provided to apply.'
-					});
-				}
-
-				// Apply the fixes
-				const result = await applyOverlapFix(proposals);
-
-				// Fetch updated conflicts to show current state
-				const updatedConflicts = await getOverlapFixes(req.user.id);
-
-				aiResponse = {
-					applied: true,
-					updatedEvents: result.updatedEvents,
-					remainingConflicts: updatedConflicts
-				};
-				break;
-			}
-
 			case 'STUDY_GEN': {
 				// Placeholder for future implementation
 				aiResponse = { message: 'Study plan generation coming soon' };

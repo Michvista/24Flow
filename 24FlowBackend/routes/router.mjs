@@ -3,6 +3,7 @@ import auth from './authRoutes/auth.mjs';
 import event from './eventRoutes/event.mjs';
 import task from './taskRoutes/task.mjs';
 import tools from './AIRoutes/AIToolsRoute.mjs';
+import overlap from './AIRoutes/conflictRoutes.mjs';
 import createError from 'http-errors';
 
 const router = express.Router();
@@ -15,6 +16,7 @@ router.use('/auth', auth);
 router.use('/events', event)
 router.use('/tasks', task)
 router.use('/ai',tools )
+router.use('/conflicts',overlap )
 
 router.use(async (req, res, next) => {
 	next(createError.NotFound('Route not Found'));

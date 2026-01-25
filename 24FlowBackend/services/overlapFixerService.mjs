@@ -158,13 +158,24 @@ async function generateAIProposal(overlappingEvents, allUserEvents) {
 		);
 
 		// Prepare context for AI
+		// Helper: mark events that should be treated as important
+		const isImportantEvent = (e) => {
+			const text = `${e.title || ''} ${e.desc || ''}`.toLowerCase();
+			const durMinutes = Math.round((new Date(e.endTime) - new Date(e.startTime)) / (1000 * 60));
+			return (
+				/\b(meeting|interview|urgent|important|priority|call|presentation)\b/.test(text) ||
+				durMinutes >= 120
+			);
+		};
+
 		const conflictingEventsInfo = sorted.map((e) => ({
 			id: e.id,
 			title: e.title,
 			description: e.desc || '',
 			startTime: e.startTime.toISOString(),
 			endTime: e.endTime.toISOString(),
-			duration: Math.round((e.endTime - e.startTime) / (1000 * 60)) // minutes
+			duration: Math.round((e.endTime - e.startTime) / (1000 * 60)), // minutes
+			priority: isImportantEvent(e) ? 'high' : 'low'
 		}));
 
 		// Get other events on the same day for context
@@ -173,80 +184,203 @@ async function generateAIProposal(overlappingEvents, allUserEvents) {
 		const dayEnd = new Date(dayStart);
 		dayEnd.setHours(23, 59, 59, 999);
 
-		const otherEvents = allUserEvents
-			.filter((e) => {
-				const eventDate = new Date(e.startTime);
-				return eventDate >= dayStart && eventDate <= dayEnd && !sorted.some((s) => s.id === e.id);
-			})
+		// Limit other events included in prompt to keep prompt size small and performance snappy.
+		const otherEventsRaw = allUserEvents.filter((e) => {
+			const eventDate = new Date(e.startTime);
+			return eventDate >= dayStart && eventDate <= dayEnd && !sorted.some((s) => s.id === e.id);
+		});
+
+		// summarize busy slots by merging overlapping other events (helps model reason without listing every single event)
+		function mergeIntervals(eventsList) {
+			if (!eventsList.length) return [];
+			const intervals = eventsList
+				.map((ev) => ({ start: new Date(ev.startTime), end: new Date(ev.endTime) }))
+				.sort((a, b) => a.start - b.start);
+			const merged = [intervals[0]];
+			for (let i = 1; i < intervals.length; i++) {
+				const last = merged[merged.length - 1];
+				if (intervals[i].start <= last.end) {
+					last.end = new Date(Math.max(last.end.getTime(), intervals[i].end.getTime()));
+				} else {
+					merged.push(intervals[i]);
+				}
+			}
+			return merged.map((m) => ({ start: m.start.toISOString(), end: m.end.toISOString() }));
+		}
+
+		const busySlots = mergeIntervals(otherEventsRaw);
+		const otherEvents = otherEventsRaw
+			.slice(0, 8)
 			.map((e) => ({
 				title: e.title,
 				startTime: e.startTime.toISOString(),
-				endTime: e.endTime.toISOString()
+				endTime: e.endTime.toISOString(),
+				priority: isImportantEvent(e) ? 'high' : 'low'
 			}));
+		const omittedCount = Math.max(0, otherEventsRaw.length - otherEvents.length);
 
 		// Construct AI prompt
-		const prompt = `You are a smart scheduling assistant. Analyze this schedule conflict and suggest optimal rescheduling.
+		const prompt = `You are a fast, strict scheduling assistant. Return ONLY a JSON array (no explanation) with corrected times for ALL conflicting events.
 
-CONFLICTING EVENTS:
-${JSON.stringify(conflictingEventsInfo, null, 2)}
+	CONFLICTING EVENTS (include priority):
+	${JSON.stringify(conflictingEventsInfo)}
 
-OTHER EVENTS ON THIS DAY:
-${JSON.stringify(otherEvents, null, 2)}
+	BUSY SLOTS SUMMARY (merged other events on the same day):
+	${JSON.stringify(busySlots)}
 
-INSTRUCTIONS:
-1. Keep the first event (${sorted[0].title}) at its current time: ${sorted[0].startTime.toISOString()}
-2. Reschedule the other ${sorted.length - 1} event(s) to available time slots
-3. Consider:
-   - Event priority and type (meetings or interviews or urgent things vs personal tasks) [if the priority is important e.g meeting vs personal task, put the meeting before the personal task]
-   - Optimal time of day for each activity
-   - Add 10-20 minute buffer between events
-   - Avoid scheduling during typical lunch hours (12:00-13:00)
-   - Prefer keeping events on the same day if possible
-   - Consider work hours (9:00-18:00 for work events)
+	SAMPLE OTHER EVENTS (first ${otherEvents.length}${omittedCount > 0 ? `, ${omittedCount} more omitted` : ''}):
+	${JSON.stringify(otherEvents)}
 
-RESPOND WITH ONLY A JSON ARRAY in this exact format (NO markdown, NO backticks, NO explanation):
-[
-  {
-    "id": "${sorted[0].id}",
-    "title": "${sorted[0].title}",
-    "startTime": "${sorted[0].startTime.toISOString()}", 
-    "endTime": "${sorted[0].endTime.toISOString()}",
-    "reasoning": "Kept in original time slot"
-  }
-]
+	RULES (follow in order):
+	1) Do NOT move events marked with "priority":"high" unless absolutely necessary; keep them before lower-priority events.
+	2) Keep the first event (${sorted[0].title}) at its current time unless it is low priority and a higher-priority event conflicts; in that case prefer the higher-priority event.
+	3) Preserve each event's duration.
+	4) Add a 10-20 minute buffer between events.
+	5) Avoid lunch (12:00-13:00) when possible and prefer same-day placement; if impossible, move to the next available day.
+	6) Prefer earlier slots within work hours (09:00-18:00) for high-priority events.
 
-CRITICAL: 
-- Start and end times MUST be valid ISO 8601 date-time strings (YYYY-MM-DDTHH:mm:ss.sssZ)
-- Include ALL ${sorted.length} events in your response
-- Return ONLY the JSON array, nothing else`;
+	OUTPUT FORMAT (exact): Return a JSON array of objects for ALL ${sorted.length} events, each with these fields: id, title, startTime (ISO string), endTime (ISO string), reasoning.
+	Example:
+	[ {"id":"${sorted[0].id}", "title":"${sorted[0].title}", "startTime":"${sorted[0].startTime.toISOString()}", "endTime":"${sorted[0].endTime.toISOString()}", "reasoning":"Kept"} ]
+
+	CRITICAL: Return the array ONLY (no markdown/no backticks/no extra text).`;
+
+		// Quick guard: ensure API key exists
+		if (!process.env.GEMINI_API_KEY) {
+			console.warn('⚠️ GEMINI_API_KEY not set — skipping AI call and using fallback');
+			// Fall back immediately to sequential scheduling
+			const sorted = [...overlappingEvents].sort(
+				(a, b) => a.startTime.getTime() - b.startTime.getTime()
+			);
+			const proposals = [];
+			proposals.push({
+				id: sorted[0].id,
+				title: sorted[0].title,
+				startTime: sorted[0].startTime.toISOString(),
+				endTime: sorted[0].endTime.toISOString(),
+				reasoning: 'Kept in original time slot (no API key)'
+			});
+			let currentEndTime = sorted[0].endTime;
+			for (let i = 1; i < sorted.length; i++) {
+				const event = sorted[i];
+				const duration = event.endTime.getTime() - event.startTime.getTime();
+				const bufferMinutes = 15;
+				const bufferMs = bufferMinutes * 60 * 1000;
+				const newStart = new Date(currentEndTime.getTime() + bufferMs);
+				const newEnd = new Date(newStart.getTime() + duration);
+				proposals.push({
+					id: event.id,
+					title: event.title,
+					startTime: newStart.toISOString(),
+					endTime: newEnd.toISOString(),
+					reasoning: `Rescheduled with ${bufferMinutes} min buffer (no API key)`
+				});
+				currentEndTime = newEnd;
+			}
+			console.log('✅ Fallback proposals generated (no API key):', proposals.length);
+			return proposals;
+		}
 
 		console.log('🤖 Calling Gemini API...');
 
-		const response = await ai.models.generateContent({
-			model: 'gemini-3-flash-preview',
-			contents: prompt,
-			generationConfig: {
-				temperature: 0.7,
-				maxOutputTokens: 2048
-			}
-		});
-
-		console.log('📥 Raw Gemini response:', JSON.stringify(response, null, 2));
-
-		// Try multiple ways to extract the text
+		// Retry logic for flaky/empty responses
+		const MAX_RETRIES = 2;
+		const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+		let response = null;
 		let aiText = null;
 
-		if (response.text) {
-			aiText = response.text;
-		} else if (response.response?.text) {
-			aiText = response.response.text();
-		} else if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
-			aiText = response.candidates[0].content.parts[0].text;
+		for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+			try {
+				response = await ai.models.generateContent({
+					model: 'gemini-3-flash-preview',
+					contents: prompt,
+					generationConfig: {
+						temperature: 0.2,
+						maxOutputTokens: 800
+					}
+				});
+
+				console.log(
+					`📥 Raw Gemini response (attempt ${attempt + 1}):`,
+					JSON.stringify(response, null, 2)
+				);
+
+				// Robust extraction: check multiple possible shapes returned by SDK
+				if (typeof response === 'string' && response.trim()) {
+					aiText = response;
+				}
+				if (!aiText && response?.text) aiText = response.text;
+				if (!aiText && typeof response?.response?.text === 'function') {
+					try {
+						aiText = await response.response.text();
+					} catch (e) {
+						// ignore
+					}
+				}
+				if (!aiText && response?.candidates) {
+					// Try to join all candidate parts text
+					for (const cand of response.candidates) {
+						const parts = cand?.content?.parts;
+						if (Array.isArray(parts)) {
+							const combined = parts.map((p) => p.text || '').join('\n');
+							if (combined.trim()) {
+								aiText = combined;
+								break;
+							}
+						}
+						if (!aiText && typeof cand?.content?.text === 'string' && cand.content.text.trim()) {
+							aiText = cand.content.text;
+							break;
+						}
+					}
+				}
+
+				if (aiText && aiText.trim()) break; // success
+			} catch (err) {
+				console.warn(`⚠️ Gemini call failed on attempt ${attempt + 1}:`, err?.message || err);
+			}
+
+			// small backoff before retrying
+			if (attempt < MAX_RETRIES) await sleep(500 * (attempt + 1));
 		}
 
 		if (!aiText || aiText.trim() === '') {
-			console.error('❌ Empty AI response. Full response object:', response);
-			throw new Error('Empty AI response - check API key and quota');
+			// Do NOT throw here; instead log and use fallback proposals so the system continues
+			console.warn(
+				'❌ Gemini returned empty text after retries. Falling back to sequential scheduling. Full response object:',
+				response
+			);
+			const sorted = [...overlappingEvents].sort(
+				(a, b) => a.startTime.getTime() - b.startTime.getTime()
+			);
+			const proposals = [];
+			proposals.push({
+				id: sorted[0].id,
+				title: sorted[0].title,
+				startTime: sorted[0].startTime.toISOString(),
+				endTime: sorted[0].endTime.toISOString(),
+				reasoning: 'Kept in original time slot (fallback after empty AI response)'
+			});
+			let currentEndTime = sorted[0].endTime;
+			for (let i = 1; i < sorted.length; i++) {
+				const event = sorted[i];
+				const duration = event.endTime.getTime() - event.startTime.getTime();
+				const bufferMinutes = 15;
+				const bufferMs = bufferMinutes * 60 * 1000;
+				const newStart = new Date(currentEndTime.getTime() + bufferMs);
+				const newEnd = new Date(newStart.getTime() + duration);
+				proposals.push({
+					id: event.id,
+					title: event.title,
+					startTime: newStart.toISOString(),
+					endTime: newEnd.toISOString(),
+					reasoning: `Rescheduled with ${bufferMinutes} min buffer (fallback)`
+				});
+				currentEndTime = newEnd;
+			}
+
+			console.log('✅ Fallback proposals generated:', proposals.length);
+			return proposals;
 		}
 
 		console.log('📝 Extracted AI text:', aiText);
@@ -390,7 +524,6 @@ function getOverlapClusters(events) {
 	return clusters;
 }
 
-
 /**
  * Main function to get overlap fixes for a user
  */
@@ -415,7 +548,6 @@ export async function getOverlapFixes(userId) {
 
 		// Find overlapping event clusters
 		const overlapClusters = getOverlapClusters(events);
-
 
 		console.log(`⚠️ Found ${overlapClusters.length} overlap clusters`);
 
