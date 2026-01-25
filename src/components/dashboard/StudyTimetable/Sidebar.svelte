@@ -116,7 +116,7 @@
 	role="button"
 	tabindex="0"
 	onkeydown={(e) => {
-		if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+		if (e.key === 'Escape' || e.key === 'Enter') {
 			isOpen = false;
 		}
 	}}

@@ -2,6 +2,7 @@ import prisma from '../db.mjs';
 import { generateAutoFill } from '../services/autoFillService.mjs';
 import { getOverlapFixes, applyOverlapFix } from '../services/overlapFixerService.mjs';
 import { GoogleGenAI } from '@google/genai';
+import { processAndSaveNLPEvent } from '../services/languageService.mjs';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -16,19 +17,12 @@ export const handleAiTool = async (req, res, next) => {
 				break;
 			}
 
-			case 'STUDY_GEN': {
-				// Placeholder for future implementation
-				aiResponse = { message: 'Study plan generation coming soon' };
-				break;
-			}
-
 			case 'NATURAL_LANGUAGE': {
-				// Placeholder for future implementation
-				aiResponse = { message: 'Natural language parsing coming soon' };
+				aiResponse = await processAndSaveNLPEvent(payload, req.user.id);
 				break;
 			}
 
-		case 'GENERATE_TAG': {
+			case 'GENERATE_TAG': {
 				const { title } = payload;
 
 				const response = await ai.models.generateContent({

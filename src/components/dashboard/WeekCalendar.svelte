@@ -56,8 +56,6 @@
 
 	let events: CalendarEvent[] = [];
 
-	
-
 	async function openAddTodo() {
 		isAddTodoOpen = true;
 		await tick();
@@ -270,7 +268,6 @@
 			duration: 5000
 		});
 	}
-
 
 	// onMount(() => {
 	//     fetchEvents();
@@ -543,7 +540,7 @@
 		role="button"
 		tabindex="0"
 		on:keydown={(e) => {
-			if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+			if (e.key === 'Escape' || e.key === 'Enter') {
 				closeAddTodo();
 			}
 		}}
@@ -731,7 +728,7 @@
 								role="button"
 								tabindex="0"
 								on:keydown={(e) => {
-									if (e.key === 'Enter' || e.key === ' ') {
+									if (e.key === 'Enter') {
 										handleGridClickKeyboard(day);
 									}
 								}}
@@ -744,7 +741,7 @@
 										role="button"
 										tabindex="0"
 										on:keydown={(e) => {
-											if (e.key === 'Enter' || e.key === ' ') {
+											if (e.key === 'Enter') {
 												handleEventClick(event);
 											}
 										}}
@@ -806,7 +803,7 @@
 						role="button"
 						tabindex="0"
 						on:keydown={(e) => {
-							if (e.key === 'Enter' || e.key === ' ') {
+							if (e.key === 'Enter') {
 								handleEventClick(event);
 								isMobileSidebarOpen = false;
 							}
@@ -836,22 +833,23 @@
 				</div>
 				<div class="max-h-48 overflow-y-auto">
 					{#each tasks as task}
-					<div class="flex items-center justify-between mb-3">
-						<div class="flex items-center gap-3 mb-3">
-							<input
-								type="checkbox"
-								bind:checked={task.completed}
-								on:change={() => toggleTask(task)}
-								class="h-4 w-4 border-2 border-off-white bg-transparent text-primary-accent focus:ring-0 rounded-none cursor-pointer"
-							/>
-							<span class="text-sm {task.completed ? 'line-through text-gray-500' : 'text-off-white'}"
-								>{task.title}</span
-							>
-						</div>
-						<button on:click={() => deleteTask(task.id)} class="p-1">
-								<Trash2 size={16} color="red"/>
+						<div class="flex items-center justify-between mb-3">
+							<div class="flex items-center gap-3 mb-3">
+								<input
+									type="checkbox"
+									bind:checked={task.completed}
+									on:change={() => toggleTask(task)}
+									class="h-4 w-4 border-2 border-off-white bg-transparent text-primary-accent focus:ring-0 rounded-none cursor-pointer"
+								/>
+								<span
+									class="text-sm {task.completed ? 'line-through text-gray-500' : 'text-off-white'}"
+									>{task.title}</span
+								>
+							</div>
+							<button on:click={() => deleteTask(task.id)} class="p-1">
+								<Trash2 size={16} color="red" />
 							</button>
-					</div>
+						</div>
 					{/each}
 				</div>
 			</div>
@@ -866,7 +864,7 @@
 			role="button"
 			tabindex="0"
 			on:keydown={(e) => {
-				if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+				if (e.key === 'Escape' || e.key === 'Enter') {
 					closeDetails();
 				}
 			}}

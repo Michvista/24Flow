@@ -13,66 +13,116 @@
 	} from 'lucide-svelte';
 	import { fade, slide, fly } from 'svelte/transition';
 	import Navbar from '../../../../components/dashboard/Navbar.svelte';
+	import { Toaster, toast } from 'svelte-sonner';
+	import SonnerToast from '../../../../components/SonnerToast.svelte';
+	import type { SvelteComponentTyped } from 'svelte';
 
 	// State for the input text
-	let userInput = $state('');
-	let isProcessing = $state(false);
+	let userInput: string = '';
+	let isProcessing: boolean = false;
 
-	// Mock parsed data
-	const allPossibleEvents = [
-		{
-			id: 1,
-			title: 'Deep Work: Math',
-			time: '10:00 AM - 01:00 PM',
-			duration: '3 Hours',
-			category: 'Study',
-			icon: School,
-			priority: 'High Priority',
-			keywords: ['math', 'study']
-		},
-		{
-			id: 2,
-			title: 'Lunch with Sarah',
-			time: '01:30 PM - 02:30 PM',
-			duration: '1 Hour',
-			category: 'Social',
-			icon: Clock,
-			priority: 'Medium',
-			keywords: ['lunch', 'sarah']
-		},
-		{
-			id: 3,
-			title: 'Gym Session',
-			time: '04:00 PM - 05:00 PM',
-			duration: '1 Hour',
-			category: 'Health',
-			icon: Dumbbell,
-			priority: 'Recurring',
-			keywords: ['gym', 'workout', 'fitness']
-		}
-	];
+	// Parsed events returned from the AI
+	type ComponentCtor = new (...args: any[]) => SvelteComponentTyped<any, any, any>;
 
-	// Derived logic to "filter" cards based on what the user types
-	let parsedEvents = $derived(
-		userInput.length < 5
-			? []
-			: allPossibleEvents.filter(
-					(event) =>
-						event.keywords.some((k) => userInput.toLowerCase().includes(k)) ||
-						userInput.toLowerCase().includes(event.title.toLowerCase())
-				)
-	);
+	interface ParsedEvent {
+		id: number;
+		title: string;
+		time: string;
+		duration: string;
+		category: string;
+		iconName?: string;
+		icon: ComponentCtor;
+		priority: string;
+		keywords?: string[];
+	}
 
-	function handleGenerate() {
+	let parsedEvents: ParsedEvent[] = [];
+
+	function notifySuccess(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'success'
+			},
+			duration: 5000
+		});
+	}
+
+	function notifyError(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'error'
+			},
+			duration: 5000
+		});
+	}
+
+	async function handleGenerate() {
+		if (isProcessing) return; // prevent duplicates
 		isProcessing = true;
-		setTimeout(() => {
+		try {
+			const response = await fetch('http://localhost:3000/ai/tool', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({
+					toolType: 'NATURAL_LANGUAGE',
+					payload: { userInput }
+				})
+			});
+
+			const result = await response.json();
+
+			if (result.status !== 'success' || !Array.isArray(result.data)) {
+				throw new Error('Invalid AI response');
+			}
+
+			// Map the iconName string to the Lucide component
+			const iconMap: Record<string, ComponentCtor> = { School, Clock, Dumbbell, Activity };
+
+			parsedEvents = result.data.map((event: any, idx: number) => ({
+				id: event.id ?? Date.now() + idx,
+				title: String(event.title ?? 'Untitled'),
+				time: String(event.time ?? ''),
+				duration: String(event.duration ?? ''),
+				category: String(event.category ?? 'General'),
+				iconName: event.iconName ?? undefined,
+				icon: iconMap[event.iconName] || Activity,
+				priority:
+					event.priority === 'High'
+						? 'High Priority'
+						: event.priority === 'Medium'
+							? 'Medium Priority'
+							: event.priority === 'Low'
+								? 'Low Priority'
+								: 'Priority Not Set',
+			}));
+
+			notifySuccess('Parsed', 'Events parsed successfully');
+		} catch (error) {
+			console.error('NLP Error:', error);
+			parsedEvents = [];
+			notifyError('Auto NLP Failed', 'Could not parse your input. Please try again.');
+		} finally {
 			isProcessing = false;
-		}, 1500);
+		}
 	}
 </script>
 
 <div class="pb-6">
 	<Navbar />
+	<Toaster position="bottom-right" expand={false} richColors />
 </div>
 <div class="flex flex-1 pb-6 justify-center py-5 font-display">
 	<div class="flex flex-col w-full max-w-[1024px] flex-1 px-4 md:px-8">
@@ -122,7 +172,8 @@
 				</div>
 				<button
 					onclick={handleGenerate}
-					class="w-full sm:w-auto flex items-center justify-center gap-3 rounded bg-primary hover:bg-blue-600 text-white h-14 px-8 text-base font-bold uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(25,115,240,0.4)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+					disabled={isProcessing}
+					class="w-full sm:w-auto flex items-center justify-center gap-3 rounded bg-primary hover:bg-blue-600 text-white h-14 px-8 text-base font-bold uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(25,115,240,0.4)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all"
 				>
 					{#if isProcessing}
 						<Loader2 class="animate-spin" />

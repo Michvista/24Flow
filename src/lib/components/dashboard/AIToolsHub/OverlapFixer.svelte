@@ -16,7 +16,6 @@
 
 		import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
-	import { no } from 'zod/v4/locales';
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
