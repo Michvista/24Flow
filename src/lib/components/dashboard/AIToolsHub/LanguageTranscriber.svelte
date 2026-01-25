@@ -106,7 +106,7 @@
 							? 'Medium Priority'
 							: event.priority === 'Low'
 								? 'Low Priority'
-								: 'Priority Not Set',
+								: 'Priority Unknown',
 			}));
 
 			notifySuccess('Parsed', 'Events parsed successfully');

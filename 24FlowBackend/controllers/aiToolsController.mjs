@@ -3,6 +3,7 @@ import { generateAutoFill } from '../services/autoFillService.mjs';
 import { getOverlapFixes, applyOverlapFix } from '../services/overlapFixerService.mjs';
 import { GoogleGenAI } from '@google/genai';
 import { processAndSaveNLPEvent } from '../services/languageService.mjs';
+import { performOCR } from '../services/OCRService.mjs';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -33,6 +34,36 @@ export const handleAiTool = async (req, res, next) => {
 				const generatedTag = response.text.trim().split(/\s+/)[0] || 'General';
 
 				aiResponse = { tag: generatedTag };
+				break;
+			}
+
+			case 'DIGITIZE_OCR': {
+				// payload: { image: "base64...", mimeType: "image/jpeg" }
+				aiResponse = await performOCR(payload);
+				break;
+			}
+
+			case 'BULK_SAVE_EVENTS': {
+				// payload: { events: [...] }
+				const { events } = payload;
+
+				// Use a transaction so it's all-or-nothing
+				aiResponse = await prisma.$transaction(
+					events.map((event) =>
+						prisma.event.create({
+							data: {
+								title: event.text,
+								startTime: new Date(event.time || new Date()),
+								endTime: new Date(new Date(event.time || new Date()).getTime() + 60 * 60 * 1000), // Default 1hr
+								userId: req.user.id,
+								color: '#3d7bff', // Default color
+								colorName: 'primary-accent',
+								textColor: '#ffffff',
+								desc: `Digitized via OCR | Tag: ${event.tag || 'None'}`
+							}
+						})
+					)
+				);
 				break;
 			}
 
