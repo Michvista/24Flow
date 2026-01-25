@@ -90,6 +90,7 @@ let isProcessing = $state(false);
             const response = await fetch('http://localhost:3000/ai/tool', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
                 body: JSON.stringify({ 
                     toolType: 'DIGITIZE_OCR',
                     payload: { 
@@ -161,6 +162,7 @@ let isProcessing = $state(false);
             const response = await fetch('http://localhost:3000/ai/tool', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
                 body: JSON.stringify({
                     toolType: 'BULK_SAVE_EVENTS',
                     payload: { events: selectedTasks }
@@ -429,6 +431,8 @@ let isProcessing = $state(false);
 		</div>
 	</div>
 </main>
+<!-- <Toaster position="bottom-right" expand={false} richColors /> -->
+<!--  -->
 
 <style>
 	.custom-scrollbar::-webkit-scrollbar {
