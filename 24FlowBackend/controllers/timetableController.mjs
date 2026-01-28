@@ -69,16 +69,35 @@ export const checkConflicts = async (req, res, next) => {
 		next(e); // This passes the error to your global error handler
 	}
 };
-/**
- * Syncs the staged timetable to the main calendar for a 12-week duration.
- * Includes duplicate protection by removing previous timetable-sourced events.
- */
+const colors = [
+	// Original Palette
+	{ bg: '#f7ff5c', text: '#000000', name: 'secondary-yellow' },
+	{ bg: '#00f57a', text: '#000000', name: 'secondary-green' },
+	{ bg: '#af52de', text: '#ffffff', name: 'secondary-purple' },
+	{ bg: '#3d7bff', text: '#ffffff', name: 'primary-accent' },
+
+	// Extended High-Contrast Vivids
+	{ bg: '#ff5c5c', text: '#000000', name: 'neo-red' },
+	{ bg: '#ff90e8', text: '#000000', name: 'neo-pink' },
+	{ bg: '#05d9e8', text: '#000000', name: 'neo-cyan' },
+	{ bg: '#ffbd12', text: '#000000', name: 'neo-orange' },
+
+	// Deep Neutrals (For Heavy Borders & Shadows)
+	{ bg: '#000000', text: '#ffffff', name: 'ink-black' },
+	{ bg: '#ffffff', text: '#000000', name: 'stark-white' },
+	{ bg: '#bebebe', text: '#000000', name: 'concrete-gray' },
+
+	// Muted Accents (For secondary UI elements)
+	{ bg: '#d6ff00', text: '#000000', name: 'acid-lime' },
+	{ bg: '#8a2be2', text: '#ffffff', name: 'royal-purple' },
+	{ bg: '#171717', text: '#00f57a', name: 'dark-mode-bg' }
+];
+
 export const syncCalendar = async (userId, classes) => {
-	// 1. DELETE PROTECTION: Remove any previously synced timetable events
-	// This ensures clicking 'Sync' twice doesn't double-book the calendar.
+	// 1. DELETE PREVIOUS SYNCED EVENTS
 	await prisma.event.deleteMany({
 		where: {
-			userId,
+			userId: userId,
 			meta: {
 				path: ['source'],
 				equals: 'timetable'
@@ -86,9 +105,19 @@ export const syncCalendar = async (userId, classes) => {
 		}
 	});
 
+	// 2. SHUFFLE COLORS
+	const shuffle = (arr) => {
+		const a = arr.slice();
+		for (let i = a.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[a[i], a[j]] = [a[j], a[i]];
+		}
+		return a;
+	};
+
+	const palette = shuffle(colors);
 	const events = [];
 
-	// Helper: Calculates the Date object for the next occurrence of a weekday
 	const getNextDateForDay = (dayName) => {
 		const daysMap = {
 			Sunday: 0,
@@ -102,19 +131,17 @@ export const syncCalendar = async (userId, classes) => {
 		const targetDay = daysMap[dayName];
 		const now = new Date();
 		const resultDate = new Date(now);
-		// Calculate days until next occurrence
 		resultDate.setDate(now.getDate() + ((targetDay + 7 - now.getDay()) % 7));
 		return resultDate;
 	};
 
-	// 2. GENERATE 12 WEEKS OF EVENTS
-	for (const c of classes) {
+	// 3. GENERATE 12 WEEKS
+	classes.forEach((c, classIdx) => {
 		const firstDate = getNextDateForDay(c.day);
-
-		// We assume c.startTime and c.endTime are strings like "09:00"
-		// If your data uses c.time (e.g. "09:00 - 10:30"), split it first:
 		const [sh, sm] = c.startTime.split(':');
 		const [eh, em] = c.endTime.split(':');
+
+		const style = palette[classIdx % palette.length];
 
 		for (let week = 0; week < 12; week++) {
 			const baseDate = new Date(firstDate);
@@ -132,8 +159,9 @@ export const syncCalendar = async (userId, classes) => {
 				location: c.room || 'TBA',
 				startTime,
 				endTime,
-				color: '#1973f0',
-				colorName: 'blue',
+				color: style.bg,
+				colorName: style.name,
+				textColor: style.text, // Fixes "Argument textColor is missing"
 				meta: {
 					source: 'timetable',
 					classId: c.id,
@@ -141,14 +169,15 @@ export const syncCalendar = async (userId, classes) => {
 				}
 			});
 		}
-	}
+	});
 
-	// 3. BATCH INSERT
+	// 4. INSERT
 	if (events.length > 0) {
-		await prisma.event.createMany({ data: events });
+		const result = await prisma.event.createMany({ data: events });
+		return { count: result.count };
 	}
 
-	return { count: events.length };
+	return { count: 0 };
 };
 
 export const exportToSheets = async (req, res, next) => {

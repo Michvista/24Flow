@@ -96,3 +96,86 @@ export const detectLargeGaps = (classes) => {
 	}
 	return tips;
 };
+
+export const syncCalendar = async (userId, classes) => {
+	try {
+		console.log(`Starting sync for user ${userId} with ${classes.length} classes.`);
+
+		// 1. DELETE PROTECTION
+		// We use a simplified filter. If your DB is SQLite, deep JSON paths can fail.
+		// This targets events created by the timetable source.
+		await prisma.event.deleteMany({
+			where: {
+				userId: userId,
+				meta: {
+					path: ['source'],
+					equals: 'timetable'
+				}
+			}
+		});
+
+		const events = [];
+
+		const getNextDateForDay = (dayName) => {
+			const daysMap = {
+				Sunday: 0,
+				Monday: 1,
+				Tuesday: 2,
+				Wednesday: 3,
+				Thursday: 4,
+				Friday: 5,
+				Saturday: 6
+			};
+			const targetDay = daysMap[dayName];
+			const now = new Date();
+			const resultDate = new Date(now);
+			resultDate.setDate(now.getDate() + ((targetDay + 7 - now.getDay()) % 7));
+			return resultDate;
+		};
+
+		// 2. GENERATE 12 WEEKS OF EVENTS
+		for (const c of classes) {
+			const firstDate = getNextDateForDay(c.day);
+			const [sh, sm] = c.startTime.split(':');
+			const [eh, em] = c.endTime.split(':');
+
+			for (let week = 0; week < 12; week++) {
+				const baseDate = new Date(firstDate);
+				baseDate.setDate(firstDate.getDate() + week * 7);
+
+				const startTime = new Date(baseDate);
+				startTime.setHours(parseInt(sh), parseInt(sm), 0, 0);
+
+				const endTime = new Date(baseDate);
+				endTime.setHours(parseInt(eh), parseInt(em), 0, 0);
+
+				events.push({
+					userId,
+					title: `Class: ${c.name}`,
+					location: c.room || 'TBA',
+					startTime,
+					endTime,
+					color: '#1973f0', // Signature Blue
+					colorName: 'blue',
+					meta: {
+						source: 'timetable',
+						classId: c.id,
+						week: week + 1
+					}
+				});
+			}
+		}
+
+		// 3. BATCH INSERT
+		if (events.length > 0) {
+			const result = await prisma.event.createMany({ data: events });
+			console.log(`Successfully synced ${result.count} events.`);
+			return { count: result.count };
+		}
+
+		return { count: 0 };
+	} catch (error) {
+		console.error('DETAILED SYNC ERROR:', error);
+		throw error;
+	}
+};

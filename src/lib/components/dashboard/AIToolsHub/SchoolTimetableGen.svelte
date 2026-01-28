@@ -230,26 +230,33 @@
 	}
 
 	async function syncToCalendar() {
-		try {
-			isSyncingCalendar = true;
+    if (classes.length === 0) return alert("Add some classes first!");
+    
+    try {
+        isSyncingCalendar = true;
 
-			const res = await fetch('http://localhost:3000/timetable/sync-calendar', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({ classes })
-			});
+        const res = await fetch('http://localhost:3000/timetable/sync-calendar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ classes })
+        });
 
-			if (!res.ok) throw new Error('Sync failed');
+        if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.error || 'Sync failed');
+        }
 
-			alert('Calendar synced for the next 12 weeks!');
-		} catch (err) {
-			console.error(err);
-			alert('Failed to sync calendar');
-		} finally {
-			isSyncingCalendar = true;
-		}
-	}
+        const data = await res.json();
+        alert(`Success! ${data.count} classes synced to your calendar for the next 12 weeks.`);
+        
+    } catch (err) {
+        console.error("Frontend Sync Error:", err);
+        alert(`Failed to sync: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+        isSyncingCalendar = false; // Fixed: must set to false to re-enable button
+    }
+}
 
 	async function applyOption(conflict: any, option: any) {
 		if (option.target === 'CLASS') {
