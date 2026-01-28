@@ -2,67 +2,76 @@ import { GoogleGenAI } from '@google/genai';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-export const getConflictResolution = async (tClass, clash) => {
+export const getConflictResolution = async (tClass, event) => {
 	const prompt = `
-You are an academic scheduling assistant.
-
-A timetable class conflicts with a calendar event.
-
-CLASS:
-- Name: ${tClass.name}
-- Day: ${tClass.day}
-- Time: ${tClass.startTime} to ${tClass.endTime}
-
-EVENT:
-- Title: ${clash.title}
-- Time: ${clash.startTime.toTimeString().slice(0, 5)} to ${clash.endTime.toTimeString().slice(0, 5)}
+You are a scheduling assistant.
 
 Rules:
-- Respond with VALID JSON ONLY.
-- No markdown.
-- No explanation.
-- Use 24-hour HH:mm format.
+- Classes are FIXED by default.
+- Events should be moved unless priority is HIGH.
+- If event priority is HIGH, provide TWO options:
+  1. Move the event
+  2. Move the class
 
-JSON schema:
+Class:
+- Name: ${tClass.name}
+- Time: ${tClass.startTime}–${tClass.endTime}
+- Day: ${tClass.day}
+
+Event:
+- Title: ${event.title}
+- Time: ${event.startTime.toISOString()}–${event.endTime.toISOString()}
+- Priority: ${event.priority || 'NORMAL'}
+
+Respond ONLY with valid JSON using this schema:
+
 {
-  "action": "MOVE_CLASS" | "MOVE_EVENT" | "KEEP_BOTH",
-  "newStartTime": "HH:mm" | null,
-  "newEndTime": "HH:mm" | null,
-  "reason": "string"
+  "strategy": "MOVE_EVENT" | "MOVE_CLASS" | "CHOICE",
+  "options": [
+    {
+      "target": "EVENT" | "CLASS",
+      "newStartTime": "HH:mm",
+      "newEndTime": "HH:mm",
+      "reason": "string"
+    }
+  ]
 }
 `;
 
-	try {
-		const result = await ai.models.generateContent({
-			model: 'gemini-3-flash-preview',
-			contents: [{ role: 'user', parts: [{ text: prompt }] }]
-		});
-
-		// 🔐 SAFE EXTRACTION
-		const candidates = result?.candidates;
-		const text = candidates?.[0]?.content?.parts?.[0]?.text;
-
-		if (!text) {
-			throw new Error('Empty AI response');
-		}
-
-		const jsonMatch = text.match(/\{[\s\S]*\}/);
-		if (!jsonMatch) {
-			throw new Error('No JSON found in AI response');
-		}
-
-		return JSON.parse(jsonMatch[0]);
-	} catch (error) {
-		console.error('AI Resolution Error:', error.message);
-
+	// --- mock AI (replace with real LLM call) ---
+	if ((event.priority || 'NORMAL') === 'HIGH') {
 		return {
-			action: 'KEEP_BOTH',
-			newStartTime: null,
-			newEndTime: null,
-			reason: 'Automatic resolution unavailable. Please adjust manually.'
+			strategy: 'CHOICE',
+			options: [
+				{
+					target: 'EVENT',
+					newStartTime: '11:30',
+					newEndTime: '12:30',
+					reason: 'Preserves class schedule'
+				},
+				{
+					target: 'CLASS',
+					newStartTime: '12:30',
+					newEndTime: '14:30',
+					reason: 'Respects high-priority event'
+				}
+			]
 		};
 	}
+
+	return {
+		strategy: 'MOVE_EVENT',
+		options: [
+			{
+				target: 'EVENT',
+				newStartTime: '12:00',
+				newEndTime: '13:00',
+				reason: 'Class has fixed academic priority'
+			}
+		]
+	};
 };
+
 
 export const generateSheetsData = async (classes) => {
 	const prompt = `Convert these classes to a CSV (Day,Subject,Start,End,Room): ${JSON.stringify(classes)}. Return raw CSV only.`;

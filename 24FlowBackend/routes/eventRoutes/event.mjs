@@ -4,7 +4,8 @@ import {
 	getEventById,
 	createEvent,
 	updateEvent,
-	deleteEvent
+	deleteEvent,
+	rescheduleEvent
 } from '../../controllers/eventController.mjs';
 import { protect } from '../../middlewares/verifyAuth.mjs';
 
@@ -28,6 +29,8 @@ router.patch('/:id', updateEvent);
 
 // Delete event
 router.delete('/:id', deleteEvent);
+
+router.post('/:id/reschedule', rescheduleEvent);
 
 
 export default router;

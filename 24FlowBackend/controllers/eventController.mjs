@@ -208,3 +208,35 @@ export const deleteEvent = async (req, res, next) => {
 		next(error);
 	}
 };
+
+export const rescheduleEvent = async (req, res, next) => {
+	try {
+		const { id } = req.params;
+		const { newStartTime, newEndTime } = req.body;
+
+		// 1. Fetch the existing event to get its specific date (Y-M-D)
+		const existingEvent = await prisma.event.findUnique({ where: { id } });
+		if (!existingEvent) return res.status(404).json({ error: 'Event not found' });
+
+		// 2. Helper to merge the existing date with the new time string (HH:mm)
+		const mergeDateTime = (originalDate, timeStr) => {
+			const [hours, minutes] = timeStr.split(':');
+			const d = new Date(originalDate);
+			d.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+			return d;
+		};
+
+		const updated = await prisma.event.update({
+			where: { id },
+			data: {
+				startTime: mergeDateTime(existingEvent.startTime, newStartTime),
+				endTime: mergeDateTime(existingEvent.endTime, newEndTime)
+			}
+		});
+
+		res.json({ status: 'success', data: updated });
+	} catch (err) {
+		console.error('Reschedule Error:', err);
+		next(err);
+	}
+};

@@ -1,13 +1,11 @@
 export const getNextDateForDay = (day) => {
 	const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 	const target = days.indexOf(day);
-	if (target === -1) throw new Error('Invalid day: ' + day);
-
 	const today = new Date();
+	// If today is the day, this returns 7 (next week) to avoid conflicting with
+	// a class that might have already started today.
 	const diff = (target + 7 - today.getDay()) % 7 || 7;
-
-	const result = new Date(today);
-	result.setDate(today.getDate() + diff);
-	return result;
+	today.setDate(today.getDate() + diff);
+	today.setHours(0, 0, 0, 0);
+	return today;
 };
