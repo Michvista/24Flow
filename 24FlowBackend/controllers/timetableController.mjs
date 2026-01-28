@@ -43,31 +43,81 @@ export const persistTimetable = async (req, res, next) => {
 	}
 };
 
-export const checkConflicts = async (req, res, next) => {
-	try {
-		// Fix: Destructure 'classes' from req.body
-		const { classes } = req.body;
-		const userId = req.user.id;
-
-		if (!classes || !Array.isArray(classes)) {
-			return res.status(400).json({ error: 'No classes provided' });
+// This is the service function your checkConflicts controller calls
+export const checkConflicts = async (userId, newClasses) => {
+	// 1. Get all existing events for the user
+	const existingEvents = await prisma.event.findMany({
+		where: { userId },
+		select: {
+			title: true,
+			startTime: true,
+			endTime: true
 		}
+	});
 
-		// Pass the extracted classes variable
-		const conflicts = await checkTimetableConflicts(userId, classes);
+	const conflicts = [];
 
-		// Pass the extracted classes variable to the gap detector
-		const tips = detectLargeGaps(classes);
+	// Helper to calculate the next occurrence of a class (same logic as sync)
+	const getNextDateForDay = (dayName) => {
+		const daysMap = {
+			Sunday: 0,
+			Monday: 1,
+			Tuesday: 2,
+			Wednesday: 3,
+			Thursday: 4,
+			Friday: 5,
+			Saturday: 6
+		};
+		const targetDay = daysMap[dayName];
+		const now = new Date();
+		const resultDate = new Date(now);
+		resultDate.setDate(now.getDate() + ((targetDay + 7 - now.getDay()) % 7));
+		return resultDate;
+	};
 
-		res.json({
-			status: 'success',
-			conflicts,
-			tips
+	for (const c of newClasses) {
+		const classDate = getNextDateForDay(c.day);
+		const [sh, sm] = c.startTime.split(':');
+		const [eh, em] = c.endTime.split(':');
+
+		const startTime = new Date(classDate);
+		startTime.setHours(parseInt(sh), parseInt(sm), 0, 0);
+
+		const endTime = new Date(classDate);
+		endTime.setHours(parseInt(eh), parseInt(em), 0, 0);
+
+		// --- THE DEDUPLICATION CHECK ---
+		// Find if this EXACT class already exists
+		const isExactMatch = existingEvents.some(
+			(existing) =>
+				// Check for variations like "Bio" vs "Class: Bio"
+				(existing.title === c.name || existing.title === `Class: ${c.name}`) &&
+				existing.startTime.getTime() === startTime.getTime() &&
+				existing.endTime.getTime() === endTime.getTime()
+		);
+
+		if (isExactMatch) {
+			continue; // Skip this class; it's already there, no conflict to report
+		}
+		// -------------------------------
+
+		// 2. NOW check for real overlaps with other events
+		const overlap = existingEvents.find((existing) => {
+			return startTime < existing.endTime && endTime > existing.startTime;
 		});
-	} catch (e) {
-		console.error('Conflict Detection Failed:', e);
-		next(e); // This passes the error to your global error handler
+
+		if (overlap) {
+			conflicts.push({
+				type: 'overlap',
+				newClass: c.name,
+				existingEvent: overlap.title,
+				timeSlot: `${c.startTime}-${c.endTime}`,
+				strategy: overlap.title.includes(c.name) ? 'MOVE_EVENT' : 'CHOICE'
+			});
+		}
 	}
+
+	return conflicts;
 };
 const colors = [
 	// Original Palette
@@ -94,7 +144,16 @@ const colors = [
 ];
 
 export const syncCalendar = async (userId, classes) => {
-	// 1. DELETE PREVIOUS SYNCED EVENTS
+	// 1. FETCH EXISTING EVENTS TO COMPARE
+	// We get all events once to avoid hitting the DB inside the loop
+	const existingEvents = await prisma.event.findMany({
+		where: { userId: userId },
+		select: { title: true, startTime: true, endTime: true }
+	});
+
+	// 2. DELETE PREVIOUS SYNCED EVENTS
+	// Note: This only clears events tagged with 'timetable'.
+	// Manual events or AI-generated tasks remain, which is why we deduplicate below.
 	await prisma.event.deleteMany({
 		where: {
 			userId: userId,
@@ -105,7 +164,7 @@ export const syncCalendar = async (userId, classes) => {
 		}
 	});
 
-	// 2. SHUFFLE COLORS
+	// 3. SHUFFLE COLORS
 	const shuffle = (arr) => {
 		const a = arr.slice();
 		for (let i = a.length - 1; i > 0; i--) {
@@ -135,7 +194,7 @@ export const syncCalendar = async (userId, classes) => {
 		return resultDate;
 	};
 
-	// 3. GENERATE 12 WEEKS
+	// 4. GENERATE 12 WEEKS WITH DEDUPLICATION
 	classes.forEach((c, classIdx) => {
 		const firstDate = getNextDateForDay(c.day);
 		const [sh, sm] = c.startTime.split(':');
@@ -153,15 +212,29 @@ export const syncCalendar = async (userId, classes) => {
 			const endTime = new Date(baseDate);
 			endTime.setHours(parseInt(eh), parseInt(em), 0, 0);
 
+			const title = `Class: ${c.name}`;
+
+			// --- CHECK FOR EXACT DUPLICATE ---
+			// If an event with same title/time exists, skip it to avoid AI conflict flags
+			const isDuplicate = existingEvents.some(
+				(existing) =>
+					existing.title === title &&
+					existing.startTime.getTime() === startTime.getTime() &&
+					existing.endTime.getTime() === endTime.getTime()
+			);
+
+			if (isDuplicate) continue;
+			// ---------------------------------
+
 			events.push({
 				userId,
-				title: `Class: ${c.name}`,
+				title,
 				location: c.room || 'TBA',
 				startTime,
 				endTime,
 				color: style.bg,
 				colorName: style.name,
-				textColor: style.text, // Fixes "Argument textColor is missing"
+				textColor: style.text,
 				meta: {
 					source: 'timetable',
 					classId: c.id,
@@ -171,7 +244,7 @@ export const syncCalendar = async (userId, classes) => {
 		}
 	});
 
-	// 4. INSERT
+	// 5. INSERT
 	if (events.length > 0) {
 		const result = await prisma.event.createMany({ data: events });
 		return { count: result.count };

@@ -26,6 +26,8 @@
 	import { fade, slide, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import Navbar from '../../../../components/dashboard/Navbar.svelte';
+	import { Toaster, toast } from 'svelte-sonner';
+	import SonnerToast from '../../../../components/SonnerToast.svelte';
 
 	// Intelligent Icon Logic
 	function getIconBySubject(subject: string) {
@@ -114,6 +116,8 @@
 			optimizationTips = data.tips || [];
 		} catch (err) {
 			console.error('Conflict check failed:', err);
+			const message = err instanceof Error ? err.message : String(err);
+			notifyError('Conflict check failed', message);
 		} finally {
 			isCheckingConflicts = false;
 		}
@@ -225,38 +229,45 @@
 			downloadCSV(json.csv);
 		} catch (err) {
 			console.error('Export failed:', err);
-			alert('Failed to export timetable.');
+			const message = err instanceof Error ? err.message : String(err);
+			notifyError('Export failed', message);
 		}
 	}
 
 	async function syncToCalendar() {
-    if (classes.length === 0) return alert("Add some classes first!");
-    
-    try {
-        isSyncingCalendar = true;
+		if (classes.length === 0) {
+			notifyError('No classes', 'Add some classes first!');
+			return;
+		}
 
-        const res = await fetch('http://localhost:3000/timetable/sync-calendar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ classes })
-        });
+		try {
+			isSyncingCalendar = true;
 
-        if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.error || 'Sync failed');
-        }
+			const res = await fetch('http://localhost:3000/timetable/sync-calendar', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({ classes })
+			});
 
-        const data = await res.json();
-        alert(`Success! ${data.count} classes synced to your calendar for the next 12 weeks.`);
-        
-    } catch (err) {
-        console.error("Frontend Sync Error:", err);
-        alert(`Failed to sync: ${err instanceof Error ? err.message : 'Unknown error'}`);
-    } finally {
-        isSyncingCalendar = false; // Fixed: must set to false to re-enable button
-    }
-}
+			if (!res.ok) {
+				const errData = await res.json();
+				throw new Error(errData.error || 'Sync failed');
+			}
+
+			const data = await res.json();
+			notifySuccess(
+				'Sync complete',
+				`Success! ${data.count} classes synced to your calendar for the next 12 weeks.`
+			);
+		} catch (err) {
+			console.error('Frontend Sync Error:', err);
+			const message = err instanceof Error ? err.message : String(err);
+			notifyError('Sync failed', message);
+		} finally {
+			isSyncingCalendar = false; // Fixed: must set to false to re-enable button
+		}
+	}
 
 	async function applyOption(conflict: any, option: any) {
 		if (option.target === 'CLASS') {
@@ -301,7 +312,7 @@
 			} catch (err) {
 				console.error('Failed to move event', err);
 				const message = err instanceof Error ? err.message : String(err);
-				alert(`Error: ${message}`);
+				notifyError('Failed to move event', message);
 				return; // Exit so we don't clear the conflict from UI if it failed
 			}
 		}
@@ -313,10 +324,41 @@
 	}
 
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+	function notifySuccess(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'success'
+			},
+			duration: 5000
+		});
+	}
+
+	function notifyError(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'error'
+			},
+			duration: 5000
+		});
+	}
 </script>
 
 <div>
 	<Navbar />
+	<Toaster position="bottom-right" expand={false} richColors />
 </div>
 
 <main
@@ -498,109 +540,130 @@
 					</h3>
 					<span class="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
 				</div>
-<div class="space-y-4">
-    {#if isCheckingConflicts}
-        <div class="bg-[#192434] border border-primary/40 p-4 rounded-sm animate-pulse">
-            <div class="flex items-center gap-3 text-primary">
-                <BrainCircuit size={20} class="animate-spin" />
-                <div>
-                    <h4 class="font-bold text-[10px] uppercase tracking-widest">AI Reviewing Schedule</h4>
-                    <p class="text-slate-400 text-[11px]">Analyzing overlaps and generating strategies...</p>
-                </div>
-            </div>
-        </div>
-    {/if}
+				<div class="space-y-4">
+					{#if isCheckingConflicts}
+						<div class="bg-[#192434] border border-primary/40 p-4 rounded-sm animate-pulse">
+							<div class="flex items-center gap-3 text-primary">
+								<BrainCircuit size={20} class="animate-spin" />
+								<div>
+									<h4 class="font-bold text-[10px] uppercase tracking-widest">
+										AI Reviewing Schedule
+									</h4>
+									<p class="text-slate-400 text-[11px]">
+										Analyzing overlaps and generating strategies...
+									</p>
+								</div>
+							</div>
+						</div>
+					{/if}
 
-    {#if !isCheckingConflicts}
-        {#each conflicts as conflict (conflict.class.id + conflict.event.id)}
-            <div in:fly={{ x: 20 }} class="bg-[#192434] border-l-4 border-red-500 p-4 rounded-sm space-y-4 shadow-xl">
-                <div class="flex items-start gap-3 text-red-400">
-                    <AlertTriangle size={18} class="shrink-0 mt-0.5" />
-                    <div class="space-y-1">
-                        <h4 class="font-black text-[10px] uppercase tracking-tighter text-red-500">Scheduling Conflict</h4>
-                        <p class="text-slate-200 text-xs leading-relaxed">
-                            <span class="text-white font-bold">{conflict.class.name}</span> 
-                            <span class="text-slate-400">({conflict.class.startTime}–{conflict.class.endTime})</span>
-                            <br />
-                            <span class="text-red-400/80 font-medium">overlaps with existing event:</span>
-                            <br />
-                            <span class="text-white font-bold">{conflict.event.title}</span>
-                            <span class="text-slate-400">
-                                ({new Date(conflict.event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}–{new Date(conflict.event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
-                            </span>
-                        </p>
-                    </div>
-                </div>
+					{#if !isCheckingConflicts}
+						{#each conflicts as conflict (conflict.class.id + conflict.event.id)}
+							<div
+								in:fly={{ x: 20 }}
+								class="bg-[#192434] border-l-4 border-red-500 p-4 rounded-sm space-y-4 shadow-xl"
+							>
+								<div class="flex items-start gap-3 text-red-400">
+									<AlertTriangle size={18} class="shrink-0 mt-0.5" />
+									<div class="space-y-1">
+										<h4 class="font-black text-[10px] uppercase tracking-tighter text-red-500">
+											Scheduling Conflict
+										</h4>
+										<p class="text-slate-200 text-xs leading-relaxed">
+											<span class="text-white font-bold">{conflict.class.name}</span>
+											<span class="text-slate-400"
+												>({conflict.class.startTime}–{conflict.class.endTime})</span
+											>
+											<br />
+											<span class="text-red-400/80 font-medium">overlaps with existing event:</span>
+											<br />
+											<span class="text-white font-bold">{conflict.event.title}</span>
+											<span class="text-slate-400">
+												({new Date(conflict.event.startTime).toLocaleTimeString([], {
+													hour: '2-digit',
+													minute: '2-digit'
+												})}–{new Date(conflict.event.endTime).toLocaleTimeString([], {
+													hour: '2-digit',
+													minute: '2-digit'
+												})})
+											</span>
+										</p>
+									</div>
+								</div>
 
-                <div class="bg-black/30 p-3 rounded border border-white/5">
-                    <div class="flex items-center gap-2 mb-1">
-                        <BrainCircuit size={14} class="text-primary" />
-                        <span class="text-[10px] font-bold text-primary uppercase">AI Strategy</span>
-                    </div>
-                    <p class="text-[11px] text-slate-300 italic leading-snug">
-                        "{conflict.suggestion.strategy || conflict.suggestion.reason}"
-                    </p>
-                </div>
+								<div class="bg-black/30 p-3 rounded border border-white/5">
+									<div class="flex items-center gap-2 mb-1">
+										<BrainCircuit size={14} class="text-primary" />
+										<span class="text-[10px] font-bold text-primary uppercase">AI Strategy</span>
+									</div>
+									<p class="text-[11px] text-slate-300 italic leading-snug">
+										"{conflict.suggestion.strategy || conflict.suggestion.reason}"
+									</p>
+								</div>
 
-                <div class="grid grid-cols-1 gap-2 pt-2">
-                    {#each conflict.suggestion.options as option}
-                        <button
-                            onclick={() => applyOption(conflict, option)}
-                            class="group relative w-full py-2.5 px-3 border text-[10px] uppercase font-black transition-all overflow-hidden
+								<div class="grid grid-cols-1 gap-2 pt-2">
+									{#each conflict.suggestion.options as option}
+										<button
+											onclick={() => applyOption(conflict, option)}
+											class="group relative w-full py-2.5 px-3 border text-[10px] uppercase font-black transition-all overflow-hidden
                                 {option.target === 'EVENT'
-                                    ? 'border-blue-500/50 text-blue-400 hover:bg-blue-500 hover:text-white'
-                                    : 'border-yellow-500/50 text-yellow-500 hover:bg-yellow-500 hover:text-black'}"
-                        >
-                            <div class="flex justify-between items-center relative z-10">
-                                <span>Move {option.target === 'EVENT' ? 'Calendar Event' : 'Class'}</span>
-                                <span class="opacity-80 font-mono">{option.newStartTime} → {option.newEndTime}</span>
-                            </div>
-                            <div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity bg-current"></div>
-                        </button>
-                    {/each}
-                </div>
-            </div>
-        {/each}
+												? 'border-blue-500/50 text-blue-400 hover:bg-blue-500 hover:text-white'
+												: 'border-yellow-500/50 text-yellow-500 hover:bg-yellow-500 hover:text-black'}"
+										>
+											<div class="flex justify-between items-center relative z-10">
+												<span>Move {option.target === 'EVENT' ? 'Calendar Event' : 'Class'}</span>
+												<span class="opacity-80 font-mono"
+													>{option.newStartTime} → {option.newEndTime}</span
+												>
+											</div>
+											<div
+												class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity bg-current"
+											></div>
+										</button>
+									{/each}
+								</div>
+							</div>
+						{/each}
 
-        {#if hasConflicts}
-            <button
-                onclick={() => (ignoredConflicts = true)}
-                class="w-full text-center text-[10px] text-slate-500 hover:text-slate-300 underline uppercase tracking-widest mt-2 transition-colors"
-            >
-                Ignore conflicts and force sync
-            </button>
-        {/if}
+						{#if hasConflicts}
+							<button
+								onclick={() => (ignoredConflicts = true)}
+								class="w-full text-center text-[10px] text-slate-500 hover:text-slate-300 underline uppercase tracking-widest mt-2 transition-colors"
+							>
+								Ignore conflicts and force sync
+							</button>
+						{/if}
 
-        {#if canMerge}
-            <div in:fade class="bg-[#192434] border border-green-500/50 p-4 rounded-sm">
-                <div class="flex items-start gap-3 text-green-400">
-                    <CheckCircle2 size={20} class="shrink-0" />
-                    <div>
-                        <h4 class="font-bold text-xs uppercase tracking-wide mb-1">Safe to Merge</h4>
-                        <p class="text-slate-400 text-xs leading-snug">
-                            {classCount} classes verified and ready to sync.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        {/if}
+						{#if canMerge}
+							<div in:fade class="bg-[#192434] border border-green-500/50 p-4 rounded-sm">
+								<div class="flex items-start gap-3 text-green-400">
+									<CheckCircle2 size={20} class="shrink-0" />
+									<div>
+										<h4 class="font-bold text-xs uppercase tracking-wide mb-1">Safe to Merge</h4>
+										<p class="text-slate-400 text-xs leading-snug">
+											{classCount} classes verified and ready to sync.
+										</p>
+									</div>
+								</div>
+							</div>
+						{/if}
 
-        {#if optimizationTips.length > 0}
-            <div in:fade class="bg-[#192434] border border-blue-500/30 p-4 rounded-sm">
-                <div class="flex items-start gap-3 text-blue-400">
-                    <Wand2 size={20} class="shrink-0" />
-                    <div>
-                        <h4 class="font-bold text-xs uppercase tracking-wide mb-1">Optimization Tip</h4>
-                        <p class="text-slate-300 text-xs leading-snug">
-                            Large gap on {optimizationTips[0].day} between
-                            {optimizationTips[0].from}–{optimizationTips[0].to}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        {/if}
-    {/if}
-</div>
+						{#if optimizationTips.length > 0}
+							<div in:fade class="bg-[#192434] border border-blue-500/30 p-4 rounded-sm">
+								<div class="flex items-start gap-3 text-blue-400">
+									<Wand2 size={20} class="shrink-0" />
+									<div>
+										<h4 class="font-bold text-xs uppercase tracking-wide mb-1">Optimization Tip</h4>
+										<p class="text-slate-300 text-xs leading-snug">
+											Large gap on {optimizationTips[0].day} between
+											{optimizationTips[0].from}–{optimizationTips[0].to}
+										</p>
+									</div>
+								</div>
+							</div>
+						{/if}
+					{/if}
+				</div>
 
 				<div class="mt-8 pt-6 border-t border-[#233248]">
 					<div
