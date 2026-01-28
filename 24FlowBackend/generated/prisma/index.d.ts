@@ -39,6 +39,11 @@ export type ConflictTask = $Result.DefaultSelection<Prisma.$ConflictTaskPayload>
  */
 export type ConflictProposal = $Result.DefaultSelection<Prisma.$ConflictProposalPayload>
 /**
+ * Model TimetableClass
+ * 
+ */
+export type TimetableClass = $Result.DefaultSelection<Prisma.$TimetableClassPayload>
+/**
  * Model Task
  * 
  */
@@ -280,6 +285,16 @@ export class PrismaClient<
     * ```
     */
   get conflictProposal(): Prisma.ConflictProposalDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.timetableClass`: Exposes CRUD operations for the **TimetableClass** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TimetableClasses
+    * const timetableClasses = await prisma.timetableClass.findMany()
+    * ```
+    */
+  get timetableClass(): Prisma.TimetableClassDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.task`: Exposes CRUD operations for the **Task** model.
@@ -779,6 +794,7 @@ export namespace Prisma {
     Conflict: 'Conflict',
     ConflictTask: 'ConflictTask',
     ConflictProposal: 'ConflictProposal',
+    TimetableClass: 'TimetableClass',
     Task: 'Task',
     MoodLog: 'MoodLog',
     SleepLog: 'SleepLog',
@@ -800,7 +816,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "event" | "conflict" | "conflictTask" | "conflictProposal" | "task" | "moodLog" | "sleepLog" | "behaviorSummary" | "preferences" | "aITools"
+      modelProps: "user" | "event" | "conflict" | "conflictTask" | "conflictProposal" | "timetableClass" | "task" | "moodLog" | "sleepLog" | "behaviorSummary" | "preferences" | "aITools"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1171,6 +1187,80 @@ export namespace Prisma {
           count: {
             args: Prisma.ConflictProposalCountArgs<ExtArgs>
             result: $Utils.Optional<ConflictProposalCountAggregateOutputType> | number
+          }
+        }
+      }
+      TimetableClass: {
+        payload: Prisma.$TimetableClassPayload<ExtArgs>
+        fields: Prisma.TimetableClassFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TimetableClassFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TimetableClassFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload>
+          }
+          findFirst: {
+            args: Prisma.TimetableClassFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TimetableClassFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload>
+          }
+          findMany: {
+            args: Prisma.TimetableClassFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload>[]
+          }
+          create: {
+            args: Prisma.TimetableClassCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload>
+          }
+          createMany: {
+            args: Prisma.TimetableClassCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TimetableClassCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload>[]
+          }
+          delete: {
+            args: Prisma.TimetableClassDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload>
+          }
+          update: {
+            args: Prisma.TimetableClassUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload>
+          }
+          deleteMany: {
+            args: Prisma.TimetableClassDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TimetableClassUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TimetableClassUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload>[]
+          }
+          upsert: {
+            args: Prisma.TimetableClassUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimetableClassPayload>
+          }
+          aggregate: {
+            args: Prisma.TimetableClassAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTimetableClass>
+          }
+          groupBy: {
+            args: Prisma.TimetableClassGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TimetableClassGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TimetableClassCountArgs<ExtArgs>
+            result: $Utils.Optional<TimetableClassCountAggregateOutputType> | number
           }
         }
       }
@@ -1731,6 +1821,7 @@ export namespace Prisma {
     conflict?: ConflictOmit
     conflictTask?: ConflictTaskOmit
     conflictProposal?: ConflictProposalOmit
+    timetableClass?: TimetableClassOmit
     task?: TaskOmit
     moodLog?: MoodLogOmit
     sleepLog?: SleepLogOmit
@@ -1822,6 +1913,7 @@ export namespace Prisma {
     moods: number
     actions: number
     conflicts: number
+    timetableClasses: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1830,6 +1922,7 @@ export namespace Prisma {
     moods?: boolean | UserCountOutputTypeCountMoodsArgs
     actions?: boolean | UserCountOutputTypeCountActionsArgs
     conflicts?: boolean | UserCountOutputTypeCountConflictsArgs
+    timetableClasses?: boolean | UserCountOutputTypeCountTimetableClassesArgs
   }
 
   // Custom InputTypes
@@ -1876,6 +1969,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountConflictsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ConflictWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTimetableClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TimetableClassWhereInput
   }
 
 
@@ -2166,6 +2266,7 @@ export namespace Prisma {
     preferences?: boolean | User$preferencesArgs<ExtArgs>
     actions?: boolean | User$actionsArgs<ExtArgs>
     conflicts?: boolean | User$conflictsArgs<ExtArgs>
+    timetableClasses?: boolean | User$timetableClassesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2218,6 +2319,7 @@ export namespace Prisma {
     preferences?: boolean | User$preferencesArgs<ExtArgs>
     actions?: boolean | User$actionsArgs<ExtArgs>
     conflicts?: boolean | User$conflictsArgs<ExtArgs>
+    timetableClasses?: boolean | User$timetableClassesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2234,6 +2336,7 @@ export namespace Prisma {
       preferences: Prisma.$PreferencesPayload<ExtArgs> | null
       actions: Prisma.$AIToolsPayload<ExtArgs>[]
       conflicts: Prisma.$ConflictPayload<ExtArgs>[]
+      timetableClasses: Prisma.$TimetableClassPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2648,6 +2751,7 @@ export namespace Prisma {
     preferences<T extends User$preferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$preferencesArgs<ExtArgs>>): Prisma__PreferencesClient<$Result.GetResult<Prisma.$PreferencesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     actions<T extends User$actionsArgs<ExtArgs> = {}>(args?: Subset<T, User$actionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conflicts<T extends User$conflictsArgs<ExtArgs> = {}>(args?: Subset<T, User$conflictsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    timetableClasses<T extends User$timetableClassesArgs<ExtArgs> = {}>(args?: Subset<T, User$timetableClassesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3249,6 +3353,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ConflictScalarFieldEnum | ConflictScalarFieldEnum[]
+  }
+
+  /**
+   * User.timetableClasses
+   */
+  export type User$timetableClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
+    where?: TimetableClassWhereInput
+    orderBy?: TimetableClassOrderByWithRelationInput | TimetableClassOrderByWithRelationInput[]
+    cursor?: TimetableClassWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TimetableClassScalarFieldEnum | TimetableClassScalarFieldEnum[]
   }
 
   /**
@@ -8042,6 +8170,1129 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ConflictProposalInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TimetableClass
+   */
+
+  export type AggregateTimetableClass = {
+    _count: TimetableClassCountAggregateOutputType | null
+    _min: TimetableClassMinAggregateOutputType | null
+    _max: TimetableClassMaxAggregateOutputType | null
+  }
+
+  export type TimetableClassMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    name: string | null
+    day: string | null
+    startTime: string | null
+    endTime: string | null
+    room: string | null
+    icon: string | null
+    syncedToCalendar: boolean | null
+    calendarEventId: string | null
+  }
+
+  export type TimetableClassMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    name: string | null
+    day: string | null
+    startTime: string | null
+    endTime: string | null
+    room: string | null
+    icon: string | null
+    syncedToCalendar: boolean | null
+    calendarEventId: string | null
+  }
+
+  export type TimetableClassCountAggregateOutputType = {
+    id: number
+    userId: number
+    name: number
+    day: number
+    startTime: number
+    endTime: number
+    room: number
+    icon: number
+    syncedToCalendar: number
+    calendarEventId: number
+    _all: number
+  }
+
+
+  export type TimetableClassMinAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    day?: true
+    startTime?: true
+    endTime?: true
+    room?: true
+    icon?: true
+    syncedToCalendar?: true
+    calendarEventId?: true
+  }
+
+  export type TimetableClassMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    day?: true
+    startTime?: true
+    endTime?: true
+    room?: true
+    icon?: true
+    syncedToCalendar?: true
+    calendarEventId?: true
+  }
+
+  export type TimetableClassCountAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    day?: true
+    startTime?: true
+    endTime?: true
+    room?: true
+    icon?: true
+    syncedToCalendar?: true
+    calendarEventId?: true
+    _all?: true
+  }
+
+  export type TimetableClassAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TimetableClass to aggregate.
+     */
+    where?: TimetableClassWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimetableClasses to fetch.
+     */
+    orderBy?: TimetableClassOrderByWithRelationInput | TimetableClassOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TimetableClassWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimetableClasses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimetableClasses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TimetableClasses
+    **/
+    _count?: true | TimetableClassCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TimetableClassMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TimetableClassMaxAggregateInputType
+  }
+
+  export type GetTimetableClassAggregateType<T extends TimetableClassAggregateArgs> = {
+        [P in keyof T & keyof AggregateTimetableClass]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTimetableClass[P]>
+      : GetScalarType<T[P], AggregateTimetableClass[P]>
+  }
+
+
+
+
+  export type TimetableClassGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TimetableClassWhereInput
+    orderBy?: TimetableClassOrderByWithAggregationInput | TimetableClassOrderByWithAggregationInput[]
+    by: TimetableClassScalarFieldEnum[] | TimetableClassScalarFieldEnum
+    having?: TimetableClassScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TimetableClassCountAggregateInputType | true
+    _min?: TimetableClassMinAggregateInputType
+    _max?: TimetableClassMaxAggregateInputType
+  }
+
+  export type TimetableClassGroupByOutputType = {
+    id: string
+    userId: string
+    name: string
+    day: string
+    startTime: string
+    endTime: string
+    room: string | null
+    icon: string
+    syncedToCalendar: boolean
+    calendarEventId: string | null
+    _count: TimetableClassCountAggregateOutputType | null
+    _min: TimetableClassMinAggregateOutputType | null
+    _max: TimetableClassMaxAggregateOutputType | null
+  }
+
+  type GetTimetableClassGroupByPayload<T extends TimetableClassGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TimetableClassGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TimetableClassGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TimetableClassGroupByOutputType[P]>
+            : GetScalarType<T[P], TimetableClassGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TimetableClassSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    day?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    room?: boolean
+    icon?: boolean
+    syncedToCalendar?: boolean
+    calendarEventId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["timetableClass"]>
+
+  export type TimetableClassSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    day?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    room?: boolean
+    icon?: boolean
+    syncedToCalendar?: boolean
+    calendarEventId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["timetableClass"]>
+
+  export type TimetableClassSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    day?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    room?: boolean
+    icon?: boolean
+    syncedToCalendar?: boolean
+    calendarEventId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["timetableClass"]>
+
+  export type TimetableClassSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    day?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    room?: boolean
+    icon?: boolean
+    syncedToCalendar?: boolean
+    calendarEventId?: boolean
+  }
+
+  export type TimetableClassOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "name" | "day" | "startTime" | "endTime" | "room" | "icon" | "syncedToCalendar" | "calendarEventId", ExtArgs["result"]["timetableClass"]>
+  export type TimetableClassInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type TimetableClassIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type TimetableClassIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $TimetableClassPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TimetableClass"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      name: string
+      day: string
+      startTime: string
+      endTime: string
+      room: string | null
+      icon: string
+      syncedToCalendar: boolean
+      calendarEventId: string | null
+    }, ExtArgs["result"]["timetableClass"]>
+    composites: {}
+  }
+
+  type TimetableClassGetPayload<S extends boolean | null | undefined | TimetableClassDefaultArgs> = $Result.GetResult<Prisma.$TimetableClassPayload, S>
+
+  type TimetableClassCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TimetableClassFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TimetableClassCountAggregateInputType | true
+    }
+
+  export interface TimetableClassDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TimetableClass'], meta: { name: 'TimetableClass' } }
+    /**
+     * Find zero or one TimetableClass that matches the filter.
+     * @param {TimetableClassFindUniqueArgs} args - Arguments to find a TimetableClass
+     * @example
+     * // Get one TimetableClass
+     * const timetableClass = await prisma.timetableClass.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TimetableClassFindUniqueArgs>(args: SelectSubset<T, TimetableClassFindUniqueArgs<ExtArgs>>): Prisma__TimetableClassClient<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TimetableClass that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TimetableClassFindUniqueOrThrowArgs} args - Arguments to find a TimetableClass
+     * @example
+     * // Get one TimetableClass
+     * const timetableClass = await prisma.timetableClass.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TimetableClassFindUniqueOrThrowArgs>(args: SelectSubset<T, TimetableClassFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TimetableClassClient<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TimetableClass that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimetableClassFindFirstArgs} args - Arguments to find a TimetableClass
+     * @example
+     * // Get one TimetableClass
+     * const timetableClass = await prisma.timetableClass.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TimetableClassFindFirstArgs>(args?: SelectSubset<T, TimetableClassFindFirstArgs<ExtArgs>>): Prisma__TimetableClassClient<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TimetableClass that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimetableClassFindFirstOrThrowArgs} args - Arguments to find a TimetableClass
+     * @example
+     * // Get one TimetableClass
+     * const timetableClass = await prisma.timetableClass.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TimetableClassFindFirstOrThrowArgs>(args?: SelectSubset<T, TimetableClassFindFirstOrThrowArgs<ExtArgs>>): Prisma__TimetableClassClient<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TimetableClasses that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimetableClassFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TimetableClasses
+     * const timetableClasses = await prisma.timetableClass.findMany()
+     * 
+     * // Get first 10 TimetableClasses
+     * const timetableClasses = await prisma.timetableClass.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const timetableClassWithIdOnly = await prisma.timetableClass.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TimetableClassFindManyArgs>(args?: SelectSubset<T, TimetableClassFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TimetableClass.
+     * @param {TimetableClassCreateArgs} args - Arguments to create a TimetableClass.
+     * @example
+     * // Create one TimetableClass
+     * const TimetableClass = await prisma.timetableClass.create({
+     *   data: {
+     *     // ... data to create a TimetableClass
+     *   }
+     * })
+     * 
+     */
+    create<T extends TimetableClassCreateArgs>(args: SelectSubset<T, TimetableClassCreateArgs<ExtArgs>>): Prisma__TimetableClassClient<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TimetableClasses.
+     * @param {TimetableClassCreateManyArgs} args - Arguments to create many TimetableClasses.
+     * @example
+     * // Create many TimetableClasses
+     * const timetableClass = await prisma.timetableClass.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TimetableClassCreateManyArgs>(args?: SelectSubset<T, TimetableClassCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TimetableClasses and returns the data saved in the database.
+     * @param {TimetableClassCreateManyAndReturnArgs} args - Arguments to create many TimetableClasses.
+     * @example
+     * // Create many TimetableClasses
+     * const timetableClass = await prisma.timetableClass.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TimetableClasses and only return the `id`
+     * const timetableClassWithIdOnly = await prisma.timetableClass.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TimetableClassCreateManyAndReturnArgs>(args?: SelectSubset<T, TimetableClassCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TimetableClass.
+     * @param {TimetableClassDeleteArgs} args - Arguments to delete one TimetableClass.
+     * @example
+     * // Delete one TimetableClass
+     * const TimetableClass = await prisma.timetableClass.delete({
+     *   where: {
+     *     // ... filter to delete one TimetableClass
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TimetableClassDeleteArgs>(args: SelectSubset<T, TimetableClassDeleteArgs<ExtArgs>>): Prisma__TimetableClassClient<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TimetableClass.
+     * @param {TimetableClassUpdateArgs} args - Arguments to update one TimetableClass.
+     * @example
+     * // Update one TimetableClass
+     * const timetableClass = await prisma.timetableClass.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TimetableClassUpdateArgs>(args: SelectSubset<T, TimetableClassUpdateArgs<ExtArgs>>): Prisma__TimetableClassClient<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TimetableClasses.
+     * @param {TimetableClassDeleteManyArgs} args - Arguments to filter TimetableClasses to delete.
+     * @example
+     * // Delete a few TimetableClasses
+     * const { count } = await prisma.timetableClass.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TimetableClassDeleteManyArgs>(args?: SelectSubset<T, TimetableClassDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TimetableClasses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimetableClassUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TimetableClasses
+     * const timetableClass = await prisma.timetableClass.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TimetableClassUpdateManyArgs>(args: SelectSubset<T, TimetableClassUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TimetableClasses and returns the data updated in the database.
+     * @param {TimetableClassUpdateManyAndReturnArgs} args - Arguments to update many TimetableClasses.
+     * @example
+     * // Update many TimetableClasses
+     * const timetableClass = await prisma.timetableClass.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TimetableClasses and only return the `id`
+     * const timetableClassWithIdOnly = await prisma.timetableClass.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TimetableClassUpdateManyAndReturnArgs>(args: SelectSubset<T, TimetableClassUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TimetableClass.
+     * @param {TimetableClassUpsertArgs} args - Arguments to update or create a TimetableClass.
+     * @example
+     * // Update or create a TimetableClass
+     * const timetableClass = await prisma.timetableClass.upsert({
+     *   create: {
+     *     // ... data to create a TimetableClass
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TimetableClass we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TimetableClassUpsertArgs>(args: SelectSubset<T, TimetableClassUpsertArgs<ExtArgs>>): Prisma__TimetableClassClient<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TimetableClasses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimetableClassCountArgs} args - Arguments to filter TimetableClasses to count.
+     * @example
+     * // Count the number of TimetableClasses
+     * const count = await prisma.timetableClass.count({
+     *   where: {
+     *     // ... the filter for the TimetableClasses we want to count
+     *   }
+     * })
+    **/
+    count<T extends TimetableClassCountArgs>(
+      args?: Subset<T, TimetableClassCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TimetableClassCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TimetableClass.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimetableClassAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TimetableClassAggregateArgs>(args: Subset<T, TimetableClassAggregateArgs>): Prisma.PrismaPromise<GetTimetableClassAggregateType<T>>
+
+    /**
+     * Group by TimetableClass.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimetableClassGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TimetableClassGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TimetableClassGroupByArgs['orderBy'] }
+        : { orderBy?: TimetableClassGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TimetableClassGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTimetableClassGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TimetableClass model
+   */
+  readonly fields: TimetableClassFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TimetableClass.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TimetableClassClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TimetableClass model
+   */
+  interface TimetableClassFieldRefs {
+    readonly id: FieldRef<"TimetableClass", 'String'>
+    readonly userId: FieldRef<"TimetableClass", 'String'>
+    readonly name: FieldRef<"TimetableClass", 'String'>
+    readonly day: FieldRef<"TimetableClass", 'String'>
+    readonly startTime: FieldRef<"TimetableClass", 'String'>
+    readonly endTime: FieldRef<"TimetableClass", 'String'>
+    readonly room: FieldRef<"TimetableClass", 'String'>
+    readonly icon: FieldRef<"TimetableClass", 'String'>
+    readonly syncedToCalendar: FieldRef<"TimetableClass", 'Boolean'>
+    readonly calendarEventId: FieldRef<"TimetableClass", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TimetableClass findUnique
+   */
+  export type TimetableClassFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
+    /**
+     * Filter, which TimetableClass to fetch.
+     */
+    where: TimetableClassWhereUniqueInput
+  }
+
+  /**
+   * TimetableClass findUniqueOrThrow
+   */
+  export type TimetableClassFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
+    /**
+     * Filter, which TimetableClass to fetch.
+     */
+    where: TimetableClassWhereUniqueInput
+  }
+
+  /**
+   * TimetableClass findFirst
+   */
+  export type TimetableClassFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
+    /**
+     * Filter, which TimetableClass to fetch.
+     */
+    where?: TimetableClassWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimetableClasses to fetch.
+     */
+    orderBy?: TimetableClassOrderByWithRelationInput | TimetableClassOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TimetableClasses.
+     */
+    cursor?: TimetableClassWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimetableClasses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimetableClasses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimetableClasses.
+     */
+    distinct?: TimetableClassScalarFieldEnum | TimetableClassScalarFieldEnum[]
+  }
+
+  /**
+   * TimetableClass findFirstOrThrow
+   */
+  export type TimetableClassFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
+    /**
+     * Filter, which TimetableClass to fetch.
+     */
+    where?: TimetableClassWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimetableClasses to fetch.
+     */
+    orderBy?: TimetableClassOrderByWithRelationInput | TimetableClassOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TimetableClasses.
+     */
+    cursor?: TimetableClassWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimetableClasses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimetableClasses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimetableClasses.
+     */
+    distinct?: TimetableClassScalarFieldEnum | TimetableClassScalarFieldEnum[]
+  }
+
+  /**
+   * TimetableClass findMany
+   */
+  export type TimetableClassFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
+    /**
+     * Filter, which TimetableClasses to fetch.
+     */
+    where?: TimetableClassWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimetableClasses to fetch.
+     */
+    orderBy?: TimetableClassOrderByWithRelationInput | TimetableClassOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TimetableClasses.
+     */
+    cursor?: TimetableClassWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimetableClasses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimetableClasses.
+     */
+    skip?: number
+    distinct?: TimetableClassScalarFieldEnum | TimetableClassScalarFieldEnum[]
+  }
+
+  /**
+   * TimetableClass create
+   */
+  export type TimetableClassCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TimetableClass.
+     */
+    data: XOR<TimetableClassCreateInput, TimetableClassUncheckedCreateInput>
+  }
+
+  /**
+   * TimetableClass createMany
+   */
+  export type TimetableClassCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TimetableClasses.
+     */
+    data: TimetableClassCreateManyInput | TimetableClassCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TimetableClass createManyAndReturn
+   */
+  export type TimetableClassCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * The data used to create many TimetableClasses.
+     */
+    data: TimetableClassCreateManyInput | TimetableClassCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TimetableClass update
+   */
+  export type TimetableClassUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TimetableClass.
+     */
+    data: XOR<TimetableClassUpdateInput, TimetableClassUncheckedUpdateInput>
+    /**
+     * Choose, which TimetableClass to update.
+     */
+    where: TimetableClassWhereUniqueInput
+  }
+
+  /**
+   * TimetableClass updateMany
+   */
+  export type TimetableClassUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TimetableClasses.
+     */
+    data: XOR<TimetableClassUpdateManyMutationInput, TimetableClassUncheckedUpdateManyInput>
+    /**
+     * Filter which TimetableClasses to update
+     */
+    where?: TimetableClassWhereInput
+    /**
+     * Limit how many TimetableClasses to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TimetableClass updateManyAndReturn
+   */
+  export type TimetableClassUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * The data used to update TimetableClasses.
+     */
+    data: XOR<TimetableClassUpdateManyMutationInput, TimetableClassUncheckedUpdateManyInput>
+    /**
+     * Filter which TimetableClasses to update
+     */
+    where?: TimetableClassWhereInput
+    /**
+     * Limit how many TimetableClasses to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TimetableClass upsert
+   */
+  export type TimetableClassUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TimetableClass to update in case it exists.
+     */
+    where: TimetableClassWhereUniqueInput
+    /**
+     * In case the TimetableClass found by the `where` argument doesn't exist, create a new TimetableClass with this data.
+     */
+    create: XOR<TimetableClassCreateInput, TimetableClassUncheckedCreateInput>
+    /**
+     * In case the TimetableClass was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TimetableClassUpdateInput, TimetableClassUncheckedUpdateInput>
+  }
+
+  /**
+   * TimetableClass delete
+   */
+  export type TimetableClassDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
+    /**
+     * Filter which TimetableClass to delete.
+     */
+    where: TimetableClassWhereUniqueInput
+  }
+
+  /**
+   * TimetableClass deleteMany
+   */
+  export type TimetableClassDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TimetableClasses to delete
+     */
+    where?: TimetableClassWhereInput
+    /**
+     * Limit how many TimetableClasses to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TimetableClass without action
+   */
+  export type TimetableClassDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimetableClass
+     */
+    select?: TimetableClassSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimetableClass
+     */
+    omit?: TimetableClassOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimetableClassInclude<ExtArgs> | null
   }
 
 
@@ -14441,6 +15692,22 @@ export namespace Prisma {
   export type ConflictProposalScalarFieldEnum = (typeof ConflictProposalScalarFieldEnum)[keyof typeof ConflictProposalScalarFieldEnum]
 
 
+  export const TimetableClassScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    name: 'name',
+    day: 'day',
+    startTime: 'startTime',
+    endTime: 'endTime',
+    room: 'room',
+    icon: 'icon',
+    syncedToCalendar: 'syncedToCalendar',
+    calendarEventId: 'calendarEventId'
+  };
+
+  export type TimetableClassScalarFieldEnum = (typeof TimetableClassScalarFieldEnum)[keyof typeof TimetableClassScalarFieldEnum]
+
+
   export const TaskScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -14693,6 +15960,7 @@ export namespace Prisma {
     preferences?: XOR<PreferencesNullableScalarRelationFilter, PreferencesWhereInput> | null
     actions?: AIToolsListRelationFilter
     conflicts?: ConflictListRelationFilter
+    timetableClasses?: TimetableClassListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -14714,6 +15982,7 @@ export namespace Prisma {
     preferences?: PreferencesOrderByWithRelationInput
     actions?: AIToolsOrderByRelationAggregateInput
     conflicts?: ConflictOrderByRelationAggregateInput
+    timetableClasses?: TimetableClassOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -14738,6 +16007,7 @@ export namespace Prisma {
     preferences?: XOR<PreferencesNullableScalarRelationFilter, PreferencesWhereInput> | null
     actions?: AIToolsListRelationFilter
     conflicts?: ConflictListRelationFilter
+    timetableClasses?: TimetableClassListRelationFilter
   }, "id" | "googleId" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -15135,6 +16405,86 @@ export namespace Prisma {
     reasoning?: StringWithAggregatesFilter<"ConflictProposal"> | string
   }
 
+  export type TimetableClassWhereInput = {
+    AND?: TimetableClassWhereInput | TimetableClassWhereInput[]
+    OR?: TimetableClassWhereInput[]
+    NOT?: TimetableClassWhereInput | TimetableClassWhereInput[]
+    id?: StringFilter<"TimetableClass"> | string
+    userId?: StringFilter<"TimetableClass"> | string
+    name?: StringFilter<"TimetableClass"> | string
+    day?: StringFilter<"TimetableClass"> | string
+    startTime?: StringFilter<"TimetableClass"> | string
+    endTime?: StringFilter<"TimetableClass"> | string
+    room?: StringNullableFilter<"TimetableClass"> | string | null
+    icon?: StringFilter<"TimetableClass"> | string
+    syncedToCalendar?: BoolFilter<"TimetableClass"> | boolean
+    calendarEventId?: StringNullableFilter<"TimetableClass"> | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type TimetableClassOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    day?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    room?: SortOrderInput | SortOrder
+    icon?: SortOrder
+    syncedToCalendar?: SortOrder
+    calendarEventId?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type TimetableClassWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TimetableClassWhereInput | TimetableClassWhereInput[]
+    OR?: TimetableClassWhereInput[]
+    NOT?: TimetableClassWhereInput | TimetableClassWhereInput[]
+    userId?: StringFilter<"TimetableClass"> | string
+    name?: StringFilter<"TimetableClass"> | string
+    day?: StringFilter<"TimetableClass"> | string
+    startTime?: StringFilter<"TimetableClass"> | string
+    endTime?: StringFilter<"TimetableClass"> | string
+    room?: StringNullableFilter<"TimetableClass"> | string | null
+    icon?: StringFilter<"TimetableClass"> | string
+    syncedToCalendar?: BoolFilter<"TimetableClass"> | boolean
+    calendarEventId?: StringNullableFilter<"TimetableClass"> | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type TimetableClassOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    day?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    room?: SortOrderInput | SortOrder
+    icon?: SortOrder
+    syncedToCalendar?: SortOrder
+    calendarEventId?: SortOrderInput | SortOrder
+    _count?: TimetableClassCountOrderByAggregateInput
+    _max?: TimetableClassMaxOrderByAggregateInput
+    _min?: TimetableClassMinOrderByAggregateInput
+  }
+
+  export type TimetableClassScalarWhereWithAggregatesInput = {
+    AND?: TimetableClassScalarWhereWithAggregatesInput | TimetableClassScalarWhereWithAggregatesInput[]
+    OR?: TimetableClassScalarWhereWithAggregatesInput[]
+    NOT?: TimetableClassScalarWhereWithAggregatesInput | TimetableClassScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TimetableClass"> | string
+    userId?: StringWithAggregatesFilter<"TimetableClass"> | string
+    name?: StringWithAggregatesFilter<"TimetableClass"> | string
+    day?: StringWithAggregatesFilter<"TimetableClass"> | string
+    startTime?: StringWithAggregatesFilter<"TimetableClass"> | string
+    endTime?: StringWithAggregatesFilter<"TimetableClass"> | string
+    room?: StringNullableWithAggregatesFilter<"TimetableClass"> | string | null
+    icon?: StringWithAggregatesFilter<"TimetableClass"> | string
+    syncedToCalendar?: BoolWithAggregatesFilter<"TimetableClass"> | boolean
+    calendarEventId?: StringNullableWithAggregatesFilter<"TimetableClass"> | string | null
+  }
+
   export type TaskWhereInput = {
     AND?: TaskWhereInput | TaskWhereInput[]
     OR?: TaskWhereInput[]
@@ -15469,6 +16819,7 @@ export namespace Prisma {
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -15490,6 +16841,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -15511,6 +16863,7 @@ export namespace Prisma {
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -15532,6 +16885,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -15979,6 +17333,96 @@ export namespace Prisma {
     reasoning?: StringFieldUpdateOperationsInput | string
   }
 
+  export type TimetableClassCreateInput = {
+    id?: string
+    name: string
+    day: string
+    startTime: string
+    endTime: string
+    room?: string | null
+    icon?: string
+    syncedToCalendar?: boolean
+    calendarEventId?: string | null
+    user: UserCreateNestedOneWithoutTimetableClassesInput
+  }
+
+  export type TimetableClassUncheckedCreateInput = {
+    id?: string
+    userId: string
+    name: string
+    day: string
+    startTime: string
+    endTime: string
+    room?: string | null
+    icon?: string
+    syncedToCalendar?: boolean
+    calendarEventId?: string | null
+  }
+
+  export type TimetableClassUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    day?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: StringFieldUpdateOperationsInput | string
+    syncedToCalendar?: BoolFieldUpdateOperationsInput | boolean
+    calendarEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    user?: UserUpdateOneRequiredWithoutTimetableClassesNestedInput
+  }
+
+  export type TimetableClassUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    day?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: StringFieldUpdateOperationsInput | string
+    syncedToCalendar?: BoolFieldUpdateOperationsInput | boolean
+    calendarEventId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TimetableClassCreateManyInput = {
+    id?: string
+    userId: string
+    name: string
+    day: string
+    startTime: string
+    endTime: string
+    room?: string | null
+    icon?: string
+    syncedToCalendar?: boolean
+    calendarEventId?: string | null
+  }
+
+  export type TimetableClassUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    day?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: StringFieldUpdateOperationsInput | string
+    syncedToCalendar?: BoolFieldUpdateOperationsInput | boolean
+    calendarEventId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TimetableClassUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    day?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: StringFieldUpdateOperationsInput | string
+    syncedToCalendar?: BoolFieldUpdateOperationsInput | boolean
+    calendarEventId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type TaskCreateInput = {
     id?: string
     title: string
@@ -16374,6 +17818,12 @@ export namespace Prisma {
     none?: ConflictWhereInput
   }
 
+  export type TimetableClassListRelationFilter = {
+    every?: TimetableClassWhereInput
+    some?: TimetableClassWhereInput
+    none?: TimetableClassWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -16396,6 +17846,10 @@ export namespace Prisma {
   }
 
   export type ConflictOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TimetableClassOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -16844,6 +18298,53 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type TimetableClassCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    day?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    room?: SortOrder
+    icon?: SortOrder
+    syncedToCalendar?: SortOrder
+    calendarEventId?: SortOrder
+  }
+
+  export type TimetableClassMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    day?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    room?: SortOrder
+    icon?: SortOrder
+    syncedToCalendar?: SortOrder
+    calendarEventId?: SortOrder
+  }
+
+  export type TimetableClassMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    day?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    room?: SortOrder
+    icon?: SortOrder
+    syncedToCalendar?: SortOrder
+    calendarEventId?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type TaskCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -16866,14 +18367,6 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     completed?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type MoodLogCountOrderByAggregateInput = {
@@ -17083,6 +18576,13 @@ export namespace Prisma {
     connect?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
   }
 
+  export type TimetableClassCreateNestedManyWithoutUserInput = {
+    create?: XOR<TimetableClassCreateWithoutUserInput, TimetableClassUncheckedCreateWithoutUserInput> | TimetableClassCreateWithoutUserInput[] | TimetableClassUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TimetableClassCreateOrConnectWithoutUserInput | TimetableClassCreateOrConnectWithoutUserInput[]
+    createMany?: TimetableClassCreateManyUserInputEnvelope
+    connect?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
+  }
+
   export type EventUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput> | EventCreateWithoutUserInput[] | EventUncheckedCreateWithoutUserInput[]
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
@@ -17134,6 +18634,13 @@ export namespace Prisma {
     connectOrCreate?: ConflictCreateOrConnectWithoutUserInput | ConflictCreateOrConnectWithoutUserInput[]
     createMany?: ConflictCreateManyUserInputEnvelope
     connect?: ConflictWhereUniqueInput | ConflictWhereUniqueInput[]
+  }
+
+  export type TimetableClassUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<TimetableClassCreateWithoutUserInput, TimetableClassUncheckedCreateWithoutUserInput> | TimetableClassCreateWithoutUserInput[] | TimetableClassUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TimetableClassCreateOrConnectWithoutUserInput | TimetableClassCreateOrConnectWithoutUserInput[]
+    createMany?: TimetableClassCreateManyUserInputEnvelope
+    connect?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -17248,6 +18755,20 @@ export namespace Prisma {
     deleteMany?: ConflictScalarWhereInput | ConflictScalarWhereInput[]
   }
 
+  export type TimetableClassUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TimetableClassCreateWithoutUserInput, TimetableClassUncheckedCreateWithoutUserInput> | TimetableClassCreateWithoutUserInput[] | TimetableClassUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TimetableClassCreateOrConnectWithoutUserInput | TimetableClassCreateOrConnectWithoutUserInput[]
+    upsert?: TimetableClassUpsertWithWhereUniqueWithoutUserInput | TimetableClassUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TimetableClassCreateManyUserInputEnvelope
+    set?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
+    disconnect?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
+    delete?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
+    connect?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
+    update?: TimetableClassUpdateWithWhereUniqueWithoutUserInput | TimetableClassUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TimetableClassUpdateManyWithWhereWithoutUserInput | TimetableClassUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TimetableClassScalarWhereInput | TimetableClassScalarWhereInput[]
+  }
+
   export type EventUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput> | EventCreateWithoutUserInput[] | EventUncheckedCreateWithoutUserInput[]
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
@@ -17346,6 +18867,20 @@ export namespace Prisma {
     update?: ConflictUpdateWithWhereUniqueWithoutUserInput | ConflictUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ConflictUpdateManyWithWhereWithoutUserInput | ConflictUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ConflictScalarWhereInput | ConflictScalarWhereInput[]
+  }
+
+  export type TimetableClassUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TimetableClassCreateWithoutUserInput, TimetableClassUncheckedCreateWithoutUserInput> | TimetableClassCreateWithoutUserInput[] | TimetableClassUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TimetableClassCreateOrConnectWithoutUserInput | TimetableClassCreateOrConnectWithoutUserInput[]
+    upsert?: TimetableClassUpsertWithWhereUniqueWithoutUserInput | TimetableClassUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TimetableClassCreateManyUserInputEnvelope
+    set?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
+    disconnect?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
+    delete?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
+    connect?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
+    update?: TimetableClassUpdateWithWhereUniqueWithoutUserInput | TimetableClassUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TimetableClassUpdateManyWithWhereWithoutUserInput | TimetableClassUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TimetableClassScalarWhereInput | TimetableClassScalarWhereInput[]
   }
 
   export type EventCreaterecurringDaysInput = {
@@ -17577,14 +19112,28 @@ export namespace Prisma {
     update?: XOR<XOR<ConflictUpdateToOneWithWhereWithoutProposalsInput, ConflictUpdateWithoutProposalsInput>, ConflictUncheckedUpdateWithoutProposalsInput>
   }
 
-  export type UserCreateNestedOneWithoutTasksInput = {
-    create?: XOR<UserCreateWithoutTasksInput, UserUncheckedCreateWithoutTasksInput>
-    connectOrCreate?: UserCreateOrConnectWithoutTasksInput
+  export type UserCreateNestedOneWithoutTimetableClassesInput = {
+    create?: XOR<UserCreateWithoutTimetableClassesInput, UserUncheckedCreateWithoutTimetableClassesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTimetableClassesInput
     connect?: UserWhereUniqueInput
   }
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
+  }
+
+  export type UserUpdateOneRequiredWithoutTimetableClassesNestedInput = {
+    create?: XOR<UserCreateWithoutTimetableClassesInput, UserUncheckedCreateWithoutTimetableClassesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTimetableClassesInput
+    upsert?: UserUpsertWithoutTimetableClassesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTimetableClassesInput, UserUpdateWithoutTimetableClassesInput>, UserUncheckedUpdateWithoutTimetableClassesInput>
+  }
+
+  export type UserCreateNestedOneWithoutTasksInput = {
+    create?: XOR<UserCreateWithoutTasksInput, UserUncheckedCreateWithoutTasksInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTasksInput
+    connect?: UserWhereUniqueInput
   }
 
   export type UserUpdateOneRequiredWithoutTasksNestedInput = {
@@ -18112,6 +19661,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TimetableClassCreateWithoutUserInput = {
+    id?: string
+    name: string
+    day: string
+    startTime: string
+    endTime: string
+    room?: string | null
+    icon?: string
+    syncedToCalendar?: boolean
+    calendarEventId?: string | null
+  }
+
+  export type TimetableClassUncheckedCreateWithoutUserInput = {
+    id?: string
+    name: string
+    day: string
+    startTime: string
+    endTime: string
+    room?: string | null
+    icon?: string
+    syncedToCalendar?: boolean
+    calendarEventId?: string | null
+  }
+
+  export type TimetableClassCreateOrConnectWithoutUserInput = {
+    where: TimetableClassWhereUniqueInput
+    create: XOR<TimetableClassCreateWithoutUserInput, TimetableClassUncheckedCreateWithoutUserInput>
+  }
+
+  export type TimetableClassCreateManyUserInputEnvelope = {
+    data: TimetableClassCreateManyUserInput | TimetableClassCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type EventUpsertWithWhereUniqueWithoutUserInput = {
     where: EventWhereUniqueInput
     update: XOR<EventUpdateWithoutUserInput, EventUncheckedUpdateWithoutUserInput>
@@ -18327,6 +19910,38 @@ export namespace Prisma {
     resolvedAt?: DateTimeNullableFilter<"Conflict"> | Date | string | null
   }
 
+  export type TimetableClassUpsertWithWhereUniqueWithoutUserInput = {
+    where: TimetableClassWhereUniqueInput
+    update: XOR<TimetableClassUpdateWithoutUserInput, TimetableClassUncheckedUpdateWithoutUserInput>
+    create: XOR<TimetableClassCreateWithoutUserInput, TimetableClassUncheckedCreateWithoutUserInput>
+  }
+
+  export type TimetableClassUpdateWithWhereUniqueWithoutUserInput = {
+    where: TimetableClassWhereUniqueInput
+    data: XOR<TimetableClassUpdateWithoutUserInput, TimetableClassUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TimetableClassUpdateManyWithWhereWithoutUserInput = {
+    where: TimetableClassScalarWhereInput
+    data: XOR<TimetableClassUpdateManyMutationInput, TimetableClassUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type TimetableClassScalarWhereInput = {
+    AND?: TimetableClassScalarWhereInput | TimetableClassScalarWhereInput[]
+    OR?: TimetableClassScalarWhereInput[]
+    NOT?: TimetableClassScalarWhereInput | TimetableClassScalarWhereInput[]
+    id?: StringFilter<"TimetableClass"> | string
+    userId?: StringFilter<"TimetableClass"> | string
+    name?: StringFilter<"TimetableClass"> | string
+    day?: StringFilter<"TimetableClass"> | string
+    startTime?: StringFilter<"TimetableClass"> | string
+    endTime?: StringFilter<"TimetableClass"> | string
+    room?: StringNullableFilter<"TimetableClass"> | string | null
+    icon?: StringFilter<"TimetableClass"> | string
+    syncedToCalendar?: BoolFilter<"TimetableClass"> | boolean
+    calendarEventId?: StringNullableFilter<"TimetableClass"> | string | null
+  }
+
   export type UserCreateWithoutEventsInput = {
     id?: string
     googleId?: string | null
@@ -18345,6 +19960,7 @@ export namespace Prisma {
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventsInput = {
@@ -18365,6 +19981,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventsInput = {
@@ -18439,6 +20056,7 @@ export namespace Prisma {
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventsInput = {
@@ -18459,6 +20077,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConflictTaskUpsertWithWhereUniqueWithoutEventInput = {
@@ -18513,6 +20132,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConflictsInput = {
@@ -18533,6 +20153,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConflictsInput = {
@@ -18645,6 +20266,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConflictsInput = {
@@ -18665,6 +20287,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConflictTaskUpsertWithWhereUniqueWithoutConflictInput = {
@@ -18925,6 +20548,106 @@ export namespace Prisma {
     tasks?: ConflictTaskUncheckedUpdateManyWithoutConflictNestedInput
   }
 
+  export type UserCreateWithoutTimetableClassesInput = {
+    id?: string
+    googleId?: string | null
+    password?: string | null
+    avatar?: string | null
+    email: string
+    name?: string | null
+    username?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    events?: EventCreateNestedManyWithoutUserInput
+    tasks?: TaskCreateNestedManyWithoutUserInput
+    moods?: MoodLogCreateNestedManyWithoutUserInput
+    sleep?: SleepLogCreateNestedOneWithoutUserInput
+    behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
+    preferences?: PreferencesCreateNestedOneWithoutUserInput
+    actions?: AIToolsCreateNestedManyWithoutUserInput
+    conflicts?: ConflictCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutTimetableClassesInput = {
+    id?: string
+    googleId?: string | null
+    password?: string | null
+    avatar?: string | null
+    email: string
+    name?: string | null
+    username?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    events?: EventUncheckedCreateNestedManyWithoutUserInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    moods?: MoodLogUncheckedCreateNestedManyWithoutUserInput
+    sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
+    behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
+    preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+    actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+    conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutTimetableClassesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTimetableClassesInput, UserUncheckedCreateWithoutTimetableClassesInput>
+  }
+
+  export type UserUpsertWithoutTimetableClassesInput = {
+    update: XOR<UserUpdateWithoutTimetableClassesInput, UserUncheckedUpdateWithoutTimetableClassesInput>
+    create: XOR<UserCreateWithoutTimetableClassesInput, UserUncheckedCreateWithoutTimetableClassesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTimetableClassesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTimetableClassesInput, UserUncheckedUpdateWithoutTimetableClassesInput>
+  }
+
+  export type UserUpdateWithoutTimetableClassesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    events?: EventUpdateManyWithoutUserNestedInput
+    tasks?: TaskUpdateManyWithoutUserNestedInput
+    moods?: MoodLogUpdateManyWithoutUserNestedInput
+    sleep?: SleepLogUpdateOneWithoutUserNestedInput
+    behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
+    preferences?: PreferencesUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTimetableClassesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    events?: EventUncheckedUpdateManyWithoutUserNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    moods?: MoodLogUncheckedUpdateManyWithoutUserNestedInput
+    sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
+    behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
+    preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type UserCreateWithoutTasksInput = {
     id?: string
     googleId?: string | null
@@ -18943,6 +20666,7 @@ export namespace Prisma {
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTasksInput = {
@@ -18963,6 +20687,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTasksInput = {
@@ -18999,6 +20724,7 @@ export namespace Prisma {
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksInput = {
@@ -19019,6 +20745,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutMoodsInput = {
@@ -19039,6 +20766,7 @@ export namespace Prisma {
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMoodsInput = {
@@ -19059,6 +20787,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMoodsInput = {
@@ -19095,6 +20824,7 @@ export namespace Prisma {
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMoodsInput = {
@@ -19115,6 +20845,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSleepInput = {
@@ -19135,6 +20866,7 @@ export namespace Prisma {
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSleepInput = {
@@ -19155,6 +20887,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSleepInput = {
@@ -19191,6 +20924,7 @@ export namespace Prisma {
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSleepInput = {
@@ -19211,6 +20945,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutBehaviorInput = {
@@ -19231,6 +20966,7 @@ export namespace Prisma {
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBehaviorInput = {
@@ -19251,6 +20987,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBehaviorInput = {
@@ -19287,6 +21024,7 @@ export namespace Prisma {
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBehaviorInput = {
@@ -19307,6 +21045,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPreferencesInput = {
@@ -19327,6 +21066,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPreferencesInput = {
@@ -19347,6 +21087,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPreferencesInput = {
@@ -19383,6 +21124,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPreferencesInput = {
@@ -19403,6 +21145,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutActionsInput = {
@@ -19423,6 +21166,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActionsInput = {
@@ -19443,6 +21187,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActionsInput = {
@@ -19479,6 +21224,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActionsInput = {
@@ -19499,6 +21245,7 @@ export namespace Prisma {
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EventCreateManyUserInput = {
@@ -19545,6 +21292,18 @@ export namespace Prisma {
     status?: $Enums.ConflictStatus
     detectedAt?: Date | string
     resolvedAt?: Date | string | null
+  }
+
+  export type TimetableClassCreateManyUserInput = {
+    id?: string
+    name: string
+    day: string
+    startTime: string
+    endTime: string
+    room?: string | null
+    icon?: string
+    syncedToCalendar?: boolean
+    calendarEventId?: string | null
   }
 
   export type EventUpdateWithoutUserInput = {
@@ -19689,6 +21448,42 @@ export namespace Prisma {
     status?: EnumConflictStatusFieldUpdateOperationsInput | $Enums.ConflictStatus
     detectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type TimetableClassUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    day?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: StringFieldUpdateOperationsInput | string
+    syncedToCalendar?: BoolFieldUpdateOperationsInput | boolean
+    calendarEventId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TimetableClassUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    day?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: StringFieldUpdateOperationsInput | string
+    syncedToCalendar?: BoolFieldUpdateOperationsInput | boolean
+    calendarEventId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TimetableClassUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    day?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: StringFieldUpdateOperationsInput | string
+    syncedToCalendar?: BoolFieldUpdateOperationsInput | boolean
+    calendarEventId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ConflictTaskCreateManyEventInput = {

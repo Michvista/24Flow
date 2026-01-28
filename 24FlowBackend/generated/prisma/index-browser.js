@@ -190,6 +190,19 @@ exports.Prisma.ConflictProposalScalarFieldEnum = {
   reasoning: 'reasoning'
 };
 
+exports.Prisma.TimetableClassScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  day: 'day',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  room: 'room',
+  icon: 'icon',
+  syncedToCalendar: 'syncedToCalendar',
+  calendarEventId: 'calendarEventId'
+};
+
 exports.Prisma.TaskScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -284,6 +297,7 @@ exports.Prisma.ModelName = {
   Conflict: 'Conflict',
   ConflictTask: 'ConflictTask',
   ConflictProposal: 'ConflictProposal',
+  TimetableClass: 'TimetableClass',
   Task: 'Task',
   MoodLog: 'MoodLog',
   SleepLog: 'SleepLog',
