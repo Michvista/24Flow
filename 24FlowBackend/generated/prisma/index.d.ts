@@ -3462,6 +3462,7 @@ export namespace Prisma {
     colorName: number
     textColor: number
     userId: number
+    meta: number
     _all: number
   }
 
@@ -3518,6 +3519,7 @@ export namespace Prisma {
     colorName?: true
     textColor?: true
     userId?: true
+    meta?: true
     _all?: true
   }
 
@@ -3621,6 +3623,7 @@ export namespace Prisma {
     colorName: string
     textColor: string
     userId: string
+    meta: JsonValue | null
     _count: EventCountAggregateOutputType | null
     _avg: EventAvgAggregateOutputType | null
     _sum: EventSumAggregateOutputType | null
@@ -3656,6 +3659,7 @@ export namespace Prisma {
     colorName?: boolean
     textColor?: boolean
     userId?: boolean
+    meta?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     conflictTasks?: boolean | Event$conflictTasksArgs<ExtArgs>
     _count?: boolean | EventCountOutputTypeDefaultArgs<ExtArgs>
@@ -3675,6 +3679,7 @@ export namespace Prisma {
     colorName?: boolean
     textColor?: boolean
     userId?: boolean
+    meta?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["event"]>
 
@@ -3692,6 +3697,7 @@ export namespace Prisma {
     colorName?: boolean
     textColor?: boolean
     userId?: boolean
+    meta?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["event"]>
 
@@ -3709,9 +3715,10 @@ export namespace Prisma {
     colorName?: boolean
     textColor?: boolean
     userId?: boolean
+    meta?: boolean
   }
 
-  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "location" | "desc" | "startTime" | "endTime" | "recurringDays" | "createdAt" | "updatedAt" | "color" | "colorName" | "textColor" | "userId", ExtArgs["result"]["event"]>
+  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "location" | "desc" | "startTime" | "endTime" | "recurringDays" | "createdAt" | "updatedAt" | "color" | "colorName" | "textColor" | "userId" | "meta", ExtArgs["result"]["event"]>
   export type EventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     conflictTasks?: boolean | Event$conflictTasksArgs<ExtArgs>
@@ -3744,6 +3751,7 @@ export namespace Prisma {
       colorName: string
       textColor: string
       userId: string
+      meta: Prisma.JsonValue | null
     }, ExtArgs["result"]["event"]>
     composites: {}
   }
@@ -4182,6 +4190,7 @@ export namespace Prisma {
     readonly colorName: FieldRef<"Event", 'String'>
     readonly textColor: FieldRef<"Event", 'String'>
     readonly userId: FieldRef<"Event", 'String'>
+    readonly meta: FieldRef<"Event", 'Json'>
   }
     
 
@@ -15636,7 +15645,8 @@ export namespace Prisma {
     color: 'color',
     colorName: 'colorName',
     textColor: 'textColor',
-    userId: 'userId'
+    userId: 'userId',
+    meta: 'meta'
   };
 
   export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
@@ -15779,6 +15789,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const JsonNullValueInput: {
     JsonNull: typeof JsonNull
   };
@@ -15859,6 +15877,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
    * Reference to a field of type 'ConflictStatus'
    */
   export type EnumConflictStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConflictStatus'>
@@ -15904,20 +15936,6 @@ export namespace Prisma {
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
-
-
-  /**
-   * Reference to a field of type 'Json'
-   */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-  /**
-   * Reference to a field of type 'QueryMode'
-   */
-  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -16059,6 +16077,7 @@ export namespace Prisma {
     colorName?: StringFilter<"Event"> | string
     textColor?: StringFilter<"Event"> | string
     userId?: StringFilter<"Event"> | string
+    meta?: JsonNullableFilter<"Event">
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     conflictTasks?: ConflictTaskListRelationFilter
   }
@@ -16077,6 +16096,7 @@ export namespace Prisma {
     colorName?: SortOrder
     textColor?: SortOrder
     userId?: SortOrder
+    meta?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     conflictTasks?: ConflictTaskOrderByRelationAggregateInput
   }
@@ -16098,6 +16118,7 @@ export namespace Prisma {
     colorName?: StringFilter<"Event"> | string
     textColor?: StringFilter<"Event"> | string
     userId?: StringFilter<"Event"> | string
+    meta?: JsonNullableFilter<"Event">
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     conflictTasks?: ConflictTaskListRelationFilter
   }, "id">
@@ -16116,6 +16137,7 @@ export namespace Prisma {
     colorName?: SortOrder
     textColor?: SortOrder
     userId?: SortOrder
+    meta?: SortOrderInput | SortOrder
     _count?: EventCountOrderByAggregateInput
     _avg?: EventAvgOrderByAggregateInput
     _max?: EventMaxOrderByAggregateInput
@@ -16140,6 +16162,7 @@ export namespace Prisma {
     colorName?: StringWithAggregatesFilter<"Event"> | string
     textColor?: StringWithAggregatesFilter<"Event"> | string
     userId?: StringWithAggregatesFilter<"Event"> | string
+    meta?: JsonNullableWithAggregatesFilter<"Event">
   }
 
   export type ConflictWhereInput = {
@@ -16940,6 +16963,7 @@ export namespace Prisma {
     color: string
     colorName: string
     textColor: string
+    meta?: NullableJsonNullValueInput | InputJsonValue
     user: UserCreateNestedOneWithoutEventsInput
     conflictTasks?: ConflictTaskCreateNestedManyWithoutEventInput
   }
@@ -16958,6 +16982,7 @@ export namespace Prisma {
     colorName: string
     textColor: string
     userId: string
+    meta?: NullableJsonNullValueInput | InputJsonValue
     conflictTasks?: ConflictTaskUncheckedCreateNestedManyWithoutEventInput
   }
 
@@ -16974,6 +16999,7 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
+    meta?: NullableJsonNullValueInput | InputJsonValue
     user?: UserUpdateOneRequiredWithoutEventsNestedInput
     conflictTasks?: ConflictTaskUpdateManyWithoutEventNestedInput
   }
@@ -16992,6 +17018,7 @@ export namespace Prisma {
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    meta?: NullableJsonNullValueInput | InputJsonValue
     conflictTasks?: ConflictTaskUncheckedUpdateManyWithoutEventNestedInput
   }
 
@@ -17009,6 +17036,7 @@ export namespace Prisma {
     colorName: string
     textColor: string
     userId: string
+    meta?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type EventUpdateManyMutationInput = {
@@ -17024,6 +17052,7 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
+    meta?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type EventUncheckedUpdateManyInput = {
@@ -17040,6 +17069,7 @@ export namespace Prisma {
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    meta?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ConflictCreateInput = {
@@ -17949,6 +17979,29 @@ export namespace Prisma {
     hasSome?: number[] | ListIntFieldRefInput<$PrismaModel>
     isEmpty?: boolean
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
@@ -17979,6 +18032,7 @@ export namespace Prisma {
     colorName?: SortOrder
     textColor?: SortOrder
     userId?: SortOrder
+    meta?: SortOrder
   }
 
   export type EventAvgOrderByAggregateInput = {
@@ -18017,6 +18071,32 @@ export namespace Prisma {
 
   export type EventSumOrderByAggregateInput = {
     recurringDays?: SortOrder
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type EnumConflictStatusFilter<$PrismaModel = never> = {
@@ -19322,6 +19402,29 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedEnumConflictStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ConflictStatus | EnumConflictStatusFieldRefInput<$PrismaModel>
@@ -19475,6 +19578,7 @@ export namespace Prisma {
     color: string
     colorName: string
     textColor: string
+    meta?: NullableJsonNullValueInput | InputJsonValue
     conflictTasks?: ConflictTaskCreateNestedManyWithoutEventInput
   }
 
@@ -19491,6 +19595,7 @@ export namespace Prisma {
     color: string
     colorName: string
     textColor: string
+    meta?: NullableJsonNullValueInput | InputJsonValue
     conflictTasks?: ConflictTaskUncheckedCreateNestedManyWithoutEventInput
   }
 
@@ -19728,6 +19833,7 @@ export namespace Prisma {
     colorName?: StringFilter<"Event"> | string
     textColor?: StringFilter<"Event"> | string
     userId?: StringFilter<"Event"> | string
+    meta?: JsonNullableFilter<"Event">
   }
 
   export type TaskUpsertWithWhereUniqueWithoutUserInput = {
@@ -20382,6 +20488,7 @@ export namespace Prisma {
     color: string
     colorName: string
     textColor: string
+    meta?: NullableJsonNullValueInput | InputJsonValue
     user: UserCreateNestedOneWithoutEventsInput
   }
 
@@ -20399,6 +20506,7 @@ export namespace Prisma {
     colorName: string
     textColor: string
     userId: string
+    meta?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type EventCreateOrConnectWithoutConflictTasksInput = {
@@ -20465,6 +20573,7 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
+    meta?: NullableJsonNullValueInput | InputJsonValue
     user?: UserUpdateOneRequiredWithoutEventsNestedInput
   }
 
@@ -20482,6 +20591,7 @@ export namespace Prisma {
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    meta?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ConflictCreateWithoutProposalsInput = {
@@ -21261,6 +21371,7 @@ export namespace Prisma {
     color: string
     colorName: string
     textColor: string
+    meta?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type TaskCreateManyUserInput = {
@@ -21319,6 +21430,7 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
+    meta?: NullableJsonNullValueInput | InputJsonValue
     conflictTasks?: ConflictTaskUpdateManyWithoutEventNestedInput
   }
 
@@ -21335,6 +21447,7 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
+    meta?: NullableJsonNullValueInput | InputJsonValue
     conflictTasks?: ConflictTaskUncheckedUpdateManyWithoutEventNestedInput
   }
 
@@ -21351,6 +21464,7 @@ export namespace Prisma {
     color?: StringFieldUpdateOperationsInput | string
     colorName?: StringFieldUpdateOperationsInput | string
     textColor?: StringFieldUpdateOperationsInput | string
+    meta?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type TaskUpdateWithoutUserInput = {

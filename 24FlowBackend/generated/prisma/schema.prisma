@@ -61,6 +61,8 @@ model Event {
   // Conflict tracking
   conflictTasks ConflictTask[]
 
+  meta Json? @default("{}")
+
   @@index([userId, startTime])
   @@index([userId, endTime])
 }
