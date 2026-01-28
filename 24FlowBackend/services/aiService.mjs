@@ -4,27 +4,12 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export const getConflictResolution = async (tClass, event) => {
 	const prompt = `
-You are a scheduling assistant.
+You are a scheduling assistant. Respond ONLY with valid JSON.
+Class: ${tClass.name} (${tClass.startTime}–${tClass.endTime}) on ${tClass.day}
+Event: ${event.title} (${event.startTime.toISOString()}–${event.endTime.toISOString()})
+Priority: ${event.priority || 'NORMAL'}
 
-Rules:
-- Classes are FIXED by default.
-- Events should be moved unless priority is HIGH.
-- If event priority is HIGH, provide TWO options:
-  1. Move the event
-  2. Move the class
-
-Class:
-- Name: ${tClass.name}
-- Time: ${tClass.startTime}–${tClass.endTime}
-- Day: ${tClass.day}
-
-Event:
-- Title: ${event.title}
-- Time: ${event.startTime.toISOString()}–${event.endTime.toISOString()}
-- Priority: ${event.priority || 'NORMAL'}
-
-Respond ONLY with valid JSON using this schema:
-
+Schema:
 {
   "strategy": "MOVE_EVENT" | "MOVE_CLASS" | "CHOICE",
   "options": [
@@ -38,70 +23,49 @@ Respond ONLY with valid JSON using this schema:
 }
 `;
 
-	// --- mock AI (replace with real LLM call) ---
-	if ((event.priority || 'NORMAL') === 'HIGH') {
+	try {
+		const result = await ai.models.generateContent({
+			model: 'gemini-3-flash-preview',
+			contents: prompt
+		});
+
+		// The SDK structure based on your error:
+		// Access the text from the response candidates
+		const rawText = result.candidates[0].content.parts[0].text;
+
+		// Clean up markdown and parse
+		const cleanJson = rawText.replace(/```json|```/gi, '').trim();
+		return JSON.parse(cleanJson);
+	} catch (error) {
+		console.error('Gemini Resolution Error:', error);
+		// Return fallback so the app doesn't crash
 		return {
-			strategy: 'CHOICE',
+			strategy: 'MOVE_EVENT',
 			options: [
 				{
 					target: 'EVENT',
-					newStartTime: '11:30',
-					newEndTime: '12:30',
-					reason: 'Preserves class schedule'
-				},
-				{
-					target: 'CLASS',
-					newStartTime: '12:30',
-					newEndTime: '14:30',
-					reason: 'Respects high-priority event'
+					newStartTime: '12:00',
+					newEndTime: '13:00',
+					reason: 'System fallback due to AI timeout.'
 				}
 			]
 		};
 	}
-
-	return {
-		strategy: 'MOVE_EVENT',
-		options: [
-			{
-				target: 'EVENT',
-				newStartTime: '12:00',
-				newEndTime: '13:00',
-				reason: 'Class has fixed academic priority'
-			}
-		]
-	};
 };
 
-
 export const generateSheetsData = async (classes) => {
-	const prompt = `Convert these classes to a CSV (Day,Subject,Start,End,Room): ${JSON.stringify(classes)}. Return raw CSV only.`;
+	const prompt = `Convert these classes to CSV (Day,Subject,Start,End,Room): ${JSON.stringify(classes)}. Return raw CSV only.`;
 
 	try {
 		const result = await ai.models.generateContent({
 			model: 'gemini-3-flash-preview',
-			contents: [{ role: 'user', parts: [{ text: prompt }] }]
+			contents: prompt
 		});
 
-		// 🔐 SAFE EXTRACTION
-		const candidates = result?.candidates;
-		const text = candidates?.[0]?.content?.parts?.[0]?.text;
-
-		if (!text) {
-			throw new Error('Empty AI response');
-		}
-
-		// Clean any markdown formatting (e.g., ```csv ... ```) to get raw CSV
-		const csvContent = text.replace(/```(?:csv)?/g, '').trim();
-
-		if (!csvContent) {
-			throw new Error('No CSV content found in AI response');
-		}
-
-		return csvContent;
+		const text = result.candidates[0].content.parts[0].text;
+		return text.replace(/```(?:csv)?/g, '').trim();
 	} catch (error) {
-		console.error('CSV Generation Error:', error.message);
-
-		// Fallback: Return headers only so the download doesn't crash
+		console.error('CSV Generation Error:', error);
 		return 'Day,Subject,Start,End,Room';
 	}
 };
