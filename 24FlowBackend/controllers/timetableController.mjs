@@ -1,5 +1,8 @@
 import prisma from '../db.mjs';
-import { checkTimetableConflicts, syncTimetableToCalendar } from '../services/timetableService.mjs';
+import {
+	checkTimetableConflicts,
+	detectLargeGaps
+} from '../services/timetableService.mjs';
 import { generateSheetsData } from '../services/aiService.mjs';
 
 export const getTimetable = async (req, res, next) => {
@@ -42,13 +45,30 @@ export const persistTimetable = async (req, res, next) => {
 
 export const checkConflicts = async (req, res, next) => {
 	try {
-		const conflicts = await checkTimetableConflicts(req.user.id, req.body.classes);
-		res.json({ status: 'success', conflicts });
+		// Fix: Destructure 'classes' from req.body
+		const { classes } = req.body;
+		const userId = req.user.id;
+
+		if (!classes || !Array.isArray(classes)) {
+			return res.status(400).json({ error: 'No classes provided' });
+		}
+
+		// Pass the extracted classes variable
+		const conflicts = await checkTimetableConflicts(userId, classes);
+
+		// Pass the extracted classes variable to the gap detector
+		const tips = detectLargeGaps(classes);
+
+		res.json({
+			status: 'success',
+			conflicts,
+			tips
+		});
 	} catch (e) {
-		next(e);
+		console.error('Conflict Detection Failed:', e);
+		next(e); // This passes the error to your global error handler
 	}
 };
-
 /**
  * Syncs the staged timetable to the main calendar for a 12-week duration.
  * Includes duplicate protection by removing previous timetable-sourced events.
