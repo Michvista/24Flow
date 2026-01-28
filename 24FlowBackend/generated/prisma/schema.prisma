@@ -32,8 +32,9 @@ model User {
   behavior    BehaviorSummary?
   preferences Preferences?
 
-  actions   AITools[]
-  conflicts Conflict[]
+  actions          AITools[]
+  conflicts        Conflict[]
+  timetableClasses TimetableClass[]
 }
 
 model Event {
@@ -161,6 +162,22 @@ model ConflictProposal {
   reasoning String   @db.Text // AI explanation
 
   @@index([conflictId])
+}
+
+model TimetableClass {
+  id               String  @id @default(uuid())
+  userId           String
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  day              String
+  startTime        String // "HH:mm"
+  endTime          String // "HH:mm"
+  room             String?
+  icon             String  @default("School")
+  syncedToCalendar Boolean @default(false)
+  calendarEventId  String? // References Event.id if synced [cite: 39]
+
+  @@index([userId, day])
 }
 
 model Task {

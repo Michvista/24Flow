@@ -18,7 +18,7 @@ export const performOCR = async ({ image, mimeType }) => {
             }
           ]
         }
-    `;
+    `; 
 
 	const result = await ai.models.generateContent({
 		model: 'gemini-3-flash-preview',
