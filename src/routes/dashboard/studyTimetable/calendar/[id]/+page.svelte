@@ -24,6 +24,39 @@
 	import type { Task, BacklogItem } from '$lib/types';
 	import { page } from '$app/stores';
 
+	import { Toaster, toast } from 'svelte-sonner';
+		import SonnerToast from '../../../../../components/SonnerToast.svelte';
+
+	function notifySuccess(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'success'
+			},
+			duration: 5000
+		});
+	}
+
+	function notifyError(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'error'
+			},
+			duration: 5000
+		});
+	}
+
 
 	// --- State ---
 	let currentView = $state('weekly');
@@ -223,8 +256,10 @@
 
 		scheduleData = json.schedule.tasks;
 		backlog = json.schedule.backlog ?? [];
+		notifySuccess('Plan Loaded', 'Your study plan has been loaded successfully.');
 	} catch (err) {
 		console.error('Failed to load plan', err);
+		notifyError('Load Failed', 'Failed to load your study plan.');
 	}
 });
 
@@ -515,6 +550,7 @@
 		</div>
 	{/if}
 </div>
+<Toaster position="bottom-right" expand={false} richColors /> 
 
 <style>
 	:global(.custom-scrollbar::-webkit-scrollbar) {
