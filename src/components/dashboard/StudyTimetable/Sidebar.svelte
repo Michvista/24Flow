@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, createEventDispatcher } from 'svelte';
 	import { gsap } from 'gsap';
 	import {
 		X,
@@ -20,8 +20,15 @@
 		scheduleData,
 		weekOffset,
 		onDragStart,
-		onOpenCreate
+		onOpenCreate,
+		onApply = undefined,
+		onDismiss = undefined,
+		tips = []
 	} = $props();
+
+	console.log('tips:',tips)
+
+	const dispatch = createEventDispatcher();
 
 	let sidebarElement = $state<HTMLElement>();
 	let overlayElement = $state<HTMLElement>();
@@ -184,17 +191,29 @@
 				>
 					Optimization
 				</div>
-				<p class="text-white text-xs leading-relaxed mt-2 font-medium">
-					High cognitive load detected on Tuesday. Moving <span
-						class="text-white underline decoration-wavy decoration-primary">History Essay</span
-					> to Wednesday is recommended.
-				</p>
+				{#if tips && tips.length > 0}
+					{#each tips as tip, i}
+						<p class="text-white text-xs leading-relaxed mt-2 font-medium">{tip}</p>
+					{/each}
+				{:else}
+					<p class="text-white text-xs leading-relaxed mt-2 font-medium">
+						No suggestions available.
+					</p>
+				{/if}
 				<div class="mt-4 flex gap-2">
 					<button
+						onclick={() => {
+							if (typeof onApply === 'function') onApply();
+							else dispatch('applyOptimization');
+						}}
 						class="flex-1 h-8 bg-primary text-white text-[10px] font-bold uppercase rounded hover:bg-blue-600 transition-colors shadow-sm"
 						>Apply</button
 					>
 					<button
+						onclick={() => {
+							if (typeof onDismiss === 'function') onDismiss();
+							else dispatch('dismissOptimization');
+						}}
 						class="flex-1 h-8 px-2 border border-border-dark text-[#92a4c9] text-[10px] font-bold uppercase rounded hover:text-white hover:bg-white/5 transition-colors"
 						>Dismiss</button
 					>

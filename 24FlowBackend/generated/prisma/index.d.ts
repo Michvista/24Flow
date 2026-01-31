@@ -73,6 +73,11 @@ export type Preferences = $Result.DefaultSelection<Prisma.$PreferencesPayload>
  * 
  */
 export type AITools = $Result.DefaultSelection<Prisma.$AIToolsPayload>
+/**
+ * Model StudyPlan
+ * 
+ */
+export type StudyPlan = $Result.DefaultSelection<Prisma.$StudyPlanPayload>
 
 /**
  * Enums
@@ -355,6 +360,16 @@ export class PrismaClient<
     * ```
     */
   get aITools(): Prisma.AIToolsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.studyPlan`: Exposes CRUD operations for the **StudyPlan** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StudyPlans
+    * const studyPlans = await prisma.studyPlan.findMany()
+    * ```
+    */
+  get studyPlan(): Prisma.StudyPlanDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -800,7 +815,8 @@ export namespace Prisma {
     SleepLog: 'SleepLog',
     BehaviorSummary: 'BehaviorSummary',
     Preferences: 'Preferences',
-    AITools: 'AITools'
+    AITools: 'AITools',
+    StudyPlan: 'StudyPlan'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -816,7 +832,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "event" | "conflict" | "conflictTask" | "conflictProposal" | "timetableClass" | "task" | "moodLog" | "sleepLog" | "behaviorSummary" | "preferences" | "aITools"
+      modelProps: "user" | "event" | "conflict" | "conflictTask" | "conflictProposal" | "timetableClass" | "task" | "moodLog" | "sleepLog" | "behaviorSummary" | "preferences" | "aITools" | "studyPlan"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1708,6 +1724,80 @@ export namespace Prisma {
           }
         }
       }
+      StudyPlan: {
+        payload: Prisma.$StudyPlanPayload<ExtArgs>
+        fields: Prisma.StudyPlanFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StudyPlanFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StudyPlanFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload>
+          }
+          findFirst: {
+            args: Prisma.StudyPlanFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StudyPlanFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload>
+          }
+          findMany: {
+            args: Prisma.StudyPlanFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload>[]
+          }
+          create: {
+            args: Prisma.StudyPlanCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload>
+          }
+          createMany: {
+            args: Prisma.StudyPlanCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StudyPlanCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload>[]
+          }
+          delete: {
+            args: Prisma.StudyPlanDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload>
+          }
+          update: {
+            args: Prisma.StudyPlanUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload>
+          }
+          deleteMany: {
+            args: Prisma.StudyPlanDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StudyPlanUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.StudyPlanUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload>[]
+          }
+          upsert: {
+            args: Prisma.StudyPlanUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudyPlanPayload>
+          }
+          aggregate: {
+            args: Prisma.StudyPlanAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStudyPlan>
+          }
+          groupBy: {
+            args: Prisma.StudyPlanGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StudyPlanGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StudyPlanCountArgs<ExtArgs>
+            result: $Utils.Optional<StudyPlanCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1828,6 +1918,7 @@ export namespace Prisma {
     behaviorSummary?: BehaviorSummaryOmit
     preferences?: PreferencesOmit
     aITools?: AIToolsOmit
+    studyPlan?: StudyPlanOmit
   }
 
   /* Types for Logging */
@@ -1914,6 +2005,7 @@ export namespace Prisma {
     actions: number
     conflicts: number
     timetableClasses: number
+    studyPlans: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1923,6 +2015,7 @@ export namespace Prisma {
     actions?: boolean | UserCountOutputTypeCountActionsArgs
     conflicts?: boolean | UserCountOutputTypeCountConflictsArgs
     timetableClasses?: boolean | UserCountOutputTypeCountTimetableClassesArgs
+    studyPlans?: boolean | UserCountOutputTypeCountStudyPlansArgs
   }
 
   // Custom InputTypes
@@ -1976,6 +2069,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountTimetableClassesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TimetableClassWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountStudyPlansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StudyPlanWhereInput
   }
 
 
@@ -2267,6 +2367,7 @@ export namespace Prisma {
     actions?: boolean | User$actionsArgs<ExtArgs>
     conflicts?: boolean | User$conflictsArgs<ExtArgs>
     timetableClasses?: boolean | User$timetableClassesArgs<ExtArgs>
+    studyPlans?: boolean | User$studyPlansArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2320,6 +2421,7 @@ export namespace Prisma {
     actions?: boolean | User$actionsArgs<ExtArgs>
     conflicts?: boolean | User$conflictsArgs<ExtArgs>
     timetableClasses?: boolean | User$timetableClassesArgs<ExtArgs>
+    studyPlans?: boolean | User$studyPlansArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2337,6 +2439,7 @@ export namespace Prisma {
       actions: Prisma.$AIToolsPayload<ExtArgs>[]
       conflicts: Prisma.$ConflictPayload<ExtArgs>[]
       timetableClasses: Prisma.$TimetableClassPayload<ExtArgs>[]
+      studyPlans: Prisma.$StudyPlanPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2752,6 +2855,7 @@ export namespace Prisma {
     actions<T extends User$actionsArgs<ExtArgs> = {}>(args?: Subset<T, User$actionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIToolsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conflicts<T extends User$conflictsArgs<ExtArgs> = {}>(args?: Subset<T, User$conflictsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConflictPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     timetableClasses<T extends User$timetableClassesArgs<ExtArgs> = {}>(args?: Subset<T, User$timetableClassesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimetableClassPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    studyPlans<T extends User$studyPlansArgs<ExtArgs> = {}>(args?: Subset<T, User$studyPlansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3377,6 +3481,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TimetableClassScalarFieldEnum | TimetableClassScalarFieldEnum[]
+  }
+
+  /**
+   * User.studyPlans
+   */
+  export type User$studyPlansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+    where?: StudyPlanWhereInput
+    orderBy?: StudyPlanOrderByWithRelationInput | StudyPlanOrderByWithRelationInput[]
+    cursor?: StudyPlanWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StudyPlanScalarFieldEnum | StudyPlanScalarFieldEnum[]
   }
 
   /**
@@ -15603,6 +15731,1091 @@ export namespace Prisma {
 
 
   /**
+   * Model StudyPlan
+   */
+
+  export type AggregateStudyPlan = {
+    _count: StudyPlanCountAggregateOutputType | null
+    _min: StudyPlanMinAggregateOutputType | null
+    _max: StudyPlanMaxAggregateOutputType | null
+  }
+
+  export type StudyPlanMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    title: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StudyPlanMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    title: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StudyPlanCountAggregateOutputType = {
+    id: number
+    userId: number
+    title: number
+    preferences: number
+    schedule: number
+    tips: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type StudyPlanMinAggregateInputType = {
+    id?: true
+    userId?: true
+    title?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StudyPlanMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    title?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StudyPlanCountAggregateInputType = {
+    id?: true
+    userId?: true
+    title?: true
+    preferences?: true
+    schedule?: true
+    tips?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type StudyPlanAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StudyPlan to aggregate.
+     */
+    where?: StudyPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StudyPlans to fetch.
+     */
+    orderBy?: StudyPlanOrderByWithRelationInput | StudyPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StudyPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StudyPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StudyPlans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StudyPlans
+    **/
+    _count?: true | StudyPlanCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StudyPlanMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StudyPlanMaxAggregateInputType
+  }
+
+  export type GetStudyPlanAggregateType<T extends StudyPlanAggregateArgs> = {
+        [P in keyof T & keyof AggregateStudyPlan]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStudyPlan[P]>
+      : GetScalarType<T[P], AggregateStudyPlan[P]>
+  }
+
+
+
+
+  export type StudyPlanGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StudyPlanWhereInput
+    orderBy?: StudyPlanOrderByWithAggregationInput | StudyPlanOrderByWithAggregationInput[]
+    by: StudyPlanScalarFieldEnum[] | StudyPlanScalarFieldEnum
+    having?: StudyPlanScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StudyPlanCountAggregateInputType | true
+    _min?: StudyPlanMinAggregateInputType
+    _max?: StudyPlanMaxAggregateInputType
+  }
+
+  export type StudyPlanGroupByOutputType = {
+    id: string
+    userId: string
+    title: string | null
+    preferences: JsonValue
+    schedule: JsonValue
+    tips: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: StudyPlanCountAggregateOutputType | null
+    _min: StudyPlanMinAggregateOutputType | null
+    _max: StudyPlanMaxAggregateOutputType | null
+  }
+
+  type GetStudyPlanGroupByPayload<T extends StudyPlanGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StudyPlanGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StudyPlanGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StudyPlanGroupByOutputType[P]>
+            : GetScalarType<T[P], StudyPlanGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StudyPlanSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    preferences?: boolean
+    schedule?: boolean
+    tips?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["studyPlan"]>
+
+  export type StudyPlanSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    preferences?: boolean
+    schedule?: boolean
+    tips?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["studyPlan"]>
+
+  export type StudyPlanSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    preferences?: boolean
+    schedule?: boolean
+    tips?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["studyPlan"]>
+
+  export type StudyPlanSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    preferences?: boolean
+    schedule?: boolean
+    tips?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type StudyPlanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "preferences" | "schedule" | "tips" | "createdAt" | "updatedAt", ExtArgs["result"]["studyPlan"]>
+  export type StudyPlanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type StudyPlanIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type StudyPlanIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $StudyPlanPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StudyPlan"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      title: string | null
+      preferences: Prisma.JsonValue
+      schedule: Prisma.JsonValue
+      tips: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["studyPlan"]>
+    composites: {}
+  }
+
+  type StudyPlanGetPayload<S extends boolean | null | undefined | StudyPlanDefaultArgs> = $Result.GetResult<Prisma.$StudyPlanPayload, S>
+
+  type StudyPlanCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StudyPlanFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StudyPlanCountAggregateInputType | true
+    }
+
+  export interface StudyPlanDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StudyPlan'], meta: { name: 'StudyPlan' } }
+    /**
+     * Find zero or one StudyPlan that matches the filter.
+     * @param {StudyPlanFindUniqueArgs} args - Arguments to find a StudyPlan
+     * @example
+     * // Get one StudyPlan
+     * const studyPlan = await prisma.studyPlan.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StudyPlanFindUniqueArgs>(args: SelectSubset<T, StudyPlanFindUniqueArgs<ExtArgs>>): Prisma__StudyPlanClient<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one StudyPlan that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {StudyPlanFindUniqueOrThrowArgs} args - Arguments to find a StudyPlan
+     * @example
+     * // Get one StudyPlan
+     * const studyPlan = await prisma.studyPlan.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StudyPlanFindUniqueOrThrowArgs>(args: SelectSubset<T, StudyPlanFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StudyPlanClient<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StudyPlan that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudyPlanFindFirstArgs} args - Arguments to find a StudyPlan
+     * @example
+     * // Get one StudyPlan
+     * const studyPlan = await prisma.studyPlan.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StudyPlanFindFirstArgs>(args?: SelectSubset<T, StudyPlanFindFirstArgs<ExtArgs>>): Prisma__StudyPlanClient<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StudyPlan that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudyPlanFindFirstOrThrowArgs} args - Arguments to find a StudyPlan
+     * @example
+     * // Get one StudyPlan
+     * const studyPlan = await prisma.studyPlan.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StudyPlanFindFirstOrThrowArgs>(args?: SelectSubset<T, StudyPlanFindFirstOrThrowArgs<ExtArgs>>): Prisma__StudyPlanClient<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more StudyPlans that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudyPlanFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StudyPlans
+     * const studyPlans = await prisma.studyPlan.findMany()
+     * 
+     * // Get first 10 StudyPlans
+     * const studyPlans = await prisma.studyPlan.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const studyPlanWithIdOnly = await prisma.studyPlan.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StudyPlanFindManyArgs>(args?: SelectSubset<T, StudyPlanFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a StudyPlan.
+     * @param {StudyPlanCreateArgs} args - Arguments to create a StudyPlan.
+     * @example
+     * // Create one StudyPlan
+     * const StudyPlan = await prisma.studyPlan.create({
+     *   data: {
+     *     // ... data to create a StudyPlan
+     *   }
+     * })
+     * 
+     */
+    create<T extends StudyPlanCreateArgs>(args: SelectSubset<T, StudyPlanCreateArgs<ExtArgs>>): Prisma__StudyPlanClient<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many StudyPlans.
+     * @param {StudyPlanCreateManyArgs} args - Arguments to create many StudyPlans.
+     * @example
+     * // Create many StudyPlans
+     * const studyPlan = await prisma.studyPlan.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StudyPlanCreateManyArgs>(args?: SelectSubset<T, StudyPlanCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StudyPlans and returns the data saved in the database.
+     * @param {StudyPlanCreateManyAndReturnArgs} args - Arguments to create many StudyPlans.
+     * @example
+     * // Create many StudyPlans
+     * const studyPlan = await prisma.studyPlan.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many StudyPlans and only return the `id`
+     * const studyPlanWithIdOnly = await prisma.studyPlan.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StudyPlanCreateManyAndReturnArgs>(args?: SelectSubset<T, StudyPlanCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a StudyPlan.
+     * @param {StudyPlanDeleteArgs} args - Arguments to delete one StudyPlan.
+     * @example
+     * // Delete one StudyPlan
+     * const StudyPlan = await prisma.studyPlan.delete({
+     *   where: {
+     *     // ... filter to delete one StudyPlan
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StudyPlanDeleteArgs>(args: SelectSubset<T, StudyPlanDeleteArgs<ExtArgs>>): Prisma__StudyPlanClient<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one StudyPlan.
+     * @param {StudyPlanUpdateArgs} args - Arguments to update one StudyPlan.
+     * @example
+     * // Update one StudyPlan
+     * const studyPlan = await prisma.studyPlan.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StudyPlanUpdateArgs>(args: SelectSubset<T, StudyPlanUpdateArgs<ExtArgs>>): Prisma__StudyPlanClient<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more StudyPlans.
+     * @param {StudyPlanDeleteManyArgs} args - Arguments to filter StudyPlans to delete.
+     * @example
+     * // Delete a few StudyPlans
+     * const { count } = await prisma.studyPlan.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StudyPlanDeleteManyArgs>(args?: SelectSubset<T, StudyPlanDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StudyPlans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudyPlanUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StudyPlans
+     * const studyPlan = await prisma.studyPlan.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StudyPlanUpdateManyArgs>(args: SelectSubset<T, StudyPlanUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StudyPlans and returns the data updated in the database.
+     * @param {StudyPlanUpdateManyAndReturnArgs} args - Arguments to update many StudyPlans.
+     * @example
+     * // Update many StudyPlans
+     * const studyPlan = await prisma.studyPlan.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more StudyPlans and only return the `id`
+     * const studyPlanWithIdOnly = await prisma.studyPlan.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends StudyPlanUpdateManyAndReturnArgs>(args: SelectSubset<T, StudyPlanUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one StudyPlan.
+     * @param {StudyPlanUpsertArgs} args - Arguments to update or create a StudyPlan.
+     * @example
+     * // Update or create a StudyPlan
+     * const studyPlan = await prisma.studyPlan.upsert({
+     *   create: {
+     *     // ... data to create a StudyPlan
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StudyPlan we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StudyPlanUpsertArgs>(args: SelectSubset<T, StudyPlanUpsertArgs<ExtArgs>>): Prisma__StudyPlanClient<$Result.GetResult<Prisma.$StudyPlanPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of StudyPlans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudyPlanCountArgs} args - Arguments to filter StudyPlans to count.
+     * @example
+     * // Count the number of StudyPlans
+     * const count = await prisma.studyPlan.count({
+     *   where: {
+     *     // ... the filter for the StudyPlans we want to count
+     *   }
+     * })
+    **/
+    count<T extends StudyPlanCountArgs>(
+      args?: Subset<T, StudyPlanCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StudyPlanCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StudyPlan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudyPlanAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StudyPlanAggregateArgs>(args: Subset<T, StudyPlanAggregateArgs>): Prisma.PrismaPromise<GetStudyPlanAggregateType<T>>
+
+    /**
+     * Group by StudyPlan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudyPlanGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StudyPlanGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StudyPlanGroupByArgs['orderBy'] }
+        : { orderBy?: StudyPlanGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StudyPlanGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStudyPlanGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StudyPlan model
+   */
+  readonly fields: StudyPlanFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StudyPlan.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StudyPlanClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StudyPlan model
+   */
+  interface StudyPlanFieldRefs {
+    readonly id: FieldRef<"StudyPlan", 'String'>
+    readonly userId: FieldRef<"StudyPlan", 'String'>
+    readonly title: FieldRef<"StudyPlan", 'String'>
+    readonly preferences: FieldRef<"StudyPlan", 'Json'>
+    readonly schedule: FieldRef<"StudyPlan", 'Json'>
+    readonly tips: FieldRef<"StudyPlan", 'Json'>
+    readonly createdAt: FieldRef<"StudyPlan", 'DateTime'>
+    readonly updatedAt: FieldRef<"StudyPlan", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StudyPlan findUnique
+   */
+  export type StudyPlanFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which StudyPlan to fetch.
+     */
+    where: StudyPlanWhereUniqueInput
+  }
+
+  /**
+   * StudyPlan findUniqueOrThrow
+   */
+  export type StudyPlanFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which StudyPlan to fetch.
+     */
+    where: StudyPlanWhereUniqueInput
+  }
+
+  /**
+   * StudyPlan findFirst
+   */
+  export type StudyPlanFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which StudyPlan to fetch.
+     */
+    where?: StudyPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StudyPlans to fetch.
+     */
+    orderBy?: StudyPlanOrderByWithRelationInput | StudyPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StudyPlans.
+     */
+    cursor?: StudyPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StudyPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StudyPlans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StudyPlans.
+     */
+    distinct?: StudyPlanScalarFieldEnum | StudyPlanScalarFieldEnum[]
+  }
+
+  /**
+   * StudyPlan findFirstOrThrow
+   */
+  export type StudyPlanFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which StudyPlan to fetch.
+     */
+    where?: StudyPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StudyPlans to fetch.
+     */
+    orderBy?: StudyPlanOrderByWithRelationInput | StudyPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StudyPlans.
+     */
+    cursor?: StudyPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StudyPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StudyPlans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StudyPlans.
+     */
+    distinct?: StudyPlanScalarFieldEnum | StudyPlanScalarFieldEnum[]
+  }
+
+  /**
+   * StudyPlan findMany
+   */
+  export type StudyPlanFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which StudyPlans to fetch.
+     */
+    where?: StudyPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StudyPlans to fetch.
+     */
+    orderBy?: StudyPlanOrderByWithRelationInput | StudyPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StudyPlans.
+     */
+    cursor?: StudyPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StudyPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StudyPlans.
+     */
+    skip?: number
+    distinct?: StudyPlanScalarFieldEnum | StudyPlanScalarFieldEnum[]
+  }
+
+  /**
+   * StudyPlan create
+   */
+  export type StudyPlanCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+    /**
+     * The data needed to create a StudyPlan.
+     */
+    data: XOR<StudyPlanCreateInput, StudyPlanUncheckedCreateInput>
+  }
+
+  /**
+   * StudyPlan createMany
+   */
+  export type StudyPlanCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StudyPlans.
+     */
+    data: StudyPlanCreateManyInput | StudyPlanCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StudyPlan createManyAndReturn
+   */
+  export type StudyPlanCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * The data used to create many StudyPlans.
+     */
+    data: StudyPlanCreateManyInput | StudyPlanCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StudyPlan update
+   */
+  export type StudyPlanUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+    /**
+     * The data needed to update a StudyPlan.
+     */
+    data: XOR<StudyPlanUpdateInput, StudyPlanUncheckedUpdateInput>
+    /**
+     * Choose, which StudyPlan to update.
+     */
+    where: StudyPlanWhereUniqueInput
+  }
+
+  /**
+   * StudyPlan updateMany
+   */
+  export type StudyPlanUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StudyPlans.
+     */
+    data: XOR<StudyPlanUpdateManyMutationInput, StudyPlanUncheckedUpdateManyInput>
+    /**
+     * Filter which StudyPlans to update
+     */
+    where?: StudyPlanWhereInput
+    /**
+     * Limit how many StudyPlans to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * StudyPlan updateManyAndReturn
+   */
+  export type StudyPlanUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * The data used to update StudyPlans.
+     */
+    data: XOR<StudyPlanUpdateManyMutationInput, StudyPlanUncheckedUpdateManyInput>
+    /**
+     * Filter which StudyPlans to update
+     */
+    where?: StudyPlanWhereInput
+    /**
+     * Limit how many StudyPlans to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StudyPlan upsert
+   */
+  export type StudyPlanUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+    /**
+     * The filter to search for the StudyPlan to update in case it exists.
+     */
+    where: StudyPlanWhereUniqueInput
+    /**
+     * In case the StudyPlan found by the `where` argument doesn't exist, create a new StudyPlan with this data.
+     */
+    create: XOR<StudyPlanCreateInput, StudyPlanUncheckedCreateInput>
+    /**
+     * In case the StudyPlan was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StudyPlanUpdateInput, StudyPlanUncheckedUpdateInput>
+  }
+
+  /**
+   * StudyPlan delete
+   */
+  export type StudyPlanDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+    /**
+     * Filter which StudyPlan to delete.
+     */
+    where: StudyPlanWhereUniqueInput
+  }
+
+  /**
+   * StudyPlan deleteMany
+   */
+  export type StudyPlanDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StudyPlans to delete
+     */
+    where?: StudyPlanWhereInput
+    /**
+     * Limit how many StudyPlans to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * StudyPlan without action
+   */
+  export type StudyPlanDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudyPlan
+     */
+    select?: StudyPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudyPlan
+     */
+    omit?: StudyPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudyPlanInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -15779,6 +16992,20 @@ export namespace Prisma {
   };
 
   export type AIToolsScalarFieldEnum = (typeof AIToolsScalarFieldEnum)[keyof typeof AIToolsScalarFieldEnum]
+
+
+  export const StudyPlanScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    title: 'title',
+    preferences: 'preferences',
+    schedule: 'schedule',
+    tips: 'tips',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type StudyPlanScalarFieldEnum = (typeof StudyPlanScalarFieldEnum)[keyof typeof StudyPlanScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -15979,6 +17206,7 @@ export namespace Prisma {
     actions?: AIToolsListRelationFilter
     conflicts?: ConflictListRelationFilter
     timetableClasses?: TimetableClassListRelationFilter
+    studyPlans?: StudyPlanListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -16001,6 +17229,7 @@ export namespace Prisma {
     actions?: AIToolsOrderByRelationAggregateInput
     conflicts?: ConflictOrderByRelationAggregateInput
     timetableClasses?: TimetableClassOrderByRelationAggregateInput
+    studyPlans?: StudyPlanOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -16026,6 +17255,7 @@ export namespace Prisma {
     actions?: AIToolsListRelationFilter
     conflicts?: ConflictListRelationFilter
     timetableClasses?: TimetableClassListRelationFilter
+    studyPlans?: StudyPlanListRelationFilter
   }, "id" | "googleId" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -16823,6 +18053,76 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"AITools"> | Date | string
   }
 
+  export type StudyPlanWhereInput = {
+    AND?: StudyPlanWhereInput | StudyPlanWhereInput[]
+    OR?: StudyPlanWhereInput[]
+    NOT?: StudyPlanWhereInput | StudyPlanWhereInput[]
+    id?: StringFilter<"StudyPlan"> | string
+    userId?: StringFilter<"StudyPlan"> | string
+    title?: StringNullableFilter<"StudyPlan"> | string | null
+    preferences?: JsonFilter<"StudyPlan">
+    schedule?: JsonFilter<"StudyPlan">
+    tips?: JsonNullableFilter<"StudyPlan">
+    createdAt?: DateTimeFilter<"StudyPlan"> | Date | string
+    updatedAt?: DateTimeFilter<"StudyPlan"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type StudyPlanOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrderInput | SortOrder
+    preferences?: SortOrder
+    schedule?: SortOrder
+    tips?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type StudyPlanWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: StudyPlanWhereInput | StudyPlanWhereInput[]
+    OR?: StudyPlanWhereInput[]
+    NOT?: StudyPlanWhereInput | StudyPlanWhereInput[]
+    userId?: StringFilter<"StudyPlan"> | string
+    title?: StringNullableFilter<"StudyPlan"> | string | null
+    preferences?: JsonFilter<"StudyPlan">
+    schedule?: JsonFilter<"StudyPlan">
+    tips?: JsonNullableFilter<"StudyPlan">
+    createdAt?: DateTimeFilter<"StudyPlan"> | Date | string
+    updatedAt?: DateTimeFilter<"StudyPlan"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type StudyPlanOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrderInput | SortOrder
+    preferences?: SortOrder
+    schedule?: SortOrder
+    tips?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: StudyPlanCountOrderByAggregateInput
+    _max?: StudyPlanMaxOrderByAggregateInput
+    _min?: StudyPlanMinOrderByAggregateInput
+  }
+
+  export type StudyPlanScalarWhereWithAggregatesInput = {
+    AND?: StudyPlanScalarWhereWithAggregatesInput | StudyPlanScalarWhereWithAggregatesInput[]
+    OR?: StudyPlanScalarWhereWithAggregatesInput[]
+    NOT?: StudyPlanScalarWhereWithAggregatesInput | StudyPlanScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"StudyPlan"> | string
+    userId?: StringWithAggregatesFilter<"StudyPlan"> | string
+    title?: StringNullableWithAggregatesFilter<"StudyPlan"> | string | null
+    preferences?: JsonWithAggregatesFilter<"StudyPlan">
+    schedule?: JsonWithAggregatesFilter<"StudyPlan">
+    tips?: JsonNullableWithAggregatesFilter<"StudyPlan">
+    createdAt?: DateTimeWithAggregatesFilter<"StudyPlan"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"StudyPlan"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     googleId?: string | null
@@ -16843,6 +18143,7 @@ export namespace Prisma {
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -16865,6 +18166,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -16887,6 +18189,7 @@ export namespace Prisma {
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -16909,6 +18212,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -17762,6 +19066,82 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type StudyPlanCreateInput = {
+    id?: string
+    title?: string | null
+    preferences: JsonNullValueInput | InputJsonValue
+    schedule: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutStudyPlansInput
+  }
+
+  export type StudyPlanUncheckedCreateInput = {
+    id?: string
+    userId: string
+    title?: string | null
+    preferences: JsonNullValueInput | InputJsonValue
+    schedule: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StudyPlanUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: JsonNullValueInput | InputJsonValue
+    schedule?: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutStudyPlansNestedInput
+  }
+
+  export type StudyPlanUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: JsonNullValueInput | InputJsonValue
+    schedule?: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudyPlanCreateManyInput = {
+    id?: string
+    userId: string
+    title?: string | null
+    preferences: JsonNullValueInput | InputJsonValue
+    schedule: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StudyPlanUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: JsonNullValueInput | InputJsonValue
+    schedule?: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudyPlanUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: JsonNullValueInput | InputJsonValue
+    schedule?: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -17854,6 +19234,12 @@ export namespace Prisma {
     none?: TimetableClassWhereInput
   }
 
+  export type StudyPlanListRelationFilter = {
+    every?: StudyPlanWhereInput
+    some?: StudyPlanWhereInput
+    none?: StudyPlanWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -17880,6 +19266,10 @@ export namespace Prisma {
   }
 
   export type TimetableClassOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StudyPlanOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -18603,6 +19993,33 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type StudyPlanCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    preferences?: SortOrder
+    schedule?: SortOrder
+    tips?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StudyPlanMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StudyPlanMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type EventCreateNestedManyWithoutUserInput = {
     create?: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput> | EventCreateWithoutUserInput[] | EventUncheckedCreateWithoutUserInput[]
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
@@ -18663,6 +20080,13 @@ export namespace Prisma {
     connect?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
   }
 
+  export type StudyPlanCreateNestedManyWithoutUserInput = {
+    create?: XOR<StudyPlanCreateWithoutUserInput, StudyPlanUncheckedCreateWithoutUserInput> | StudyPlanCreateWithoutUserInput[] | StudyPlanUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StudyPlanCreateOrConnectWithoutUserInput | StudyPlanCreateOrConnectWithoutUserInput[]
+    createMany?: StudyPlanCreateManyUserInputEnvelope
+    connect?: StudyPlanWhereUniqueInput | StudyPlanWhereUniqueInput[]
+  }
+
   export type EventUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput> | EventCreateWithoutUserInput[] | EventUncheckedCreateWithoutUserInput[]
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
@@ -18721,6 +20145,13 @@ export namespace Prisma {
     connectOrCreate?: TimetableClassCreateOrConnectWithoutUserInput | TimetableClassCreateOrConnectWithoutUserInput[]
     createMany?: TimetableClassCreateManyUserInputEnvelope
     connect?: TimetableClassWhereUniqueInput | TimetableClassWhereUniqueInput[]
+  }
+
+  export type StudyPlanUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<StudyPlanCreateWithoutUserInput, StudyPlanUncheckedCreateWithoutUserInput> | StudyPlanCreateWithoutUserInput[] | StudyPlanUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StudyPlanCreateOrConnectWithoutUserInput | StudyPlanCreateOrConnectWithoutUserInput[]
+    createMany?: StudyPlanCreateManyUserInputEnvelope
+    connect?: StudyPlanWhereUniqueInput | StudyPlanWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -18849,6 +20280,20 @@ export namespace Prisma {
     deleteMany?: TimetableClassScalarWhereInput | TimetableClassScalarWhereInput[]
   }
 
+  export type StudyPlanUpdateManyWithoutUserNestedInput = {
+    create?: XOR<StudyPlanCreateWithoutUserInput, StudyPlanUncheckedCreateWithoutUserInput> | StudyPlanCreateWithoutUserInput[] | StudyPlanUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StudyPlanCreateOrConnectWithoutUserInput | StudyPlanCreateOrConnectWithoutUserInput[]
+    upsert?: StudyPlanUpsertWithWhereUniqueWithoutUserInput | StudyPlanUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: StudyPlanCreateManyUserInputEnvelope
+    set?: StudyPlanWhereUniqueInput | StudyPlanWhereUniqueInput[]
+    disconnect?: StudyPlanWhereUniqueInput | StudyPlanWhereUniqueInput[]
+    delete?: StudyPlanWhereUniqueInput | StudyPlanWhereUniqueInput[]
+    connect?: StudyPlanWhereUniqueInput | StudyPlanWhereUniqueInput[]
+    update?: StudyPlanUpdateWithWhereUniqueWithoutUserInput | StudyPlanUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: StudyPlanUpdateManyWithWhereWithoutUserInput | StudyPlanUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: StudyPlanScalarWhereInput | StudyPlanScalarWhereInput[]
+  }
+
   export type EventUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<EventCreateWithoutUserInput, EventUncheckedCreateWithoutUserInput> | EventCreateWithoutUserInput[] | EventUncheckedCreateWithoutUserInput[]
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
@@ -18961,6 +20406,20 @@ export namespace Prisma {
     update?: TimetableClassUpdateWithWhereUniqueWithoutUserInput | TimetableClassUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: TimetableClassUpdateManyWithWhereWithoutUserInput | TimetableClassUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: TimetableClassScalarWhereInput | TimetableClassScalarWhereInput[]
+  }
+
+  export type StudyPlanUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<StudyPlanCreateWithoutUserInput, StudyPlanUncheckedCreateWithoutUserInput> | StudyPlanCreateWithoutUserInput[] | StudyPlanUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: StudyPlanCreateOrConnectWithoutUserInput | StudyPlanCreateOrConnectWithoutUserInput[]
+    upsert?: StudyPlanUpsertWithWhereUniqueWithoutUserInput | StudyPlanUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: StudyPlanCreateManyUserInputEnvelope
+    set?: StudyPlanWhereUniqueInput | StudyPlanWhereUniqueInput[]
+    disconnect?: StudyPlanWhereUniqueInput | StudyPlanWhereUniqueInput[]
+    delete?: StudyPlanWhereUniqueInput | StudyPlanWhereUniqueInput[]
+    connect?: StudyPlanWhereUniqueInput | StudyPlanWhereUniqueInput[]
+    update?: StudyPlanUpdateWithWhereUniqueWithoutUserInput | StudyPlanUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: StudyPlanUpdateManyWithWhereWithoutUserInput | StudyPlanUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: StudyPlanScalarWhereInput | StudyPlanScalarWhereInput[]
   }
 
   export type EventCreaterecurringDaysInput = {
@@ -19292,6 +20751,20 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutActionsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutActionsInput, UserUpdateWithoutActionsInput>, UserUncheckedUpdateWithoutActionsInput>
+  }
+
+  export type UserCreateNestedOneWithoutStudyPlansInput = {
+    create?: XOR<UserCreateWithoutStudyPlansInput, UserUncheckedCreateWithoutStudyPlansInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStudyPlansInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutStudyPlansNestedInput = {
+    create?: XOR<UserCreateWithoutStudyPlansInput, UserUncheckedCreateWithoutStudyPlansInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStudyPlansInput
+    upsert?: UserUpsertWithoutStudyPlansInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutStudyPlansInput, UserUpdateWithoutStudyPlansInput>, UserUncheckedUpdateWithoutStudyPlansInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -19800,6 +21273,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StudyPlanCreateWithoutUserInput = {
+    id?: string
+    title?: string | null
+    preferences: JsonNullValueInput | InputJsonValue
+    schedule: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StudyPlanUncheckedCreateWithoutUserInput = {
+    id?: string
+    title?: string | null
+    preferences: JsonNullValueInput | InputJsonValue
+    schedule: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StudyPlanCreateOrConnectWithoutUserInput = {
+    where: StudyPlanWhereUniqueInput
+    create: XOR<StudyPlanCreateWithoutUserInput, StudyPlanUncheckedCreateWithoutUserInput>
+  }
+
+  export type StudyPlanCreateManyUserInputEnvelope = {
+    data: StudyPlanCreateManyUserInput | StudyPlanCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type EventUpsertWithWhereUniqueWithoutUserInput = {
     where: EventWhereUniqueInput
     update: XOR<EventUpdateWithoutUserInput, EventUncheckedUpdateWithoutUserInput>
@@ -20048,6 +21551,36 @@ export namespace Prisma {
     calendarEventId?: StringNullableFilter<"TimetableClass"> | string | null
   }
 
+  export type StudyPlanUpsertWithWhereUniqueWithoutUserInput = {
+    where: StudyPlanWhereUniqueInput
+    update: XOR<StudyPlanUpdateWithoutUserInput, StudyPlanUncheckedUpdateWithoutUserInput>
+    create: XOR<StudyPlanCreateWithoutUserInput, StudyPlanUncheckedCreateWithoutUserInput>
+  }
+
+  export type StudyPlanUpdateWithWhereUniqueWithoutUserInput = {
+    where: StudyPlanWhereUniqueInput
+    data: XOR<StudyPlanUpdateWithoutUserInput, StudyPlanUncheckedUpdateWithoutUserInput>
+  }
+
+  export type StudyPlanUpdateManyWithWhereWithoutUserInput = {
+    where: StudyPlanScalarWhereInput
+    data: XOR<StudyPlanUpdateManyMutationInput, StudyPlanUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type StudyPlanScalarWhereInput = {
+    AND?: StudyPlanScalarWhereInput | StudyPlanScalarWhereInput[]
+    OR?: StudyPlanScalarWhereInput[]
+    NOT?: StudyPlanScalarWhereInput | StudyPlanScalarWhereInput[]
+    id?: StringFilter<"StudyPlan"> | string
+    userId?: StringFilter<"StudyPlan"> | string
+    title?: StringNullableFilter<"StudyPlan"> | string | null
+    preferences?: JsonFilter<"StudyPlan">
+    schedule?: JsonFilter<"StudyPlan">
+    tips?: JsonNullableFilter<"StudyPlan">
+    createdAt?: DateTimeFilter<"StudyPlan"> | Date | string
+    updatedAt?: DateTimeFilter<"StudyPlan"> | Date | string
+  }
+
   export type UserCreateWithoutEventsInput = {
     id?: string
     googleId?: string | null
@@ -20067,6 +21600,7 @@ export namespace Prisma {
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventsInput = {
@@ -20088,6 +21622,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventsInput = {
@@ -20163,6 +21698,7 @@ export namespace Prisma {
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventsInput = {
@@ -20184,6 +21720,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConflictTaskUpsertWithWhereUniqueWithoutEventInput = {
@@ -20239,6 +21776,7 @@ export namespace Prisma {
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConflictsInput = {
@@ -20260,6 +21798,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConflictsInput = {
@@ -20373,6 +21912,7 @@ export namespace Prisma {
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConflictsInput = {
@@ -20394,6 +21934,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConflictTaskUpsertWithWhereUniqueWithoutConflictInput = {
@@ -20677,6 +22218,7 @@ export namespace Prisma {
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTimetableClassesInput = {
@@ -20698,6 +22240,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTimetableClassesInput = {
@@ -20735,6 +22278,7 @@ export namespace Prisma {
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTimetableClassesInput = {
@@ -20756,6 +22300,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutTasksInput = {
@@ -20777,6 +22322,7 @@ export namespace Prisma {
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTasksInput = {
@@ -20798,6 +22344,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTasksInput = {
@@ -20835,6 +22382,7 @@ export namespace Prisma {
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksInput = {
@@ -20856,6 +22404,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutMoodsInput = {
@@ -20877,6 +22426,7 @@ export namespace Prisma {
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMoodsInput = {
@@ -20898,6 +22448,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMoodsInput = {
@@ -20935,6 +22486,7 @@ export namespace Prisma {
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMoodsInput = {
@@ -20956,6 +22508,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSleepInput = {
@@ -20977,6 +22530,7 @@ export namespace Prisma {
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSleepInput = {
@@ -20998,6 +22552,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSleepInput = {
@@ -21035,6 +22590,7 @@ export namespace Prisma {
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSleepInput = {
@@ -21056,6 +22612,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutBehaviorInput = {
@@ -21077,6 +22634,7 @@ export namespace Prisma {
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBehaviorInput = {
@@ -21098,6 +22656,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBehaviorInput = {
@@ -21135,6 +22694,7 @@ export namespace Prisma {
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBehaviorInput = {
@@ -21156,6 +22716,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPreferencesInput = {
@@ -21177,6 +22738,7 @@ export namespace Prisma {
     actions?: AIToolsCreateNestedManyWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPreferencesInput = {
@@ -21198,6 +22760,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPreferencesInput = {
@@ -21235,6 +22798,7 @@ export namespace Prisma {
     actions?: AIToolsUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPreferencesInput = {
@@ -21256,6 +22820,7 @@ export namespace Prisma {
     actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutActionsInput = {
@@ -21277,6 +22842,7 @@ export namespace Prisma {
     preferences?: PreferencesCreateNestedOneWithoutUserInput
     conflicts?: ConflictCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActionsInput = {
@@ -21298,6 +22864,7 @@ export namespace Prisma {
     preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
     conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
     timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
+    studyPlans?: StudyPlanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActionsInput = {
@@ -21335,6 +22902,7 @@ export namespace Prisma {
     preferences?: PreferencesUpdateOneWithoutUserNestedInput
     conflicts?: ConflictUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActionsInput = {
@@ -21354,6 +22922,111 @@ export namespace Prisma {
     sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
     behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
     preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
+    studyPlans?: StudyPlanUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutStudyPlansInput = {
+    id?: string
+    googleId?: string | null
+    password?: string | null
+    avatar?: string | null
+    email: string
+    name?: string | null
+    username?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    events?: EventCreateNestedManyWithoutUserInput
+    tasks?: TaskCreateNestedManyWithoutUserInput
+    moods?: MoodLogCreateNestedManyWithoutUserInput
+    sleep?: SleepLogCreateNestedOneWithoutUserInput
+    behavior?: BehaviorSummaryCreateNestedOneWithoutUserInput
+    preferences?: PreferencesCreateNestedOneWithoutUserInput
+    actions?: AIToolsCreateNestedManyWithoutUserInput
+    conflicts?: ConflictCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutStudyPlansInput = {
+    id?: string
+    googleId?: string | null
+    password?: string | null
+    avatar?: string | null
+    email: string
+    name?: string | null
+    username?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    events?: EventUncheckedCreateNestedManyWithoutUserInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    moods?: MoodLogUncheckedCreateNestedManyWithoutUserInput
+    sleep?: SleepLogUncheckedCreateNestedOneWithoutUserInput
+    behavior?: BehaviorSummaryUncheckedCreateNestedOneWithoutUserInput
+    preferences?: PreferencesUncheckedCreateNestedOneWithoutUserInput
+    actions?: AIToolsUncheckedCreateNestedManyWithoutUserInput
+    conflicts?: ConflictUncheckedCreateNestedManyWithoutUserInput
+    timetableClasses?: TimetableClassUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutStudyPlansInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutStudyPlansInput, UserUncheckedCreateWithoutStudyPlansInput>
+  }
+
+  export type UserUpsertWithoutStudyPlansInput = {
+    update: XOR<UserUpdateWithoutStudyPlansInput, UserUncheckedUpdateWithoutStudyPlansInput>
+    create: XOR<UserCreateWithoutStudyPlansInput, UserUncheckedCreateWithoutStudyPlansInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutStudyPlansInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutStudyPlansInput, UserUncheckedUpdateWithoutStudyPlansInput>
+  }
+
+  export type UserUpdateWithoutStudyPlansInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    events?: EventUpdateManyWithoutUserNestedInput
+    tasks?: TaskUpdateManyWithoutUserNestedInput
+    moods?: MoodLogUpdateManyWithoutUserNestedInput
+    sleep?: SleepLogUpdateOneWithoutUserNestedInput
+    behavior?: BehaviorSummaryUpdateOneWithoutUserNestedInput
+    preferences?: PreferencesUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUpdateManyWithoutUserNestedInput
+    conflicts?: ConflictUpdateManyWithoutUserNestedInput
+    timetableClasses?: TimetableClassUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutStudyPlansInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    events?: EventUncheckedUpdateManyWithoutUserNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    moods?: MoodLogUncheckedUpdateManyWithoutUserNestedInput
+    sleep?: SleepLogUncheckedUpdateOneWithoutUserNestedInput
+    behavior?: BehaviorSummaryUncheckedUpdateOneWithoutUserNestedInput
+    preferences?: PreferencesUncheckedUpdateOneWithoutUserNestedInput
+    actions?: AIToolsUncheckedUpdateManyWithoutUserNestedInput
     conflicts?: ConflictUncheckedUpdateManyWithoutUserNestedInput
     timetableClasses?: TimetableClassUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -21415,6 +23088,16 @@ export namespace Prisma {
     icon?: string
     syncedToCalendar?: boolean
     calendarEventId?: string | null
+  }
+
+  export type StudyPlanCreateManyUserInput = {
+    id?: string
+    title?: string | null
+    preferences: JsonNullValueInput | InputJsonValue
+    schedule: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type EventUpdateWithoutUserInput = {
@@ -21598,6 +23281,36 @@ export namespace Prisma {
     icon?: StringFieldUpdateOperationsInput | string
     syncedToCalendar?: BoolFieldUpdateOperationsInput | boolean
     calendarEventId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type StudyPlanUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: JsonNullValueInput | InputJsonValue
+    schedule?: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudyPlanUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: JsonNullValueInput | InputJsonValue
+    schedule?: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudyPlanUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    preferences?: JsonNullValueInput | InputJsonValue
+    schedule?: JsonNullValueInput | InputJsonValue
+    tips?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ConflictTaskCreateManyEventInput = {

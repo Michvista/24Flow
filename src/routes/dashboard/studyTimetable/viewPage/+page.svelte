@@ -96,6 +96,19 @@
 		}
 	}
 
+    	let avatarUrl = '';
+
+	function generateRandomAvatar() {
+		const styles = ['adventurer', 'fun-emoji', 'bottts', 'lorelei', 'avataaars'];
+		const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+		const randomSeed = Math.random().toString(36).substring(7);
+		return `https://api.dicebear.com/7.x/${randomStyle}/svg?seed=${randomSeed}`;
+	}
+
+	onMount(() => {
+		avatarUrl = generateRandomAvatar();
+	});
+
 	// Reactive trigger: Fetch when page or search changes
 	$: {
 		(currentPage, searchQuery);
@@ -153,13 +166,15 @@
 			<div class="flex items-center gap-4 pl-8 border-l">
 				<div class="text-right">
 					<p class="text-sm font-bold leading-none">Alex Chen</p>
-					<p class="text-[10px] text-slate-500 uppercase tracking-widest">Student Pro Plan</p>
 				</div>
-				<img
-					alt="User avatar"
-					class="w-10 h-10 border-2 border-slate-500 bg-slate-200"
-					src="https://ui-avatars.com/api/?name=Alex+Chen"
-				/>
+				<div
+			class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-900 overflow-hidden bg-slate-200"
+			style="background-image: url('{avatarUrl}');"
+		>
+			{#if !avatarUrl}
+				<div class=" w-full h-full"></div>
+			{/if}
+		</div>
 			</div>
 		</div>
 	</header>

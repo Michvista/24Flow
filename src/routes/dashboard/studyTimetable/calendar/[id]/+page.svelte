@@ -25,7 +25,7 @@
 	import { page } from '$app/stores';
 
 	import { Toaster, toast } from 'svelte-sonner';
-		import SonnerToast from '../../../../../components/SonnerToast.svelte';
+	import SonnerToast from '../../../../../components/SonnerToast.svelte';
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
@@ -57,7 +57,6 @@
 		});
 	}
 
-
 	// --- State ---
 	let currentView = $state('weekly');
 	let isEditMode = $state(false);
@@ -85,6 +84,11 @@
 
 	// --- Rich Dummy Data ---
 	let scheduleData = $state<Task[]>([]);
+
+	let tips = $state<string[]>([]);
+
+	let isLoading = $state(true);
+	let errorMessage = $state('');
 
 	let backlog = $state<BacklogItem[]>([
 		{
@@ -230,39 +234,112 @@
 	});
 
 	function exportCsv() {
-	const rows = scheduleData.map(t =>
-		`${t.title},${t.time},${t.duration}`
-	);
+		const rows = scheduleData.map((t) => `${t.title},${t.time},${t.duration}`);
 
-	const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
-	const url = URL.createObjectURL(blob);
+		const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+		const url = URL.createObjectURL(blob);
 
-	const a = document.createElement('a');
-	a.href = url;
-	a.download = 'timetable.csv';
-	a.click();
-}
-
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'timetable.csv';
+		a.click();
+	}
 
 	onMount(async () => {
-	const planId = $page.params.id;
+		const planId = $page.params.id;
 
-	try {
-		const res = await fetch(`http://localhost:3000/study-plans/${planId}`, {
-			credentials: 'include'
-		});
+		try {
+			const res = await fetch(`http://localhost:3000/study-plans/${planId}`, {
+				credentials: 'include'
+			});
 
-		const json = await res.json();
+			const json = await res.json();
+			console.log(json);
 
-		scheduleData = json.schedule.tasks;
-		backlog = json.schedule.backlog ?? [];
-		notifySuccess('Plan Loaded', 'Your study plan has been loaded successfully.');
-	} catch (err) {
-		console.error('Failed to load plan', err);
-		notifyError('Load Failed', 'Failed to load your study plan.');
-	}
-});
+			// Defensive normalization: backend should already normalize, but handle malformed AI shapes here
+			const normalizeLocal = (rawSchedule: any) => {
+				if (!rawSchedule || typeof rawSchedule !== 'object') return { tasks: [], backlog: [] };
+				const schedule = { ...rawSchedule };
 
+				// prefer explicit tasks
+				if (!Array.isArray(schedule.tasks)) {
+					if (Array.isArray(schedule.list)) schedule.tasks = schedule.list;
+					else if (Array.isArray(schedule.days)) {
+						try {
+							schedule.tasks = schedule.days.flatMap((d: any) =>
+								Array.isArray(d.tasks) ? d.tasks : []
+							);
+						} catch (e) {
+							schedule.tasks = [];
+						}
+					} else if (Array.isArray(schedule.weeks)) {
+						try {
+							schedule.tasks = schedule.weeks.flatMap((w: any) =>
+								Array.isArray(w.list) ? w.list : []
+							);
+						} catch (e) {
+							schedule.tasks = [];
+						}
+					} else schedule.tasks = [];
+				}
+
+				const tasks = Array.isArray(schedule.tasks) ? schedule.tasks : [];
+				const enriched = tasks.map((t: any, i: number) => {
+					const obj = typeof t === 'string' ? { title: t } : ({ ...t } as any);
+					const title = obj.title ?? obj.name ?? 'Study Task';
+					let time = String(obj.time ?? '09:00');
+					if (!time.includes(':')) time = time.padEnd(5, ':00').slice(0, 5);
+					time = time.slice(0, 5);
+					const duration = obj.duration ?? obj.len ?? '1h';
+					const isBreak = /break/i.test(title);
+					let day = 0;
+					if (typeof obj.day === 'number') day = obj.day;
+					else if (typeof obj.day === 'string') {
+						const n = obj.day.toLowerCase();
+						if (n.startsWith('mon')) day = 0;
+						else if (n.startsWith('tue')) day = 1;
+						else if (n.startsWith('wed')) day = 2;
+						else if (n.startsWith('thu')) day = 3;
+						else if (n.startsWith('fri')) day = 4;
+						else if (n.startsWith('sat')) day = 5;
+						else if (n.startsWith('sun')) day = 6;
+					}
+
+					return {
+						id: obj.id ?? `${Date.now().toString(36)}-${i}`,
+						week: obj.week ?? 0,
+						day,
+						time,
+						title,
+						duration: String(duration),
+						type: obj.type ?? (isBreak ? 'Break' : 'Study'),
+						color: obj.color ?? (isBreak ? 'bg-[#232f48]' : 'bg-primary'),
+						subColor: obj.subColor ?? (isBreak ? 'text-white/60' : 'text-blue-200'),
+						isBreak,
+						description: obj.description ?? null
+					};
+				});
+
+				return {
+					tasks: enriched,
+					backlog: Array.isArray(schedule.backlog) ? schedule.backlog : []
+				};
+			};
+
+			const normalized = normalizeLocal(json.schedule ?? {});
+			scheduleData = normalized.tasks;
+			backlog = normalized.backlog;
+			// tips are returned by the API; keep them for Sidebar suggestions
+			tips = Array.isArray(json.tips) ? json.tips : json.tips ? [String(json.tips)] : [];
+			notifySuccess('Plan Loaded', 'Your study plan has been loaded successfully.');
+		} catch (err: any) {
+			console.error('Failed to load plan', err);
+			errorMessage = err?.message ?? 'Failed to load your study plan.';
+			notifyError('Load Failed', errorMessage);
+		} finally {
+			isLoading = false;
+		}
+	});
 </script>
 
 <nav>
@@ -325,7 +402,7 @@
 							</button>
 						{:else}
 							<button
-							onclick={exportCsv}
+								onclick={exportCsv}
 								class="flex-1 sm:flex-none flex items-center justify-center gap-2 h-10 px-4 bg-card-dark border-2 border-border-dark text-white text-xs md:text-sm font-bold uppercase rounded shadow-hard hover:shadow-hard-hover hover:-translate-y-0.5 transition-all"
 							>
 								<FileDown size={16} /> <span>Export</span>
@@ -381,7 +458,7 @@
 								><ChevronLeft size={20} /></button
 							>
 							<div
-								class="flex-[3] md:flex-none px-4 h-10 flex items-center justify-center text-white font-bold text-xs md:text-sm min-w-[160px] font-mono"
+								class="flex-3 md:flex-none px-4 h-10 flex items-center justify-center text-white font-bold text-xs md:text-sm min-w-40 font-mono"
 							>
 								{formatDateRange()}
 							</div>
@@ -463,7 +540,7 @@
 					showDetailedModal = true;
 					console.log('Button clicked, modal should open');
 				}}
-				class="fixed bottom-6 right-6 md:bottom-10 md:right-10 size-14 md:size-16 bg-white text-primary rounded shadow-hard hover:shadow-hard-hover hover:-translate-y-1 transition-all flex items-center justify-center border-2 border-border-dark z-[100] group"
+				class="fixed bottom-6 right-6 md:bottom-10 md:right-10 size-14 md:size-16 bg-white text-primary rounded shadow-hard hover:shadow-hard-hover hover:-translate-y-1 transition-all flex items-center justify-center border-2 border-border-dark z-100 group"
 				aria-label="Add new task"
 			>
 				<Plus
@@ -488,7 +565,7 @@
 
 	{#if showCreateModal}
 		<div
-			class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+			class="fixed inset-0 bg-black/80 backdrop-blur-sm z-60 flex items-center justify-center p-4"
 		>
 			<div
 				class="bg-card-dark border-2 border-border-dark w-full max-w-md rounded shadow-hard p-5 md:p-6 animate-in zoom-in-95 duration-200"
@@ -507,10 +584,14 @@
 					class="space-y-4"
 				>
 					<div>
-						<label class="block text-[10px] font-bold uppercase text-[#92a4c9] mb-1">Title</label>
+						<label
+							for="newTaskTitle"
+							class="block text-[10px] font-bold uppercase text-[#92a4c9] mb-1">Title</label
+						>
 						<input
 							bind:value={newTask.title}
 							type="text"
+							id="newTaskTitle"
 							class="w-full bg-background-dark border-2 border-border-dark rounded px-4 py-2 text-white focus:border-primary outline-none"
 							placeholder="Physics Review"
 							required
@@ -518,8 +599,12 @@
 					</div>
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 						<div>
-							<label class="block text-[10px] font-bold uppercase text-[#92a4c9] mb-1">Type</label>
+							<label
+								for="newTaskType"
+								class="block text-[10px] font-bold uppercase text-[#92a4c9] mb-1">Type</label
+							>
 							<select
+								id="newTaskType"
 								bind:value={newTask.type}
 								class="w-full bg-background-dark border-2 border-border-dark rounded px-4 py-2 text-white outline-none"
 							>
@@ -529,10 +614,12 @@
 							</select>
 						</div>
 						<div>
-							<label class="block text-[10px] font-bold uppercase text-[#92a4c9] mb-1"
-								>Duration</label
+							<label
+								for="newTaskDuration"
+								class="block text-[10px] font-bold uppercase text-[#92a4c9] mb-1">Duration</label
 							>
 							<input
+								id="newTaskDuration"
 								bind:value={newTask.duration}
 								type="text"
 								class="w-full bg-background-dark border-2 border-border-dark rounded px-4 py-2 text-white outline-none"
@@ -550,7 +637,7 @@
 		</div>
 	{/if}
 </div>
-<Toaster position="bottom-right" expand={false} richColors /> 
+<Toaster position="bottom-right" expand={false} richColors />
 
 <style>
 	:global(.custom-scrollbar::-webkit-scrollbar) {
