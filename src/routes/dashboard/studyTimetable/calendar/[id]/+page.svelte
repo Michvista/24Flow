@@ -15,13 +15,15 @@
 	} from 'lucide-svelte';
 
 	// Components
-	import WeekView from '../../../../components/dashboard/StudyTimetable/WeekView.svelte';
-	import DayView from '../../../../components/dashboard/StudyTimetable/DayView.svelte';
-	import ListView from '../../../../components/dashboard/StudyTimetable/ListView.svelte';
-	import Sidebar from '../../../../components/dashboard/StudyTimetable/Sidebar.svelte';
-	import AddTaskModal from '../../../../components/modal/AddTaskModal.svelte';
+	import WeekView from '../../../../../components/dashboard/StudyTimetable/WeekView.svelte';
+	import DayView from '../../../../../components/dashboard/StudyTimetable/DayView.svelte';
+	import ListView from '../../../../../components/dashboard/StudyTimetable/ListView.svelte';
+	import Sidebar from '../../../../../components/dashboard/StudyTimetable/Sidebar.svelte';
+	import AddTaskModal from '../../../../../components/modal/AddTaskModal.svelte';
 
 	import type { Task, BacklogItem } from '$lib/types';
+	import { page } from '$app/stores';
+
 
 	// --- State ---
 	let currentView = $state('weekly');
@@ -49,94 +51,7 @@
 	});
 
 	// --- Rich Dummy Data ---
-	let scheduleData = $state<Task[]>([
-		{
-			id: 1,
-			week: 0,
-			day: 0,
-			time: '09:00',
-			title: 'Calculus II: Derivatives',
-			type: 'Deep Work',
-			duration: '2h',
-			color: 'bg-primary',
-			subColor: 'text-blue-200',
-			description: 'Chain rule application and implicit differentiation.',
-			icon: 'functions'
-		},
-		{
-			id: 2,
-			week: 0,
-			day: 0,
-			time: '11:00',
-			title: 'Morning Break',
-			type: 'Rest',
-			duration: '15m',
-			color: 'bg-[#232f48]',
-			isBreak: true
-		},
-		{
-			id: 3,
-			week: 0,
-			day: 0,
-			time: '11:15',
-			title: 'Physics Concepts',
-			type: 'Flashcards',
-			duration: '1h',
-			color: 'bg-[#be185d]',
-			subColor: 'text-pink-200',
-			description: 'Review thermodynamics formulas.',
-			icon: 'bolt'
-		},
-		{
-			id: 4,
-			week: 0,
-			day: 1,
-			time: '09:00',
-			title: 'History Essay Draft',
-			type: 'Writing',
-			duration: '2h',
-			color: 'bg-[#6d28d9]',
-			subColor: 'text-purple-200',
-			description: 'Industrial Revolution introduction.',
-			icon: 'history_edu'
-		},
-		{
-			id: 5,
-			week: 0,
-			day: 1,
-			time: '11:30',
-			title: 'English Lit Review',
-			type: 'Reading',
-			duration: '1.5h',
-			color: 'bg-[#c2410c]',
-			subColor: 'text-orange-200',
-			icon: 'menu_book'
-		},
-		{
-			id: 6,
-			week: 0,
-			day: 2,
-			time: '09:00',
-			title: 'Chemistry Pre-lab',
-			type: 'Lab Prep',
-			duration: '1.5h',
-			color: 'bg-[#059669]',
-			subColor: 'text-emerald-200',
-			icon: 'science'
-		},
-		{
-			id: 7,
-			week: 0,
-			day: 2,
-			time: '11:00',
-			title: 'Calculus Practice',
-			type: 'Math',
-			duration: '1h',
-			color: 'bg-primary',
-			subColor: 'text-blue-200',
-			icon: 'calculate'
-		}
-	]);
+	let scheduleData = $state<Task[]>([]);
 
 	let backlog = $state<BacklogItem[]>([
 		{
@@ -280,6 +195,39 @@
 		const oneWeek = 1000 * 60 * 60 * 24 * 7;
 		return Math.ceil(diff / oneWeek);
 	});
+
+	function exportCsv() {
+	const rows = scheduleData.map(t =>
+		`${t.title},${t.time},${t.duration}`
+	);
+
+	const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+	const url = URL.createObjectURL(blob);
+
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = 'timetable.csv';
+	a.click();
+}
+
+
+	onMount(async () => {
+	const planId = $page.params.id;
+
+	try {
+		const res = await fetch(`http://localhost:3000/study-plans/${planId}`, {
+			credentials: 'include'
+		});
+
+		const json = await res.json();
+
+		scheduleData = json.schedule.tasks;
+		backlog = json.schedule.backlog ?? [];
+	} catch (err) {
+		console.error('Failed to load plan', err);
+	}
+});
+
 </script>
 
 <nav>
@@ -342,6 +290,7 @@
 							</button>
 						{:else}
 							<button
+							onclick={exportCsv}
 								class="flex-1 sm:flex-none flex items-center justify-center gap-2 h-10 px-4 bg-card-dark border-2 border-border-dark text-white text-xs md:text-sm font-bold uppercase rounded shadow-hard hover:shadow-hard-hover hover:-translate-y-0.5 transition-all"
 							>
 								<FileDown size={16} /> <span>Export</span>
