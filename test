@@ -1,7 +1,6 @@
-<script>
-    import { page } from '$app/state';
-</script>
-
-{#if page.data.user}
-    <span>Hello, {page.data.user.name}</span>
-{/if}
+onMount(() => {
+    const tabParam = $page.url.searchParams.get('tab');
+    if (tabParam) {
+        activeTab = tabParam;
+    }
+});

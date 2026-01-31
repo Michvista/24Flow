@@ -9,7 +9,8 @@
 		Clock,
 		Brain,
 		Trash2,
-		Sparkles
+		Sparkles,
+		SquareArrowOutUpRight 
 	} from 'lucide-svelte';
 
 	// State for form inputs
@@ -29,7 +30,7 @@
 
 	// 1 & 2. Dynamic Calculations and Adding Subjects
 	const totalTopics = $derived(queuedSubjects.reduce((acc, s) => acc + s.topics, 0));
-	const estimatedHours = $derived(totalTopics * 4.3); // Mock formula: 4.3 hours per topic
+	const estimatedHours = $derived(totalTopics * dailyHours); // Mock formula: dailyHours per topic
 
 	function addSubject() {
 		if (!subjectName || !topicList) return;
@@ -220,6 +221,16 @@
 					class="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"
 				></div>
 			</button>
+			<a href="/dashboard/studyTimetable/calendar">
+			<button
+				class="relative w-full text-white text-xl font-black uppercase py-6 border-2 border-white shadow-neo hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all group overflow-hidden"
+			>
+				<span class="relative z-10 flex items-center justify-center gap-3">
+					<SquareArrowOutUpRight  class="size-7 animate-pulse" />
+					Go To Timetable
+				</span>
+			</button>
+			</a>
 		</section>
 
 		<aside class="w-full lg:w-[400px] flex flex-col gap-6 shrink-0">

@@ -1,0 +1,256 @@
+<script lang="ts">
+	import { X, PlusCircle, ChevronDown, Calendar, Timer, Info, ArrowLeft } from 'lucide-svelte';
+	import { gsap } from 'gsap';
+
+	let { show = $bindable(), onAdd, initial = undefined } = $props();
+
+	// Form State
+	let task = $state({
+		title: '',
+		subject: '',
+		type: 'deep_work',
+		date: '',
+		startTime: '',
+		duration: '60',
+		description: ''
+	});
+
+	let modalContainer = $state<HTMLElement>();
+	let overlay = $state<HTMLElement>();
+
+	function resetForm() {
+		task = {
+			title: '',
+			subject: '',
+			type: 'deep_work',
+			date: '',
+			startTime: '',
+			duration: '60',
+			description: ''
+		};
+	}
+
+	// When the modal opens, prefill fields from `initial` if provided.
+	// Avoid reading `task` inside the effect to prevent an infinite update loop.
+	$effect(() => {
+		if (show && initial) {
+			// Only copy known fields from `initial` and provide safe defaults.
+			task = {
+				title: initial.title ?? '',
+				subject: initial.subject ?? '',
+				type: initial.type ?? 'deep_work',
+				date: initial.date ?? '',
+				startTime: initial.startTime ?? '',
+				duration: initial.duration ?? '60',
+				description: initial.description ?? ''
+			};
+		}
+	});
+
+	// GSAP Animation Logic
+	$effect(() => {
+		if (show && overlay && modalContainer) {
+			// Animation when opening
+			gsap.set(overlay, { display: 'flex' });
+			gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+			gsap.fromTo(
+				modalContainer,
+				{ scale: 0.9, y: 20, opacity: 0 },
+				{ scale: 1, y: 0, opacity: 1, duration: 0.4, ease: 'back.out(1.7)' }
+			);
+		}
+	});
+
+	function close() {
+		if (!modalContainer || !overlay) return;
+
+		gsap.to(modalContainer, { scale: 0.9, y: 20, opacity: 0, duration: 0.2 });
+		gsap.to(overlay, {
+			opacity: 0,
+			duration: 0.2,
+			onComplete: () => {
+				show = false;
+				resetForm();
+				if (overlay) {
+					gsap.set(overlay, { display: 'none' });
+				}
+			}
+		});
+	}
+
+	function handleSubmit() {
+		onAdd?.({ ...task });
+		close();
+	}
+</script>
+
+{#if show}
+	<div
+		bind:this={overlay}
+		class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 overflow-y-auto"
+	>
+		<div
+			bind:this={modalContainer}
+			class="bg-card-dark border-2 border-border-dark w-full max-w-2xl rounded shadow-hard flex flex-col my-auto"
+		>
+			<div
+				class="px-6 py-4 border-b-2 border-border-dark bg-background-dark flex items-center justify-between"
+			>
+				<div class="flex items-center gap-4">
+					<button
+						onclick={close}
+						class="size-10 flex items-center justify-center bg-card-dark border-2 border-border-dark hover:border-white/40 text-white rounded transition-all shadow-hard-sm"
+					>
+						<ArrowLeft size={20} />
+					</button>
+					<div>
+						<p class="text-[#92a4c9] text-[10px] font-bold uppercase tracking-wider">New Entry</p>
+						<h2 class="text-white text-xl font-black uppercase">Add New Task</h2>
+					</div>
+				</div>
+				<button onclick={close} class="text-gray-400 hover:text-white transition-colors">
+					<X size={24} />
+				</button>
+			</div>
+
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSubmit();
+				}}
+				class="p-6 md:p-8 flex flex-col gap-6"
+			>
+				<div class="flex flex-col gap-2">
+					<label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Task Title</label
+					>
+					<input
+						bind:value={task.title}
+						required
+						class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold placeholder-white/10 rounded h-14 px-4 outline-none transition-colors shadow-sm"
+						placeholder="e.g. Calculus: Limits Review"
+						type="text"
+					/>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="flex flex-col gap-2">
+						<label class="text-[#92a4c9] text-[10px] font-bold uppercase tracking-wider"
+							>Subject / Category</label
+						>
+						<input
+							bind:value={task.subject}
+							class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none placeholder-white/10"
+							placeholder="e.g. Mathematics"
+							type="text"
+						/>
+					</div>
+
+					<div class="flex flex-col gap-2">
+						<label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Type</label>
+						<div class="relative">
+							<select
+								bind:value={task.type}
+								class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none appearance-none cursor-pointer transition-colors shadow-sm"
+							>
+								<option value="deep_work">Deep Work</option>
+								<option value="review">Review Session</option>
+								<option value="reading">Reading</option>
+								<option value="lab">Lab Prep</option>
+								<option value="assignment">Assignment</option>
+							</select>
+							<ChevronDown
+								size={18}
+								class="absolute right-4 top-1/2 -translate-y-1/2 text-[#92a4c9] pointer-events-none"
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+					<div class="flex flex-col gap-2">
+						<label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Date</label>
+						<input
+							bind:value={task.date}
+							required
+							class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none transition-colors shadow-sm [color-scheme:dark]"
+							type="date"
+						/>
+					</div>
+					<div class="flex flex-col gap-2">
+						<label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider"
+							>Start Time</label
+						>
+						<input
+							bind:value={task.startTime}
+							required
+							class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none transition-colors shadow-sm [color-scheme:dark]"
+							type="time"
+						/>
+					</div>
+					<div class="flex flex-col gap-2">
+						<label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Duration</label
+						>
+						<div class="relative">
+							<select
+								bind:value={task.duration}
+								class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-bold rounded h-14 px-4 outline-none appearance-none cursor-pointer transition-colors shadow-sm"
+							>
+								<option value="30">30 min</option>
+								<option value="45">45 min</option>
+								<option value="60">1 h</option>
+								<option value="90">1.5 h</option>
+								<option value="120">2 h</option>
+							</select>
+							<Timer
+								size={18}
+								class="absolute right-4 top-1/2 -translate-y-1/2 text-[#92a4c9] pointer-events-none"
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div class="flex flex-col gap-2">
+					<label class="text-[#92a4c9] text-xs font-bold uppercase tracking-wider"
+						>Description</label
+					>
+					<textarea
+						bind:value={task.description}
+						class="w-full bg-background-dark border-2 border-border-dark focus:border-primary text-white font-medium placeholder-white/10 rounded p-4 h-24 outline-none resize-none transition-colors shadow-sm"
+						placeholder="Add goals or materials..."
+					></textarea>
+				</div>
+
+				<div
+					class="flex flex-col-reverse md:flex-row items-center justify-end gap-4 pt-6 border-t-2 border-border-dark"
+				>
+					<button
+						type="button"
+						onclick={close}
+						class="w-full md:w-auto h-12 px-6 rounded border-2 border-transparent hover:border-border-dark text-[#92a4c9] hover:text-white font-bold uppercase tracking-wide transition-all"
+					>
+						Cancel
+					</button>
+					<button
+						type="submit"
+						class="w-full md:w-auto group flex items-center justify-center gap-2 h-12 px-8 bg-primary border-2 border-transparent hover:border-white/20 text-white font-bold uppercase tracking-wide rounded transition-all shadow-hard hover:shadow-hard-hover hover:-translate-y-0.5"
+					>
+						<PlusCircle size={20} />
+						<span>Add to Timetable</span>
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{/if}
+
+<style>
+	:global(.shadow-hard) {
+		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.5);
+	}
+	:global(.shadow-hard-hover) {
+		box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.5);
+	}
+	:global(.shadow-hard-sm) {
+		box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.5);
+	}
+</style>
