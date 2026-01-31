@@ -1,4 +1,4 @@
-<script   lang="ts">
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { gsap } from 'gsap';
 	import {
@@ -19,7 +19,7 @@
 	import DayView from '../../../../components/dashboard/StudyTimetable/DayView.svelte';
 	import ListView from '../../../../components/dashboard/StudyTimetable/ListView.svelte';
 	import Sidebar from '../../../../components/dashboard/StudyTimetable/Sidebar.svelte';
-	import AddTaskModal from '../../../../components/modal/MoodSelectionModal.svelte';
+	import AddTaskModal from '../../../../components/modal/AddTaskModal.svelte';
 
 	import type { Task, BacklogItem } from '$lib/types';
 
@@ -33,6 +33,7 @@
 	let modalInitial = $state<any>(null);
 	let showCreateModal = $state(false);
 	let isHeaderSticky = $state(false);
+	let scheduleDataBackup = $state<Task[]>([]);
 
 	// Scroll detection for sticky header
 	let mainContent = $state<HTMLElement>();
@@ -160,6 +161,24 @@
 
 	const hours24 = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0') + ':00');
 
+	// --- Edit Mode Handlers ---
+	function enterEditMode() {
+		// Save current state before editing
+		scheduleDataBackup = JSON.parse(JSON.stringify(scheduleData));
+		isEditMode = true;
+	}
+
+	function cancelEdit() {
+		// Restore to previous state
+		scheduleData = JSON.parse(JSON.stringify(scheduleDataBackup));
+		isEditMode = false;
+	}
+
+	function saveEdit() {
+		// Data is already modified, just exit edit mode
+		isEditMode = false;
+	}
+
 	// --- Handlers ---
 	function handleDetailedAdd(data: any) {
 		const id = Math.random();
@@ -263,6 +282,9 @@
 	});
 </script>
 
+<nav>
+	<a href="/dashboard"> Go Home </a>
+</nav>
 <div class="bg-background-dark font-display text-white overflow-hidden h-screen flex flex-col">
 	<header
 		class="lg:hidden h-14 bg-card-dark border-b-2 border-border-dark flex items-center justify-between px-4 z-40 shrink-0"
@@ -307,13 +329,13 @@
 					<div class="flex gap-2 md:gap-3">
 						{#if isEditMode}
 							<button
-								onclick={() => (isEditMode = false)}
+								onclick={cancelEdit}
 								class="flex-1 sm:flex-none flex items-center justify-center gap-2 h-10 px-4 bg-background-dark border-2 border-red-500/50 text-red-400 text-xs md:text-sm font-bold uppercase rounded shadow-hard transition-all hover:-translate-y-0.5"
 							>
 								<X size={16} /> <span>Cancel</span>
 							</button>
 							<button
-								onclick={() => (isEditMode = false)}
+								onclick={saveEdit}
 								class="flex-1 sm:flex-none flex items-center justify-center gap-2 h-10 px-4 bg-success border-2 border-transparent text-white text-xs md:text-sm font-bold uppercase rounded shadow-hard transition-all hover:-translate-y-0.5"
 							>
 								<Save size={16} /> <span>Save</span>
@@ -325,7 +347,7 @@
 								<FileDown size={16} /> <span>Export</span>
 							</button>
 							<button
-								onclick={() => (isEditMode = true)}
+								onclick={enterEditMode}
 								class="flex-1 sm:flex-none flex items-center justify-center gap-2 h-10 px-4 bg-primary border-2 border-transparent text-white text-xs md:text-sm font-bold uppercase rounded shadow-hard hover:shadow-hard-hover hover:-translate-y-0.5 transition-all"
 							>
 								<Edit3 size={16} /> <span>Edit</span>

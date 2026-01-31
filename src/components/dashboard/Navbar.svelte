@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import { Menu, X, Calendar, Cpu, Settings as SettingsIcon } from 'lucide-svelte';
 	import gsap from 'gsap';
+	import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
 
 	let { activeTab = $bindable('AI Tools Hub') } = $props();
 
@@ -48,6 +50,34 @@
 	// Sidebar-specific classes
 	const sidebarLinkClass =
 		'text-2xl font-black uppercase tracking-tighter p-4 border-2 border-black bg-white text-black shadow-[4px_4px_0_0_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all';
+
+	// Safely set the active tab. If setting the tab doesn't "take" (for example
+	// when this Navbar is used on a route that doesn't bind `activeTab`),
+	// redirect the user to /dashboard where the central dashboard app will
+	// manage the activeTab state correctly.
+async function safeSetActive(tab: string) {
+    // 1. Update the local state
+    activeTab = tab;
+
+    // 2. Browser-only check
+    if (typeof window === 'undefined') return;
+
+    // 3. Direct Path Check 
+    // If we aren't on the root dashboard, the tabs won't "work" visually, so redirect.
+    if ($page.url.pathname !== '/dashboard') {
+        console.log('Not on /dashboard root, redirecting...');
+        
+        // Pass the tab as a query parameter so the Dashboard can open it on arrival
+        await goto(`/dashboard?tab=${encodeURIComponent(tab)}`);
+    }
+}
+
+onMount(() => {
+    const tabParam = $page.url.searchParams.get('tab');
+    if (tabParam) {
+        activeTab = tabParam;
+    }
+});
 </script>
 
 <header
@@ -76,7 +106,7 @@
 			<button
 				type="button"
 				class="{linkClass} {activeTab === 'AI Tools Hub' ? activeClass : inactiveClass}"
-				on:click={() => (activeTab = 'AI Tools Hub')}
+				on:click={() => safeSetActive('AI Tools Hub')}
 			>
 				<Cpu size={16} /> AI Tools Hub
 			</button>
@@ -84,7 +114,7 @@
 			<button
 				type="button"
 				class="{linkClass} {activeTab === 'Settings' ? activeClass : inactiveClass}"
-				on:click={() => (activeTab = 'Settings')}
+				on:click={() => safeSetActive('Settings')}
 			>
 				<SettingsIcon size={16} /> Settings
 			</button>
@@ -130,7 +160,7 @@
 			bind:this={menuLinks[1]}
 			class="{sidebarLinkClass} {activeTab === 'AI Tools Hub' ? 'bg-yellow-300' : ''}"
 			on:click={() => {
-				activeTab = 'AI Tools Hub';
+				safeSetActive('AI Tools Hub');
 				toggleMobileMenu();
 			}}
 		>
@@ -141,7 +171,7 @@
 			bind:this={menuLinks[2]}
 			class="{sidebarLinkClass} {activeTab === 'Settings' ? 'bg-yellow-300' : ''}"
 			on:click={() => {
-				activeTab = 'Settings';
+				safeSetActive('Settings');
 				toggleMobileMenu();
 			}}
 		>

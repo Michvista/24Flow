@@ -368,7 +368,7 @@
 										<button
 											type="button"
 											disabled
-											class="text-gray-400 hover:text-white text-xs underline font-mono decoration-1 underline-offset-4"
+											class="text-gray-400 disabled:cursor-not-allowed hover:text-white text-xs underline font-mono decoration-1 underline-offset-4"
 											>FORGOT KEY?</button
 										>
 									</div>
