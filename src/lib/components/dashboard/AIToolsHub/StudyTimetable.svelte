@@ -14,6 +14,39 @@
 	} from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 
+	import { Toaster, toast } from 'svelte-sonner';
+		import SonnerToast from '../../../../components/SonnerToast.svelte';
+
+	function notifySuccess(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'success'
+			},
+			duration: 5000
+		});
+	}
+
+	function notifyError(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'error'
+			},
+			duration: 5000
+		});
+	}
+
 	
 	
 	// State for form inputs
@@ -84,11 +117,16 @@
 		const json = await res.json();
 
 		if (json.planId) {
-			goto(`/dashboard/studyTimetable/calendar/${json.planId}`);
+			notifySuccess('Timetable Generated', 'Your study timetable has been created successfully.');
+			setTimeout(() => {
+				isGenerating = false;
+				goto(`/dashboard/studyTimetable/calendar/${json.planId}`);
+			}, 1000);
 		}
 	} catch (err) {
 		console.error(err);
 		alert('Failed to generate timetable');
+		notifyError('Generation Failed', 'An error occurred while generating the timetable.');
 	}
 
 	isGenerating = false;
@@ -266,16 +304,6 @@
 					class="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"
 				></div>
 			</button>
-			<a href="/dashboard/studyTimetable/calendar">
-			<button
-				class="relative w-full text-white text-xl font-black uppercase py-6 border-2 border-white shadow-neo hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all group overflow-hidden"
-			>
-				<span class="relative z-10 flex items-center justify-center gap-3">
-					<SquareArrowOutUpRight  class="size-7 animate-pulse" />
-					Go To Timetable
-				</span>
-			</button>
-			</a>
 		</section>
 
 		<aside class="w-full lg:w-[400px] flex flex-col gap-6 shrink-0">
@@ -365,7 +393,7 @@
 		</div>
 	</footer>
 </div>
-
+<Toaster position="bottom-right" expand={false} richColors /> 
 <style>
 	:global(.dark) {
 		--primary: #0f49bd;
