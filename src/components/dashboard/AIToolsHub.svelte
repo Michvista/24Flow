@@ -27,7 +27,7 @@
 			desc: 'Generates a balanced study plan for exams, ensuring proper breaks and topic rotation.',
 			icon: GraduationCap,
 			color: 'primary',
-			link: '/dashboard/AITools/StudyTimetable',
+			link: '/dashboard/studyTimetable/viewPage',
 			disabled: false
 		},
 		{

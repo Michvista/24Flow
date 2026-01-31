@@ -12,8 +12,12 @@
 		Sparkles,
 		SquareArrowOutUpRight 
 	} from 'lucide-svelte';
+	import { goto } from '$app/navigation';
 
+	
+	
 	// State for form inputs
+	let isGenerating = $state(false);
 	let subjectName = $state('');
 	let priority = $state('High');
 	let topicList = $state('');
@@ -55,6 +59,41 @@
 	function removeSubject(id: number) {
 		queuedSubjects = queuedSubjects.filter((s) => s.id !== id);
 	}
+
+	async function generateTimetable() {
+	if (queuedSubjects.length === 0) return;
+
+	isGenerating = true;
+
+	const payload = {
+		subjects: queuedSubjects,
+		dailyHours,
+		deadline,
+		includeBreaks,
+		spacedRepetition
+	};
+
+	try {
+		const res = await fetch('http://localhost:3000/study-plans', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
+			body: JSON.stringify(payload)
+		});
+
+		const json = await res.json();
+
+		if (json.planId) {
+			goto(`/dashboard/studyTimetable/calendar/${json.planId}`);
+		}
+	} catch (err) {
+		console.error(err);
+		alert('Failed to generate timetable');
+	}
+
+	isGenerating = false;
+}
+
 </script>
 
 <svelte:head>
@@ -211,11 +250,17 @@
 			</div>
 
 			<button
+				onclick={generateTimetable}
 				class="relative w-full bg-primary text-white text-xl font-black uppercase py-6 border-2 border-white shadow-neo hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all group overflow-hidden"
 			>
 				<span class="relative z-10 flex items-center justify-center gap-3">
 					<Sparkles class="size-7 animate-pulse" />
-					Generate Timetable
+					{#if isGenerating}
+	Generating…
+{:else}
+	Generate Timetable
+{/if}
+
 				</span>
 				<div
 					class="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"

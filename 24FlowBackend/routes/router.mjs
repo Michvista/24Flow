@@ -5,6 +5,7 @@ import task from './taskRoutes/task.mjs';
 import tools from './AIRoutes/AIToolsRoute.mjs';
 import overlap from './AIRoutes/conflictRoutes.mjs';
 import timetable from './AIRoutes/timetableRoutes.mjs';
+import studyPlan from './AIRoutes/studyPlanRoutes.mjs';
 import createError from 'http-errors';
 
 const router = express.Router();
@@ -19,6 +20,7 @@ router.use('/tasks', task)
 router.use('/ai',tools )
 router.use('/conflicts',overlap )
 router.use('/timetable',timetable )
+router.use('/study-plans',studyPlan)
 
 router.use(async (req, res, next) => {
 	next(createError.NotFound('Route not Found'));

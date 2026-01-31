@@ -35,6 +35,8 @@ model User {
   actions AITools[]
   conflicts    Conflict[]
   timetableClasses TimetableClass[] 
+
+  studyPlans    StudyPlan[]
 }
 
 model Event {
@@ -238,4 +240,17 @@ model AITools {
   inputData  Json     // Stores what the user sent
   outputData Json     // Stores the AI response
   createdAt  DateTime @default(now())
+}
+
+model StudyPlan {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String?
+  preferences Json     // form input from StudyTimetable.svelte
+  schedule    Json     // generated timetable structure
+  tips        Json?    // AI tips
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }
