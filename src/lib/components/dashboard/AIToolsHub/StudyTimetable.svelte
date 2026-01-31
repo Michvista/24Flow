@@ -10,12 +10,13 @@
 		Brain,
 		Trash2,
 		Sparkles,
-		SquareArrowOutUpRight 
+		SquareArrowOutUpRight
 	} from 'lucide-svelte';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	import { Toaster, toast } from 'svelte-sonner';
-		import SonnerToast from '../../../../components/SonnerToast.svelte';
+	import SonnerToast from '../../../../components/SonnerToast.svelte';
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
@@ -47,10 +48,13 @@
 		});
 	}
 
-	
-	
 	// State for form inputs
 	let isGenerating = $state(false);
+	let aiActive = $state(false);
+	let insights = $state<string[]>([]);
+	let errorMessage = $state('');
+	let successMessage = $state('');
+	let insightLoading = $state(true);
 	let subjectName = $state('');
 	let priority = $state('High');
 	let topicList = $state('');
@@ -60,10 +64,7 @@
 	let spacedRepetition = $state(false);
 
 	// Data for the queue
-	let queuedSubjects = $state([
-		{ id: 1, name: 'Linear Algebra', topics: 12, priority: 'High' },
-		{ id: 2, name: 'Thermodynamics', topics: 8, priority: 'Med' }
-	]);
+	let queuedSubjects = $state<any[]>([]);
 
 	// 1 & 2. Dynamic Calculations and Adding Subjects
 	const totalTopics = $derived(queuedSubjects.reduce((acc, s) => acc + s.topics, 0));
@@ -79,10 +80,11 @@
 			id: Date.now(),
 			name: subjectName,
 			topics: topics.length,
+			topicsArray: topics,
 			priority: priority
 		};
 
-		queuedSubjects.push(newSubject);
+		queuedSubjects = [...queuedSubjects, newSubject];
 
 		// Reset form
 		subjectName = '';
@@ -94,44 +96,88 @@
 	}
 
 	async function generateTimetable() {
-	if (queuedSubjects.length === 0) return;
+		// improved flow with messages
+		if (queuedSubjects.length === 0) {
+			errorMessage = 'Please add at least one subject';
+			return;
+		}
 
-	isGenerating = true;
+		isGenerating = true;
+		errorMessage = '';
+		successMessage = '';
 
-	const payload = {
-		subjects: queuedSubjects,
-		dailyHours,
-		deadline,
-		includeBreaks,
-		spacedRepetition
-	};
+		const payload = {
+			subjects: queuedSubjects,
+			dailyHours,
+			deadline: deadline || null,
+			includeBreaks,
+			spacedRepetition
+		};
 
-	try {
-		const res = await fetch('http://localhost:3000/study-plans', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			credentials: 'include',
-			body: JSON.stringify(payload)
-		});
+		try {
+			const res = await fetch('http://localhost:3000/study-plans', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify(payload)
+			});
 
-		const json = await res.json();
+			const json = await res.json();
+			if (!res.ok) {
+				throw new Error(json?.error || 'Failed to generate timetable');
+			}
 
-		if (json.planId) {
+			// backend returns plan or planId
+			const planId = json.planId ?? (json.plan && json.plan.id) ?? null;
+			const tasksCount = (json.plan && (json.plan.tasks?.length ?? 0)) ?? json.tasks?.length ?? 0;
+
+			successMessage = `Generated ${tasksCount || 0} study sessions!`;
 			notifySuccess('Timetable Generated', 'Your study timetable has been created successfully.');
+
 			setTimeout(() => {
 				isGenerating = false;
-				goto(`/dashboard/studyTimetable/calendar/${json.planId}`);
+				if (planId) goto(`/dashboard/studyTimetable/calendar/${planId}`);
 			}, 1000);
+		} catch (err: any) {
+			console.error('Generation error:', err);
+			errorMessage = err?.message ?? 'Failed to generate timetable. Please try again.';
+			notifyError('Generation Failed', errorMessage);
+		} finally {
+			isGenerating = false;
 		}
-	} catch (err) {
-		console.error(err);
-		alert('Failed to generate timetable');
-		notifyError('Generation Failed', 'An error occurred while generating the timetable.');
 	}
 
-	isGenerating = false;
-}
-
+	onMount(async () => {
+		try {
+			const res = await fetch('http://localhost:3000/ai/status', {
+				method: 'GET',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' }
+			});
+			const json = await res.json();
+			aiActive = !!json?.data?.active;
+		} catch (err: any) {
+			console.warn('Failed to fetch AI status', err);
+			aiActive = false;
+		}
+		// Fetch insights automatically
+		try {
+			const r = await fetch('http://localhost:3000/ai/insights', {
+				method: 'GET',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' }
+			});
+			const j = await r.json();
+			insights = Array.isArray(j?.data?.insights)
+				? j.data.insights
+				: [String(j?.data?.insights ?? 'No insights')];
+		} catch (e: any) {
+			console.warn('Failed to fetch insights', e);
+			insights = ['No insights available'];
+		} finally {
+			insightLoading = false;
+		}
+	});
 </script>
 
 <svelte:head>
@@ -294,32 +340,61 @@
 				<span class="relative z-10 flex items-center justify-center gap-3">
 					<Sparkles class="size-7 animate-pulse" />
 					{#if isGenerating}
-	Generating…
-{:else}
-	Generate Timetable
-{/if}
-
+						Generating…
+					{:else}
+						Generate Timetable
+					{/if}
 				</span>
 				<div
 					class="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"
 				></div>
 			</button>
+
+			{#if errorMessage}
+				<div class="mt-4 p-4 bg-red-500/10 border-2 border-red-500 rounded text-red-500">
+					<strong>Error:</strong>
+					{errorMessage}
+				</div>
+			{/if}
+
+			{#if successMessage}
+				<div class="mt-4 p-4 bg-green-500/10 border-2 border-green-500 rounded text-green-500">
+					<strong>Success!</strong>
+					{successMessage}
+				</div>
+			{/if}
 		</section>
 
 		<aside class="w-full lg:w-[400px] flex flex-col gap-6 shrink-0">
 			<div class="bg-[#0a101a] border-2 border-primary p-6 relative">
-				<div
-					class="absolute -top-3 right-4 bg-primary border border-primary px-2 py-0.5 text-xs font-mono text-white uppercase font-bold tracking-widest z-10 animate-pulse"
-				>
-					AI Active
-				</div>
+				{#if aiActive}
+					<div
+						class="absolute -top-3 right-4 bg-primary border border-primary px-2 py-0.5 text-xs font-mono text-white uppercase font-bold tracking-widest z-10 animate-pulse"
+					>
+						{#if isGenerating}Generating…{:else}AI Active{/if}
+					</div>
+				{:else}
+					<div
+						class="absolute -top-3 right-4 bg-white/10 border border-white/10 px-2 py-0.5 text-xs font-mono text-slate-300 uppercase font-bold tracking-widest z-10"
+					>
+						AI Unavailable
+					</div>
+				{/if}
 				<h3 class="text-primary text-lg font-black uppercase mb-4 flex items-center gap-2">
 					<Brain class="size-5" /> Insights
 				</h3>
 				<div class="flex flex-col gap-4">
 					<div class="bg-primary/10 border-l-4 border-primary p-3 text-sm">
-						<span class="font-bold text-white">Suggestion:</span> Breaking tasks into 45-min blocks is
-						20% more effective.
+						{#if insightLoading}
+							<span class="font-bold text-white">Suggestion:</span> Loading insights…
+						{:else}
+							<span class="font-bold text-white">Suggestion:</span>
+							{#if insights.length > 0}
+								<span> {insights[0]} </span>
+							{:else}
+								<span> No insights available.</span>
+							{/if}
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -375,9 +450,7 @@
 		<div
 			class="max-w-[1600px] mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center gap-4"
 		>
-			<p class="text-xs font-mono text-slate-500 uppercase">
-				© 2026 AI Scheduler Inc. // System v2.4.1
-			</p>
+			<p class="text-xs font-mono text-slate-500 uppercase">© 2026 24FLOW</p>
 			<div class="flex gap-6">
 				<a
 					class="text-xs font-bold text-slate-400 hover:text-primary uppercase"
@@ -393,7 +466,8 @@
 		</div>
 	</footer>
 </div>
-<Toaster position="bottom-right" expand={false} richColors /> 
+<Toaster position="bottom-right" expand={false} richColors />
+
 <style>
 	:global(.dark) {
 		--primary: #0f49bd;

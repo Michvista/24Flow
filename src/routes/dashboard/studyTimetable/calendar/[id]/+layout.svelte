@@ -3,7 +3,7 @@
 	let { children } = $props();
 	import favicon from '$lib/assets/favicon.svg';
 
-	import '../../../../app.css';
+	import '../../../../../app.css';
 </script>
 
 <svelte:head>

@@ -6,13 +6,15 @@ import {
 	regenerateStudyPlan,
 	deleteStudyPlan
 } from '../../controllers/studyPlanController.mjs';
+import { protect } from '../../middlewares/verifyAuth.mjs';
 
 const router = express.Router();
 
-router.post('/', createStudyPlan);
-router.get('/', getAllStudyPlans);
-router.get('/:id', getStudyPlan);
-router.post('/:id/regenerate', regenerateStudyPlan);
-router.delete('/:id', deleteStudyPlan);
+// Protect study plan endpoints - user must be authenticated
+router.post('/', protect, createStudyPlan);
+router.get('/', protect, getAllStudyPlans);
+router.get('/:id', protect, getStudyPlan);
+router.post('/:id/regenerate', protect, regenerateStudyPlan);
+router.delete('/:id', protect, deleteStudyPlan);
 
 export default router;

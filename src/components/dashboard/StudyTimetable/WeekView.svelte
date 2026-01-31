@@ -5,8 +5,15 @@
 	let { scheduleData, weekOffset, hours24, isEditMode, onDelete, onDrop, onDragStart, getDayDate } =
 		$props();
 
-	const getEntry = (day: number, time: string) =>
-		scheduleData.find((i: Task) => i.week === weekOffset && i.day === day && i.time === time);
+	// Return all entries that fall within the hour slot (e.g. 09:00 matches 09:00,09:30,09:45)
+	const getEntries = (day: number, time: string) => {
+		const slotHour = Number(time.split(':')[0]);
+		return scheduleData.filter((i: Task) => {
+			if (i.week !== weekOffset || i.day !== day) return false;
+			const hour = Number(String(i.time || '00:00').split(':')[0]);
+			return hour === slotHour;
+		});
+	};
 </script>
 
 <div class="min-w-[1000px] border-2 border-border-dark bg-background-dark rounded shadow-hard">
@@ -32,7 +39,7 @@
 				<span class="text-white font-bold font-mono text-xs md:text-sm">{time}</span>
 			</div>
 			{#each Array(7) as _, dayIndex}
-				{@const entry = getEntry(dayIndex, time)}
+				{@const entries = getEntries(dayIndex, time)}
 				<div
 					role="gridcell"
 					class="p-1 md:p-2 border-r border-border-dark relative group {dayIndex > 4
@@ -41,41 +48,46 @@
 					ondragover={(e) => isEditMode && e.preventDefault()}
 					ondrop={(e) => isEditMode && onDrop(e, dayIndex, time)}
 				>
-					{#if entry}
-						<div
-							draggable={isEditMode}
-							ondragstart={(e) => isEditMode && onDragStart(e, entry, 'calendar')}
-							class="h-full w-full {entry.isBreak
-								? 'bg-[#232f48] border-white/5'
-								: entry.color +
-									' border-white/10'} p-2 md:p-3 rounded-sm border shadow-hard transition-all {isEditMode
-								? 'cursor-grab active:cursor-grabbing hover:border-white/30'
-								: 'hover:-translate-y-0.5 hover:shadow-hard-hover'} flex flex-col justify-between overflow-hidden"
-						>
-							<div class="flex justify-between items-start">
-								<div class="flex flex-col overflow-hidden">
-									<span
-										class="{entry.subColor ||
-											'text-[#92a4c9]'} text-[9px] font-bold uppercase truncate tracking-wider"
-										>{entry.type}</span
-									>
-									<span
-										class="text-white font-bold leading-tight text-[11px] md:text-xs line-clamp-2 mt-0.5"
-										>{entry.title}</span
-									>
+					{#if entries.length}
+						<div class="flex flex-col gap-2">
+							{#each entries as entry}
+								<div
+									draggable={isEditMode}
+									ondragstart={(e) => isEditMode && onDragStart(e, entry, 'calendar')}
+									class="w-full {entry.isBreak
+										? 'bg-[#232f48] border-white/5'
+										: entry.color +
+											' border-white/10'} p-2 md:p-3 rounded-sm border shadow-hard transition-all {isEditMode
+										? 'cursor-grab active:cursor-grabbing hover:border-white/30'
+										: 'hover:-translate-y-0.5 hover:shadow-hard-hover'} flex flex-col justify-between overflow-hidden"
+								>
+									<div class="flex justify-between items-start">
+										<div class="flex flex-col overflow-hidden">
+											<span
+												class="{entry.subColor ||
+													'text-[#92a4c9]'} text-[9px] font-bold uppercase truncate tracking-wider"
+												>{entry.type}</span
+											>
+											<span
+												class="text-white font-bold leading-tight text-[11px] md:text-xs line-clamp-2 mt-0.5"
+												>{entry.title}</span
+											>
+										</div>
+										{#if isEditMode}
+											<button
+												onclick={() => onDelete(entry.id)}
+												class="text-white/40 hover:text-red-400 shrink-0"
+												><Trash2 size={12} /></button
+											>
+										{/if}
+									</div>
+									{#if !entry.isBreak}
+										<div class="flex items-center gap-1 text-white/80 text-[9px] font-bold mt-2">
+											<Timer size={10} /> <span>{entry.duration}</span>
+										</div>
+									{/if}
 								</div>
-								{#if isEditMode}
-									<button
-										onclick={() => onDelete(entry.id)}
-										class="text-white/40 hover:text-red-400 shrink-0"><Trash2 size={12} /></button
-									>
-								{/if}
-							</div>
-							{#if !entry.isBreak}
-								<div class="flex items-center gap-1 text-white/80 text-[9px] font-bold mt-2">
-									<Timer size={10} /> <span>{entry.duration}</span>
-								</div>
-							{/if}
+							{/each}
 						</div>
 					{:else if isEditMode}
 						<div

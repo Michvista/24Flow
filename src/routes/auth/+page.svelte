@@ -365,12 +365,12 @@
 											class="text-white text-xs font-bold uppercase tracking-widest group-focus-within:text-[#1973f0] transition-colors"
 											>Password</span
 										>
-										<button
+										<!-- <button
 											type="button"
 											disabled
 											class="text-gray-400 disabled:cursor-not-allowed hover:text-white text-xs underline font-mono decoration-1 underline-offset-4"
 											>FORGOT KEY?</button
-										>
+										> -->
 									</div>
 									<div class="relative">
 										<input

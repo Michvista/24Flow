@@ -249,6 +249,17 @@ exports.Prisma.AIToolsScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.StudyPlanScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  preferences: 'preferences',
+  schedule: 'schedule',
+  tips: 'tips',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -309,7 +320,8 @@ exports.Prisma.ModelName = {
   SleepLog: 'SleepLog',
   BehaviorSummary: 'BehaviorSummary',
   Preferences: 'Preferences',
-  AITools: 'AITools'
+  AITools: 'AITools',
+  StudyPlan: 'StudyPlan'
 };
 
 /**

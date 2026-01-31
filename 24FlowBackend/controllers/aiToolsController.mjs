@@ -2,6 +2,7 @@ import prisma from '../db.mjs';
 import { generateAutoFill } from '../services/autoFillService.mjs';
 import { getOverlapFixes, applyOverlapFix } from '../services/overlapFixerService.mjs';
 import { GoogleGenAI } from '@google/genai';
+import { generateWithGemini } from '../services/geminiService.mjs';
 import { processAndSaveNLPEvent } from '../services/languageService.mjs';
 import { performOCR } from '../services/OCRService.mjs';
 
@@ -111,5 +112,47 @@ export const handleAiTool = async (req, res, next) => {
 			message: error.message || 'An error occurred processing your request',
 			...(process.env.NODE_ENV === 'development' && { stack: error.stack })
 		});
+	}
+};
+
+export const getAiStatus = async (req, res, next) => {
+	try {
+		const active = !!process.env.GEMINI_API_KEY;
+		res.json({ status: 'success', data: { active } });
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const getInsights = async (req, res, next) => {
+	try {
+		const userId = req.user?.id;
+		if (!userId) return res.status(401).json({ status: 'error', message: 'Not authenticated' });
+
+		const prompt = 'Provide 3 actionable study insights for this user as a JSON array of strings.';
+
+			const result = await ai.models.generateContent({
+				model: 'gemini-3-flash-preview',
+				contents: prompt
+			});
+	
+		const responseText =
+			result.text ||
+			result.response?.text?.() ||
+			result.text.trim().split(/\s+/)[0] ||
+			'No Insights';
+
+		console.log('--- RAW INSIGHTS ---');
+		console.log(responseText);
+
+		// Regex to find the array [ "insight1", "insight2" ]
+		const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+		const insights = jsonMatch ? JSON.parse(jsonMatch[0]) : ['Stay focused!'];
+
+		res.json({ status: 'success', data: { insights } });
+	} catch (err) {
+		console.error('[aiToolsController] getInsights error:', err);
+		// Ensure you don't use 'title' here unless it's defined!
+		next(err);
 	}
 };
