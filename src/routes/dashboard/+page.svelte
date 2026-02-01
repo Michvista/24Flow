@@ -34,9 +34,20 @@
 		});
 	}
 
-	// Fetch the report stored by the Cron Job
+	// Allowed hours (24h): 7am, 12pm, 5pm, 11pm
+	const ALLOWED_HOURS = [7, 12, 17, 23];
+
+	function isAllowedTime(date = new Date()) {
+		return ALLOWED_HOURS.includes(date.getHours());
+	}
+
+	// Fetch the report stored by the Cron Job (only at allowed times)
 	async function fetchMorningIntelligence() {
-		// starting fetchMorningIntelligence
+		if (!isAllowedTime()) {
+			// Do not run intelligence fetch outside allowed times
+			return;
+		}
+
 		isLoadingIntel = true;
 
 		try {
@@ -53,8 +64,9 @@
 			if (res.ok && result.data) {
 				triggerIntelToast(result.data);
 			} else {
-				console.warn('No intelligence report found in database. Did the 7AM cron job run?');
-				toast.error('Mood logged, but no AI report found for today.');
+				// keep silent if no report during allowed time — it's non-critical
+				// console.warn('No intelligence report found in database.');
+				// toast.error('Mood logged, but no AI report found for today.');
 			}
 		} catch (err) {
 			console.error('Fetch failure:', err);
@@ -73,7 +85,14 @@
 	}
 
 	onMount(() => {
-		showModal = true;
+		// Only auto-open the mood modal at configured times
+		if (isAllowedTime()) {
+			showModal = true;
+			// kick off intelligence fetch which will trigger behavior toast if data present
+			void fetchMorningIntelligence();
+		} else {
+			showModal = false;
+		}
 	});
 </script>
 
