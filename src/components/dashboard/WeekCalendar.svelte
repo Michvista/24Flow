@@ -129,6 +129,8 @@
 	let currentDay = startOfToday();
 	let currentView = 'Week';
 	const baseDate = startOfWeek(startOfToday());
+	import { PUBLIC_API_URL } from '$env/static/public';
+
 
 	// const events = [
 	// 	{
@@ -216,7 +218,7 @@
 
 	async function fetchEvents() {
 		try {
-			const res = await fetch('http://localhost:3000/events', {
+			const res = await fetch(`${PUBLIC_API_URL}/events`, {
 				credentials: 'include'
 			});
 			const json = await res.json();
@@ -429,7 +431,7 @@
 
 	async function fetchTasks() {
 		try {
-			const res = await fetch('http://localhost:3000/tasks', { credentials: 'include' });
+			const res = await fetch(`${PUBLIC_API_URL}/tasks`, { credentials: 'include' });
 			const result = await res.json();
 			if (res.ok) tasks = result.data;
 		} catch (err) {
@@ -443,7 +445,7 @@
 		tasks = tasks.filter((task) => task.id !== taskId);
 
 		try {
-			const res = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+			const res = await fetch(`${PUBLIC_API_URL}/tasks/${taskId}`, {
 				method: 'DELETE',
 				credentials: 'include'
 			});
@@ -473,7 +475,7 @@
 		tasks = [...tasks]; // Trigger UI update for the line-through class
 
 		try {
-			const res = await fetch(`http://localhost:3000/tasks/${task.id}`, {
+			const res = await fetch(`${PUBLIC_API_URL}/tasks/${task.id}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
@@ -503,7 +505,7 @@
 		const endStr = rangeEnd.toISOString();
 
 		try {
-			const res = await fetch(`http://localhost:3000/events?start=${startStr}&end=${endStr}`, {
+			const res = await fetch(`${PUBLIC_API_URL}/events?start=${startStr}&end=${endStr}`, {
 				credentials: 'include'
 			});
 
