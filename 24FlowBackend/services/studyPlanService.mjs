@@ -146,49 +146,19 @@ export const deletePlanService = async (userId, id) => {
  * @param {string} id
  * @param {object} updates - may contain { schedule, preferences, tips }
  */
-export const updatePlanService = async (userId, id, updates) => {
-	console.log('[StudyPlan] Updating plan:', id);
+export const updatePlanService = async (userId, planId, updates) => {
+	const dataToUpdate = {};
 
-	const existing = await fetchPlan(userId, id);
-	if (!existing) {
-		throw new Error('Plan not found');
-	}
+	// Extract only the fields we want to allow updating
+	if (updates.schedule) dataToUpdate.schedule = updates.schedule;
+	if (updates.tips) dataToUpdate.tips = updates.tips;
+	if (updates.preferences) dataToUpdate.preferences = updates.preferences;
 
-	const data = {};
-
-	if (updates.schedule && typeof updates.schedule === 'object') {
-		// Merge schedule parts defensively
-		data.schedule = {
-			tasks: Array.isArray(updates.schedule.tasks)
-				? updates.schedule.tasks
-				: existing.schedule?.tasks || [],
-			backlog: Array.isArray(updates.schedule.backlog)
-				? updates.schedule.backlog
-				: existing.schedule?.backlog || [],
-			suggestions: Array.isArray(updates.schedule.suggestions)
-				? updates.schedule.suggestions
-				: existing.schedule?.suggestions || []
-		};
-	}
-
-	if (updates.preferences && typeof updates.preferences === 'object') {
-		data.preferences = updates.preferences;
-	}
-
-	if (typeof updates.tips !== 'undefined') {
-		data.tips = updates.tips;
-	}
-
-	if (Object.keys(data).length === 0) {
-		// Nothing to update
-		return existing;
-	}
-
-	const updated = await prisma.studyPlan.update({
-		where: { id },
-		data
+	return await prisma.studyPlan.update({
+		where: {
+			id: planId,
+			userId: userId
+		},
+		data: dataToUpdate
 	});
-
-	console.log('[StudyPlan] Updated plan:', updated.id);
-	return updated;
 };
