@@ -9,7 +9,8 @@
 		subMonths,
 		addMonths,
 		startOfWeek,
-		endOfWeek
+		endOfWeek,
+		getDaysInMonth
 	} from 'date-fns';
 	import { ChevronLeft, ChevronRight } from 'lucide-svelte';
 
@@ -31,10 +32,22 @@
 	}
 
 	function prevMonth() {
-		viewDate = subMonths(viewDate, 1);
+		const newMonth = subMonths(viewDate, 1);
+		viewDate = newMonth;
+
+		// Keep the same day-of-month if possible, otherwise clamp to month's last day
+		const day = currentDay ? currentDay.getDate() : 1;
+		const max = getDaysInMonth(newMonth);
+		currentDay = new Date(newMonth.getFullYear(), newMonth.getMonth(), Math.min(day, max));
 	}
+
 	function nextMonth() {
-		viewDate = addMonths(viewDate, 1);
+		const newMonth = addMonths(viewDate, 1);
+		viewDate = newMonth;
+
+		const day = currentDay ? currentDay.getDate() : 1;
+		const max = getDaysInMonth(newMonth);
+		currentDay = new Date(newMonth.getFullYear(), newMonth.getMonth(), Math.min(day, max));
 	}
 </script>
 

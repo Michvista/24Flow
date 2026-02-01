@@ -631,7 +631,8 @@
 				</button>
 			</div>
 			<div class="hidden md:flex h-10 border-2 border-black bg-primary-bg p-1">
-				{#each ['Month', 'Week', 'Day'] as view}
+				<!-- {#each ['Month', 'Week', 'Day'] as view} -->
+				{#each [ 'Week'] as view}
 					<button
 						class="px-3 h-full text-sm font-bold {currentView === view
 							? 'bg-off-white text-black'
