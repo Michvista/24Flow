@@ -26,6 +26,7 @@
 
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../../../../../components/SonnerToast.svelte';
+	import Navbar from '../../../../../components/dashboard/Navbar.svelte';
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
@@ -428,9 +429,7 @@
 	});
 </script>
 
-<nav>
-	<a href="/dashboard"> Go Home </a>
-</nav>
+<Navbar />
 <div class="bg-background-dark font-display text-white overflow-hidden h-screen flex flex-col">
 	<header
 		class="lg:hidden h-14 bg-card-dark border-b-2 border-border-dark flex items-center justify-between px-4 z-40 shrink-0"

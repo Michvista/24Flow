@@ -171,6 +171,7 @@ ${subjectsDetails}
 **MANDATORY CHECKLIST BEFORE RESPONDING:**
 ☐ Generated tasks for week 0 through week ${totalWeeks - 1}? 
 ☐ Each week has all 7 days (0-6)?
+☐ The Suggestions are present and relevant?
 ☐ Each weekday has ${dailyHours} hours of study (excluding breaks)?
 ☐ Tasks use times from 00:00-23:59 based on subject complexity?
 ☐ Total task count > ${tasksPerWeek * totalWeeks}?

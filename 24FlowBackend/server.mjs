@@ -9,6 +9,8 @@ import passport from './passport-config.mjs';
 
 import cookieParser from 'cookie-parser';
 
+import { initCron } from './services/cronService.mjs';
+
 const app = express();
 
 app.use(cookieParser());
@@ -26,8 +28,11 @@ app.use(bodyParser.json({ limit: '10mb' }));
 
 // Initialize passport (configured in passport-config.mjs)
 app.use(passport.initialize());
+initCron(); 
+
 
 app.use('/', route);
+
 
 app.listen(3000, () => {
 	console.log('Server is running on port 3000');

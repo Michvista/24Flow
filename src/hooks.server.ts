@@ -30,6 +30,7 @@ export async function handle({ event, resolve }) {
 	} else {
 		event.locals.user = null;
 	}
+	
 
 	const isProtectedRoute = event.url.pathname.startsWith('/dashboard');
 
@@ -37,10 +38,11 @@ export async function handle({ event, resolve }) {
 		throw redirect(307, '/401');
 	}
 
-	const isAuthPage = event.url.pathname === '/login' || event.url.pathname === '/signup';
+	const isAuthPage = event.url.pathname === '/auth';
 
 	if (isAuthPage && event.locals.user) {
-		throw redirect(307, '/dashboard');
+		throw redirect(303, '/dashboard');
+		console.log('Redirecting authenticated user from /auth to /dashboard');
 	}
 
 	const response = await resolve(event);

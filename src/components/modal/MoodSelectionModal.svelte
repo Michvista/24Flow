@@ -17,9 +17,28 @@
 
   let currentRotation = $derived(moods.find(m => m.id === selectedMood)?.rotation || 0);
 
-  function handleConfirm() {
-    onConfirm?.(selectedMood);
-    isOpen = false;
+ async function handleConfirm() {
+    try {
+      const response = await fetch('http://localhost:3000/ai/tool', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
+        body: JSON.stringify({
+          toolType: 'LOG_MOOD',
+          payload: { mood: selectedMood }
+        })
+      });
+
+      const result = await response.json();
+	  console.log(result)
+      
+      if (result.status === 'success') {
+        onConfirm?.(selectedMood);
+        isOpen = false;
+      }
+    } catch (error) {
+      console.error("Failed to log mood:", error);
+    }
   }
 </script>
 

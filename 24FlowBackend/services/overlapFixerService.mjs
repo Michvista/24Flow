@@ -277,11 +277,11 @@ async function generateAIProposal(overlappingEvents, allUserEvents) {
 				});
 				currentEndTime = newEnd;
 			}
-			console.log('✅ Fallback proposals generated (no API key):', proposals.length);
+			console.log(' Fallback proposals generated (no API key):', proposals.length);
 			return proposals;
 		}
 
-		console.log('🤖 Calling Gemini API...');
+		console.log(' Calling Gemini API...');
 
 		// Retry logic for flaky/empty responses
 		const MAX_RETRIES = 2;
@@ -301,7 +301,7 @@ async function generateAIProposal(overlappingEvents, allUserEvents) {
 				});
 
 				console.log(
-					`📥 Raw Gemini response (attempt ${attempt + 1}):`,
+					` Raw Gemini response (attempt ${attempt + 1}):`,
 					JSON.stringify(response, null, 2)
 				);
 
@@ -379,11 +379,11 @@ async function generateAIProposal(overlappingEvents, allUserEvents) {
 				currentEndTime = newEnd;
 			}
 
-			console.log('✅ Fallback proposals generated:', proposals.length);
+			console.log(' Fallback proposals generated:', proposals.length);
 			return proposals;
 		}
 
-		console.log('📝 Extracted AI text:', aiText);
+		console.log(' Extracted AI text:', aiText);
 
 		// Clean the response - remove markdown code blocks if present
 		let jsonText = aiText.trim();
@@ -395,7 +395,7 @@ async function generateAIProposal(overlappingEvents, allUserEvents) {
 			jsonText = jsonMatch[0];
 		}
 
-		console.log('🔧 Cleaned JSON text:', jsonText);
+		console.log(' Cleaned JSON text:', jsonText);
 
 		const aiProposals = JSON.parse(jsonText);
 
@@ -426,11 +426,11 @@ async function generateAIProposal(overlappingEvents, allUserEvents) {
 			};
 		});
 
-		console.log('✅ AI proposals validated:', validatedProposals.length);
+		console.log(' AI proposals validated:', validatedProposals.length);
 
 		return validatedProposals;
 	} catch (error) {
-		console.error('⚠️ AI proposal generation failed:', error);
+		console.error(' AI proposal generation failed:', error);
 		console.error('Error details:', {
 			name: error.name,
 			message: error.message,
@@ -438,7 +438,7 @@ async function generateAIProposal(overlappingEvents, allUserEvents) {
 		});
 
 		// Fallback to simple sequential scheduling
-		console.log('🔄 Using fallback sequential scheduling...');
+		console.log(' Using fallback sequential scheduling...');
 
 		const sorted = [...overlappingEvents].sort(
 			(a, b) => a.startTime.getTime() - b.startTime.getTime()
@@ -476,7 +476,7 @@ async function generateAIProposal(overlappingEvents, allUserEvents) {
 			currentEndTime = newEnd;
 		}
 
-		console.log('✅ Fallback proposals generated:', proposals.length);
+		console.log(' Fallback proposals generated:', proposals.length);
 
 		return proposals;
 	}
@@ -529,7 +529,7 @@ function getOverlapClusters(events) {
  */
 export async function getOverlapFixes(userId) {
 	try {
-		console.log(`🔍 Fetching events for user ${userId}...`);
+		console.log(` Fetching events for user ${userId}...`);
 
 		const events = await prisma.event.findMany({
 			where: {
@@ -540,7 +540,7 @@ export async function getOverlapFixes(userId) {
 			}
 		});
 
-		console.log(`📅 Found ${events.length} events`);
+		console.log(` Found ${events.length} events`);
 
 		if (events.length === 0) {
 			return [];
@@ -549,7 +549,7 @@ export async function getOverlapFixes(userId) {
 		// Find overlapping event clusters
 		const overlapClusters = getOverlapClusters(events);
 
-		console.log(`⚠️ Found ${overlapClusters.length} overlap clusters`);
+		console.log(` Found ${overlapClusters.length} overlap clusters`);
 
 		if (overlapClusters.length === 0) {
 			return [];
@@ -558,7 +558,7 @@ export async function getOverlapFixes(userId) {
 		// Generate AI-powered conflict resolutions
 		const conflicts = await Promise.all(
 			overlapClusters.map(async (cluster, clusterIdx) => {
-				console.log(`\n🔧 Processing cluster ${clusterIdx + 1}/${overlapClusters.length}...`);
+				console.log(`\n Processing cluster ${clusterIdx + 1}/${overlapClusters.length}...`);
 
 				// Sort cluster by start time
 				const sortedCluster = [...cluster].sort(
@@ -600,7 +600,7 @@ export async function getOverlapFixes(userId) {
 
 					// Validate dates
 					if (isNaN(proposalStart.getTime()) || isNaN(proposalEnd.getTime())) {
-						console.error(`❌ Invalid date for ${p.title}: ${p.startTime} - ${p.endTime}`);
+						console.error(` Invalid date for ${p.title}: ${p.startTime} - ${p.endTime}`);
 						throw new Error(`AI returned invalid date for "${p.title}"`);
 					}
 
@@ -634,7 +634,7 @@ export async function getOverlapFixes(userId) {
 						? aiReasonings
 						: `Detected ${overlapCount} event${overlapCount > 1 ? 's' : ''} overlapping with '${sortedCluster[0].title}'. Suggesting optimal rescheduling.`;
 
-				console.log(`✅ Cluster ${clusterIdx + 1} processed`);
+				console.log(` Cluster ${clusterIdx + 1} processed`);
 
 				return {
 					id: generateErrorId(),
@@ -646,11 +646,11 @@ export async function getOverlapFixes(userId) {
 			})
 		);
 
-		console.log(`\n🎉 Generated ${conflicts.length} conflict resolutions`);
+		console.log(`\n Generated ${conflicts.length} conflict resolutions`);
 
 		return conflicts;
 	} catch (error) {
-		console.error('💥 Error in getOverlapFixes:', error);
+		console.error(' Error in getOverlapFixes:', error);
 		throw error;
 	}
 }
@@ -660,7 +660,7 @@ export async function getOverlapFixes(userId) {
  */
 export async function applyOverlapFix(proposals) {
 	try {
-		console.log(`💾 Applying fixes for ${proposals.length} events...`);
+		console.log(` Applying fixes for ${proposals.length} events...`);
 
 		const updates = await Promise.all(
 			proposals.map((proposal) => {
@@ -673,14 +673,14 @@ export async function applyOverlapFix(proposals) {
 
 				// Validate dates
 				if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
-					console.error('❌ Invalid date string received:', { startStr, endStr, proposal });
+					console.error(' Invalid date string received:', { startStr, endStr, proposal });
 					throw new Error(
 						`Invalid date format for "${proposal.title}": start=${startStr}, end=${endStr}`
 					);
 				}
 
 				console.log(
-					`  ✏️ Updating ${proposal.title}: ${startTime.toISOString()} - ${endTime.toISOString()}`
+					`   Updating ${proposal.title}: ${startTime.toISOString()} - ${endTime.toISOString()}`
 				);
 
 				return prisma.event.update({
@@ -693,11 +693,11 @@ export async function applyOverlapFix(proposals) {
 			})
 		);
 
-		console.log('✅ All events updated successfully');
+		console.log(' All events updated successfully');
 
 		return { success: true, updatedEvents: updates };
 	} catch (error) {
-		console.error('💥 Error applying overlap fix:', error);
+		console.error(' Error applying overlap fix:', error);
 		throw error;
 	}
 }
