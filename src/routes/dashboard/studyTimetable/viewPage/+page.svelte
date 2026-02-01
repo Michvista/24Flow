@@ -17,14 +17,14 @@
 		ChevronRight,
 		Fullscreen,
 		LayoutDashboard,
-        ArrowBigLeft 
+		ArrowBigLeft
 	} from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import StudyTimetable from '$lib/components/dashboard/AIToolsHub/StudyTimetable.svelte';
-    import { goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 
-
-    	import { Toaster, toast } from 'svelte-sonner';
+	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
 
 	function notifySuccess(title: string, message: string) {
@@ -57,7 +57,6 @@
 		});
 	}
 
-
 	// --- State Management ---
 	interface Plan {
 		id: number;
@@ -78,89 +77,91 @@
 	let totalPages: number = 4;
 	let showGenerator: boolean = false;
 
-export let data;
-let user = data?.user?.name;
-console.log(user)
+	export let data;
+	let user = data?.user?.name;
 
-let totalTasks:number = 0
-interface Subject {
-    id: number;
-    name: string;
-    topics: number;
-    priority: string;
-    topicsArray?: string[];
-}
+	let totalTasks: number = 0;
+	interface Subject {
+		id: number;
+		name: string;
+		topics: number;
+		priority: string;
+		topicsArray?: string[];
+	}
 
-interface BackendPlan {
-    id: string; // Backend sends string IDs like "cml315..."
-    tasksCount: number;
-    subjects: Subject[];
-    createdAt: string;
-    deadline: string;
-}
+	interface BackendPlan {
+		id: string; // Backend sends string IDs like "cml315..."
+		tasksCount: number;
+		subjects: Subject[];
+		createdAt: string;
+		deadline: string;
+	}
 
-async function fetchPlans() {
-    loading = true;
-    try {
-        const params = new URLSearchParams({
-            page: currentPage.toString(),
-            search: searchQuery
-        });
-        
-        const res = await fetch(`http://localhost:3000/study-plans?${params}`, {
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-        });
-        
-        const data = await res.json();
-        totalTasks = data.plans.reduce((sum:number, plan:BackendPlan) => sum + plan.tasksCount, 0);
-        
-        if (data.success) {
-            // Map the backend data to your UI needs
-            plans = data.plans.map((p: BackendPlan) => ({
-                ...p,
-                // Use the first subject name as the title
-                title: p.subjects.length > 0 ? p.subjects[0].name : 'Untitled Plan',
-                // Flatten all topic names from all subjects into one tag array
-                tags: p.subjects.flatMap(s => s.topicsArray || []),
-                // Format the date
-                date: new Date(p.createdAt).toLocaleDateString()
-            }));
-            notifySuccess('Plans Loaded', 'Your study plans have been successfully loaded.');
-            if (data.totalPages) totalPages = data.totalPages; 
-        }
-    } catch (e: any) {
-        console.error('Fetch failed', e);
-        notifyError('Load Failed', e.message || 'Could not load study plans.');
-    } finally {
-        loading = false;
-    }
-}
+	async function fetchPlans() {
+		loading = true;
+		try {
+			const params = new URLSearchParams({
+				page: currentPage.toString(),
+				search: searchQuery
+			});
 
-    // Function to delete a plan
-    async function deletePlan(id: number) {
-        if (!confirm('Are you sure you want to delete this plan?')) return;
-        
-        try {
-            const res = await fetch(`http://localhost:3000/study-plans/${id}`, { method: 'DELETE', credentials: 'include' });
-            const data = await res.json();
-            if (data.success) {
-                plans = plans.filter(p => p.id !== id);
-                notifySuccess('Plan Deleted', 'The study plan has been successfully deleted.');
-            }
-        } catch (e) {
-            console.error('Delete failed', e);
-            notifyError('Delete Failed', 'Could not delete the study plan.');
-        }
-    }
+			const res = await fetch(`${PUBLIC_API_URL}/study-plans?${params}`, {
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include'
+			});
 
-    // Reactive trigger: Fetch when page or search changes
-$: {
-    currentPage, searchQuery; // Reference them so Svelte tracks them
-    fetchPlans();
-}
+			const data = await res.json();
+			totalTasks = data.plans.reduce((sum: number, plan: BackendPlan) => sum + plan.tasksCount, 0);
 
-    	let avatarUrl = '';
+			if (data.success) {
+				// Map the backend data to your UI needs
+				plans = data.plans.map((p: BackendPlan) => ({
+					...p,
+					// Use the first subject name as the title
+					title: p.subjects.length > 0 ? p.subjects[0].name : 'Untitled Plan',
+					// Flatten all topic names from all subjects into one tag array
+					tags: p.subjects.flatMap((s) => s.topicsArray || []),
+					// Format the date
+					date: new Date(p.createdAt).toLocaleDateString()
+				}));
+				notifySuccess('Plans Loaded', 'Your study plans have been successfully loaded.');
+				if (data.totalPages) totalPages = data.totalPages;
+			}
+		} catch (e: any) {
+			console.error('Fetch failed', e);
+			notifyError('Load Failed', e.message || 'Could not load study plans.');
+		} finally {
+			loading = false;
+		}
+	}
+
+	// Function to delete a plan
+	async function deletePlan(id: number) {
+		if (!confirm('Are you sure you want to delete this plan?')) return;
+
+		try {
+			const res = await fetch(`${PUBLIC_API_URL}/study-plans/${id}`, {
+				method: 'DELETE',
+				credentials: 'include'
+			});
+			const data = await res.json();
+			if (data.success) {
+				plans = plans.filter((p) => p.id !== id);
+				notifySuccess('Plan Deleted', 'The study plan has been successfully deleted.');
+			}
+		} catch (e) {
+			console.error('Delete failed', e);
+			notifyError('Delete Failed', 'Could not delete the study plan.');
+		}
+	}
+
+	// Reactive trigger: Fetch when page or search changes
+	$: {
+		(currentPage, searchQuery); // Reference them so Svelte tracks them
+		fetchPlans();
+	}
+
+	let avatarUrl = '';
 
 	function generateRandomAvatar() {
 		const styles = ['adventurer', 'fun-emoji', 'bottts', 'lorelei', 'avataaars'];
@@ -186,62 +187,62 @@ $: {
 </script>
 
 <div class=" relative bg-background-dark text-slate-100 min-h-screen font-display">
-	
-
 	{#if showGenerator}
-    <div class="absolute z-[700] left-10 top-18 text-white ">
-        <button on:click={() => (showGenerator = false)}>
-            <span class="flex justify-center items-center uppercase font-bold">
-                <ArrowBigLeft  size={24} /> Back
-            </span>
-        </button>
-    </div>
+		<div class="absolute z-[700] left-10 top-18 text-white">
+			<button on:click={() => (showGenerator = false)}>
+				<span class="flex justify-center items-center uppercase font-bold">
+					<ArrowBigLeft size={24} /> Back
+				</span>
+			</button>
+		</div>
 		<StudyTimetable />
 	{:else}
-    <header
-		class="border-b-2 bg-background-dark border-slate-900 bg-panel-dark px-6 py-4 flex items-center justify-between sticky top-0 z-50"
-	>
-		<div class="flex items-center gap-3">
-			<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"
-				><path
-					clip-rule="evenodd"
-					d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z"
-					fill="white"
-					fill-rule="evenodd"
-				></path></svg
-			>
-			<div class="flex flex-col">
-				<div class="flex items-center gap-2">
-					<h1 class="font-bold text-xl tracking-tighter uppercase font-monoton">24FLOW</h1>
-				</div>
-			</div>
-		</div>
-
-		<div class="flex items-center gap-8">
-			<nav class="hidden md:flex items-center gap-6 text-sm font-bold uppercase tracking-widest">
-				<a class="flex items-center gap-2 text-primary" href="/"><ListTodo size={18} /> MY PLANS</a>
-				<a class="flex items-center gap-2 hover:text-primary transition-colors" href="/"
-					><PlusSquare size={18} /> NEW PLAN</a
-				>
-				<a class="flex items-center gap-2 hover:text-primary transition-colors" href="/"
-					><LayoutDashboard size={18} /> DASHBOARD</a
-				>
-			</nav>
-			<div class="flex items-center gap-4 pl-8 border-l">
-				<div class="text-right">
-					<p class="text-sm font-bold leading-none">{user}</p>
-				</div>
-				<div
-			class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-900 overflow-hidden bg-slate-200"
-			style="background-image: url('{avatarUrl}');"
+		<header
+			class="border-b-2 bg-background-dark border-slate-900 bg-panel-dark px-6 py-4 flex items-center justify-between sticky top-0 z-50"
 		>
-			{#if !avatarUrl}
-				<div class=" w-full h-full"></div>
-			{/if}
-		</div>
+			<div class="flex items-center gap-3">
+				<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"
+					><path
+						clip-rule="evenodd"
+						d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z"
+						fill="white"
+						fill-rule="evenodd"
+					></path></svg
+				>
+				<div class="flex flex-col">
+					<div class="flex items-center gap-2">
+						<h1 class="font-bold text-xl tracking-tighter uppercase font-monoton">24FLOW</h1>
+					</div>
+				</div>
 			</div>
-		</div>
-	</header>
+
+			<div class="flex items-center gap-8">
+				<nav class="hidden md:flex items-center gap-6 text-sm font-bold uppercase tracking-widest">
+					<a class="flex items-center gap-2 text-primary" href="/"
+						><ListTodo size={18} /> MY PLANS</a
+					>
+					<a class="flex items-center gap-2 hover:text-primary transition-colors" href="/"
+						><PlusSquare size={18} /> NEW PLAN</a
+					>
+					<a class="flex items-center gap-2 hover:text-primary transition-colors" href="/"
+						><LayoutDashboard size={18} /> DASHBOARD</a
+					>
+				</nav>
+				<div class="flex items-center gap-4 pl-8 border-l">
+					<div class="text-right">
+						<p class="text-sm font-bold leading-none">{user}</p>
+					</div>
+					<div
+						class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-900 overflow-hidden bg-slate-200"
+						style="background-image: url('{avatarUrl}');"
+					>
+						{#if !avatarUrl}
+							<div class=" w-full h-full"></div>
+						{/if}
+					</div>
+				</div>
+			</div>
+		</header>
 		<main class="max-w-7xl mx-auto px-6 py-12">
 			<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
 				<div>
@@ -278,12 +279,12 @@ $: {
 					>
 						<CheckCircle2 size={24} />
 					</div>
-				<div>
-    <p class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">
-        Active Plans
-    </p>
-    <p class="text-2xl font-black">{plans.length.toString().padStart(2, '0')}</p>
-</div>
+					<div>
+						<p class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">
+							Active Plans
+						</p>
+						<p class="text-2xl font-black">{plans.length.toString().padStart(2, '0')}</p>
+					</div>
 				</div>
 				<div class="bg-panel-dark p-6 border-2 border-slate-900 flex items-center gap-5">
 					<div
@@ -360,17 +361,18 @@ $: {
 							</div>
 							<div class="grid grid-cols-2 mt-auto border-t-2 border-slate-900">
 								<button
-                                on:click={() => window.location.href = `http://localhost:5173/dashboard/studyTimetable/calendar/${plan.id}`}
+									on:click={() =>
+										(window.location.href = `http://localhost:5173/dashboard/studyTimetable/calendar/${plan.id}`)}
 									class="py-4 font-bold uppercase text-sm flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors border-r-2 border-slate-900"
 								>
 									<Fullscreen size={16} /> View
 								</button>
 								<button
-    on:click={() => deletePlan(plan.id)}
-    class="py-4 font-bold uppercase text-sm flex items-center justify-center gap-2 hover:bg-red-600 transition-colors hover:text-white"
->
-    <Trash2 size={16} /> Delete
-</button>
+									on:click={() => deletePlan(plan.id)}
+									class="py-4 font-bold uppercase text-sm flex items-center justify-center gap-2 hover:bg-red-600 transition-colors hover:text-white"
+								>
+									<Trash2 size={16} /> Delete
+								</button>
 							</div>
 							<div
 								class="absolute -top-1 -right-1 w-full h-full bg-slate-700 -z-10 transition-transform group-hover:translate-x-1 group-hover:translate-y-1"

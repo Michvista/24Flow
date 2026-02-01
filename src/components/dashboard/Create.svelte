@@ -1,9 +1,10 @@
 <script lang="ts">
-import { onMount } from 'svelte';
-    import { MapPin, Calendar } from 'lucide-svelte';
-    import { format } from 'date-fns';
+	import { onMount } from 'svelte';
+	import { MapPin, Calendar } from 'lucide-svelte';
+	import { format } from 'date-fns';
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../SonnerToast.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
@@ -35,121 +36,119 @@ import { onMount } from 'svelte';
 		});
 	}
 
-export let initialDate: Date = new Date();
-    export let initialTime: string = '';
-    export let onSuccess = () => {};  
+	export let initialDate: Date = new Date();
+	export let initialTime: string = '';
+	export let onSuccess = () => {};
 
 	interface NeoColor {
-    bg: string;
-    text: string;
-    name: string;
-    description?: string;
-}
+		bg: string;
+		text: string;
+		name: string;
+		description?: string;
+	}
 
-    // Form State
-    let title = '';
-    let location = '';
-    let date = '';
-    let description = '';
+	// Form State
+	let title = '';
+	let location = '';
+	let date = '';
+	let description = '';
 
 	let selectedDays = [1, 3]; // Indices for M, W
-	
 
-let startTimeIndex: number | null = null;
-    let endTimeIndex: number | null = null;
-    
-    // Sync props with local state on load
-    onMount(() => {
-        if (initialDate) {
-            date = format(initialDate, 'yyyy-MM-dd');
-        }
-        if (initialTime) {
-            // If the grid click gives us "14:20", we find the closest index in timeSlots
-            const hour = initialTime.split(':')[0];
-            const index = timeSlots.findIndex(t => t.startsWith(hour));
-            if (index !== -1) startTimeIndex = index;
-        }
-    });
+	let startTimeIndex: number | null = null;
+	let endTimeIndex: number | null = null;
 
-	
-    async function handleSubmit() {
-       if (!title || startTimeIndex === null) {
-            notifyError("Validation Error","Please provide a title and start time.");
-            return;
-        }
+	// Sync props with local state on load
+	onMount(() => {
+		if (initialDate) {
+			date = format(initialDate, 'yyyy-MM-dd');
+		}
+		if (initialTime) {
+			// If the grid click gives us "14:20", we find the closest index in timeSlots
+			const hour = initialTime.split(':')[0];
+			const index = timeSlots.findIndex((t) => t.startsWith(hour));
+			if (index !== -1) startTimeIndex = index;
+		}
+	});
 
-        const startStr = `${date}T${timeSlots[startTimeIndex]}:00`;
-        const endStr = endTimeIndex !== null 
-            ? `${date}T${timeSlots[endTimeIndex]}:00`
-            : `${date}T${timeSlots[startTimeIndex + 1] || '23:59'}:00`;
+	async function handleSubmit() {
+		if (!title || startTimeIndex === null) {
+			notifyError('Validation Error', 'Please provide a title and start time.');
+			return;
+		}
 
-//  Neobrutalist Color Palette
+		const startStr = `${date}T${timeSlots[startTimeIndex]}:00`;
+		const endStr =
+			endTimeIndex !== null
+				? `${date}T${timeSlots[endTimeIndex]}:00`
+				: `${date}T${timeSlots[startTimeIndex + 1] || '23:59'}:00`;
 
+		//  Neobrutalist Color Palette
 
-const colors: NeoColor[] = [
-    // Original Palette
-    { bg: '#f7ff5c', text: '#000000', name: 'secondary-yellow' },
-    { bg: '#00f57a', text: '#000000', name: 'secondary-green' },
-    { bg: '#af52de', text: '#ffffff', name: 'secondary-purple' },
-    { bg: '#3d7bff', text: '#ffffff', name: 'primary-accent' },
+		const colors: NeoColor[] = [
+			// Original Palette
+			{ bg: '#f7ff5c', text: '#000000', name: 'secondary-yellow' },
+			{ bg: '#00f57a', text: '#000000', name: 'secondary-green' },
+			{ bg: '#af52de', text: '#ffffff', name: 'secondary-purple' },
+			{ bg: '#3d7bff', text: '#ffffff', name: 'primary-accent' },
 
-    // Extended High-Contrast Vivids
-    { bg: '#ff5c5c', text: '#000000', name: 'neo-red' },
-    { bg: '#ff90e8', text: '#000000', name: 'neo-pink' },
-    { bg: '#05d9e8', text: '#000000', name: 'neo-cyan' },
-    { bg: '#ffbd12', text: '#000000', name: 'neo-orange' },
+			// Extended High-Contrast Vivids
+			{ bg: '#ff5c5c', text: '#000000', name: 'neo-red' },
+			{ bg: '#ff90e8', text: '#000000', name: 'neo-pink' },
+			{ bg: '#05d9e8', text: '#000000', name: 'neo-cyan' },
+			{ bg: '#ffbd12', text: '#000000', name: 'neo-orange' },
 
-    // Deep Neutrals (For Heavy Borders & Shadows)
-    { bg: '#000000', text: '#ffffff', name: 'ink-black' },
-    { bg: '#ffffff', text: '#000000', name: 'stark-white' },
-    { bg: '#bebebe', text: '#000000', name: 'concrete-gray' },
+			// Deep Neutrals (For Heavy Borders & Shadows)
+			{ bg: '#000000', text: '#ffffff', name: 'ink-black' },
+			{ bg: '#ffffff', text: '#000000', name: 'stark-white' },
+			{ bg: '#bebebe', text: '#000000', name: 'concrete-gray' },
 
-    // Muted Accents (For secondary UI elements)
-    { bg: '#d6ff00', text: '#000000', name: 'acid-lime' },
-    { bg: '#8a2be2', text: '#ffffff', name: 'royal-purple' },
-    { bg: '#171717', text: '#00f57a', name: 'dark-mode-bg' }
-];
+			// Muted Accents (For secondary UI elements)
+			{ bg: '#d6ff00', text: '#000000', name: 'acid-lime' },
+			{ bg: '#8a2be2', text: '#ffffff', name: 'royal-purple' },
+			{ bg: '#171717', text: '#00f57a', name: 'dark-mode-bg' }
+		];
 
-const randomStyle = colors[Math.floor(Math.random() * colors.length)];
+		const randomStyle = colors[Math.floor(Math.random() * colors.length)];
 
-const payload = {
-    title,
-    location,
-    description,
-    startTime: new Date(startStr).toISOString(),
-    endTime: new Date(endStr).toISOString(),
-    recurringDays: selectedDays,
-    color: randomStyle.bg,  // Send hex color
-    textColor: randomStyle.text,
-    colorName: randomStyle.name 
-};
-        try {
-            const response = await fetch('http://localhost:3000/events', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-                credentials: 'include' 
-            });
+		const payload = {
+			title,
+			location,
+			description,
+			startTime: new Date(startStr).toISOString(),
+			endTime: new Date(endStr).toISOString(),
+			recurringDays: selectedDays,
+			color: randomStyle.bg, // Send hex color
+			textColor: randomStyle.text,
+			colorName: randomStyle.name
+		};
+		try {
+			const response = await fetch(`${PUBLIC_API_URL}/events`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload),
+				credentials: 'include'
+			});
 
-            if (response.ok) {
-                const result = await response.json();
-				notifySuccess("Event Created", "reloading page...")
-                console.log('Event Created:', result);
-                onSuccess();
+			if (response.ok) {
+				const result = await response.json();
+				notifySuccess('Event Created', 'reloading page...');
+				console.log('Event Created:', result);
+				onSuccess();
 
-				    setTimeout(() => {
-        window.location.reload();
-    }, 1500);
-            } else {
-                const err = await response.json();
-                alert(`Error: ${err.message}`);
-				notifyError("Error occured", String(err.message))
-            }
-        } catch (error) {
-            console.error('Fetch error:', error);
-			notifyError('System Fetch Error', String(error))
-        }
-    }
+				setTimeout(() => {
+					window.location.reload();
+				}, 1500);
+			} else {
+				const err = await response.json();
+				alert(`Error: ${err.message}`);
+				notifyError('Error occured', String(err.message));
+			}
+		} catch (error) {
+			console.error('Fetch error:', error);
+			notifyError('System Fetch Error', String(error));
+		}
+	}
 	// 1. Dynamic Recurrence Text
 	const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -164,51 +163,49 @@ const payload = {
 						.map((i) => dayNames[i])
 						.join(', ')}`;
 
-						$: if (initialDate) {
-        date = format(initialDate, 'yyyy-MM-dd');
-    }
+	$: if (initialDate) {
+		date = format(initialDate, 'yyyy-MM-dd');
+	}
 
-    $: if (initialTime) {
-        const hour = initialTime.split(':')[0];
-        const index = timeSlots.findIndex(t => t.startsWith(hour));
-        if (index !== -1) startTimeIndex = index;
-    }
+	$: if (initialTime) {
+		const hour = initialTime.split(':')[0];
+		const index = timeSlots.findIndex((t) => t.startsWith(hour));
+		if (index !== -1) startTimeIndex = index;
+	}
 
 	// 2. Dynamic Time Generation (00:00 to 23:00)
 	const timeSlots = Array.from({ length: 24 }, (_, i) => {
 		return i.toString().padStart(2, '0') + ':00';
 	});
 
-	
-
 	function handleTimeClick(index: number) {
-        if (startTimeIndex === null || endTimeIndex !== null) {
-            startTimeIndex = index;
-            endTimeIndex = null;
-        } else {
-            if (index === startTimeIndex) {
-                startTimeIndex = null;
-            } else {
-                // We allow index to be less than startTimeIndex!
-                // This means the event ends the following day.
-                endTimeIndex = index;
-            }
-        }
-    }
+		if (startTimeIndex === null || endTimeIndex !== null) {
+			startTimeIndex = index;
+			endTimeIndex = null;
+		} else {
+			if (index === startTimeIndex) {
+				startTimeIndex = null;
+			} else {
+				// We allow index to be less than startTimeIndex!
+				// This means the event ends the following day.
+				endTimeIndex = index;
+			}
+		}
+	}
 
-    // Update the visual selection logic to handle the "wrap around"
-    $: isSelected = (index: number) => {
-        if (startTimeIndex === null) return false;
-        if (endTimeIndex === null) return index === startTimeIndex;
-        
-        if (startTimeIndex <= endTimeIndex) {
-            // Normal same-day range
-            return index >= startTimeIndex && index <= endTimeIndex;
-        } else {
-            // Overnight range: select from start to end of day, AND start of day to end index
-            return index >= startTimeIndex || index <= endTimeIndex;
-        }
-    };
+	// Update the visual selection logic to handle the "wrap around"
+	$: isSelected = (index: number) => {
+		if (startTimeIndex === null) return false;
+		if (endTimeIndex === null) return index === startTimeIndex;
+
+		if (startTimeIndex <= endTimeIndex) {
+			// Normal same-day range
+			return index >= startTimeIndex && index <= endTimeIndex;
+		} else {
+			// Overnight range: select from start to end of day, AND start of day to end index
+			return index >= startTimeIndex || index <= endTimeIndex;
+		}
+	};
 </script>
 
 <svelte:head>
@@ -319,7 +316,7 @@ const payload = {
 						Description
 					</p>
 					<textarea
-					bind:value={description}
+						bind:value={description}
 						class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden text-text-primary focus:outline-0 focus:ring-4 focus:ring-primary/50 border-4 border-black bg-surface h-40 placeholder:text-text-secondary p-[15px] text-base font-normal leading-normal"
 						placeholder="Add a description for your event..."
 					></textarea>
@@ -341,6 +338,7 @@ const payload = {
 		</form>
 	</div>
 </div>
+
 <style>
 	.font-display {
 		font-family: 'Space Grotesk', sans-serif;

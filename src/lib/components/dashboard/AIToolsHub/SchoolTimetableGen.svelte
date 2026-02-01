@@ -28,6 +28,7 @@
 	import Navbar from '../../../../components/dashboard/Navbar.svelte';
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	// Intelligent Icon Logic
 	function getIconBySubject(subject: string) {
@@ -104,7 +105,7 @@
 			isCheckingConflicts = true;
 			conflicts = []; // clear old state so UI doesn't lie
 
-			const res = await fetch('http://localhost:3000/timetable/check-conflicts', {
+			const res = await fetch(`${PUBLIC_API_URL}/timetable/check-conflicts`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
@@ -126,7 +127,7 @@
 	// LOAD DATA ON REFRESH
 	onMount(async () => {
 		try {
-			const res = await fetch('http://localhost:3000/timetable', { credentials: 'include' });
+			const res = await fetch(`${PUBLIC_API_URL}/timetable`, { credentials: 'include' });
 			if (res.ok) {
 				const json = await res.json();
 				const data = json.data;
@@ -150,7 +151,7 @@
 
 	// AUTO-SAVE LOGIC
 	async function persist() {
-		await fetch('http://localhost:3000/timetable/persist', {
+		await fetch(`${PUBLIC_API_URL}/timetable/persist`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			credentials: 'include',
@@ -216,7 +217,7 @@
 
 	async function exportCSV() {
 		try {
-			const res = await fetch('http://localhost:3000/timetable/export/sheets', {
+			const res = await fetch(`${PUBLIC_API_URL}/timetable/export/sheets`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
@@ -243,7 +244,7 @@
 		try {
 			isSyncingCalendar = true;
 
-			const res = await fetch('http://localhost:3000/timetable/sync-calendar', {
+			const res = await fetch(`${PUBLIC_API_URL}/timetable/sync-calendar`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
@@ -289,18 +290,15 @@
 
 		if (option.target === 'EVENT') {
 			try {
-				const response = await fetch(
-					`http://localhost:3000/events/${conflict.event.id}/reschedule`,
-					{
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						credentials: 'include',
-						body: JSON.stringify({
-							newStartTime: option.newStartTime,
-							newEndTime: option.newEndTime
-						})
-					}
-				);
+				const response = await fetch(`${PUBLIC_API_URL}/events/${conflict.event.id}/reschedule`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					credentials: 'include',
+					body: JSON.stringify({
+						newStartTime: option.newStartTime,
+						newEndTime: option.newEndTime
+					})
+				});
 
 				if (!response.ok) {
 					const errorData = await response.json();

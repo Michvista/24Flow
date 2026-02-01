@@ -25,9 +25,9 @@
 				'Give the app your tasks and free hours — it automatically arranges everything into a perfect, balanced 12AM–12AM schedule.'
 		},
 		{
-			title: 'AI Hour Block Optimizer',
+			title: 'AI OCR ',
 			description:
-				'The AI reshuffles your timetable to reduce overload, remove gaps, and ensure tasks fit into your available hours efficiently.'
+				'The AI extracts text from images of handwritten or printed schedules, converting them into editable digital timetables.'
 		},
 		{
 			title: 'AI Study Timetable Generator',

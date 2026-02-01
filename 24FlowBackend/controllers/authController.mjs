@@ -254,3 +254,35 @@ export const logOut = async (req, res, next) => {
 		next(error);
 	}
 };
+
+export const deleteAccount = async (req, res, next) => {
+	try {
+		const userId = req.user.id;
+
+		// Delete user and related data in a transaction
+		await prisma.$transaction([
+			prisma.event.deleteMany({ where: { userId } }),
+			prisma.task.deleteMany({ where: { userId } }),
+			prisma.timetableClass.deleteMany({ where: { userId } }),
+			prisma.preferences.deleteMany({ where: { userId } }),
+			prisma.sleep.deleteMany({ where: { userId } }),
+			prisma.aITools.deleteMany({ where: { userId } }),
+			prisma.user.delete({ where: { id: userId } })
+		]);
+
+		// Clear authentication cookie
+		res.clearCookie('accessToken', {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'strict',	
+			path: '/'
+		});
+
+		res.status(200).json({
+			status: true,
+			message: 'Account deleted successfully'
+		});
+	} catch (error) {
+		next(error);
+	}
+};

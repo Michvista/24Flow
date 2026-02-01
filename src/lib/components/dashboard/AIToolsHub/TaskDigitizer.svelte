@@ -16,6 +16,7 @@
 	import Navbar from '../../../../components/dashboard/Navbar.svelte';
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
@@ -132,7 +133,7 @@
 		try {
 			const base64String = await toBase64(file);
 
-			const response = await fetch('http://localhost:3000/ai/tool', {
+			const response = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -234,7 +235,7 @@
 
 		isSaving = true;
 		try {
-			const response = await fetch('http://localhost:3000/ai/tool', {
+			const response = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'

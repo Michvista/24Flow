@@ -4,6 +4,42 @@ const ai = new GoogleGenAI({
 	apiKey: process.env.GEMINI_API_KEY
 });
 
+const colors = [
+	// Original Palette
+	{ bg: '#f7ff5c', text: '#000000', name: 'secondary-yellow' },
+	{ bg: '#00f57a', text: '#000000', name: 'secondary-green' },
+	{ bg: '#af52de', text: '#ffffff', name: 'secondary-purple' },
+	{ bg: '#3d7bff', text: '#ffffff', name: 'primary-accent' },
+
+	// Extended High-Contrast Vivids
+	{ bg: '#ff5c5c', text: '#000000', name: 'neo-red' },
+	{ bg: '#ff90e8', text: '#000000', name: 'neo-pink' },
+	{ bg: '#05d9e8', text: '#000000', name: 'neo-cyan' },
+	{ bg: '#ffbd12', text: '#000000', name: 'neo-orange' },
+
+	// Deep Neutrals (For Heavy Borders & Shadows)
+	{ bg: '#000000', text: '#ffffff', name: 'ink-black' },
+	{ bg: '#ffffff', text: '#000000', name: 'stark-white' },
+	{ bg: '#bebebe', text: '#000000', name: 'concrete-gray' },
+
+	// Muted Accents (For secondary UI elements)
+	{ bg: '#d6ff00', text: '#000000', name: 'acid-lime' },
+	{ bg: '#8a2be2', text: '#ffffff', name: 'royal-purple' },
+	{ bg: '#171717', text: '#00f57a', name: 'dark-mode-bg' }
+];
+
+// 3. SHUFFLE COLORS
+	const shuffle = (arr) => {
+		const a = arr.slice();
+		for (let i = a.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[a[i], a[j]] = [a[j], a[i]];
+		}
+		return a;
+	};
+
+	const palette = shuffle(colors);
+
 /**
  * Safe JSON parser that extracts JSON from markdown or raw text
  */
@@ -66,6 +102,14 @@ function minutesToTimeStr(totalMinutes) {
 	const hh = Math.floor(mins / 60);
 	const mm = mins % 60;
 	return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+}
+
+function createSubjectColorMap(subjects) {
+	const map = {};
+	subjects.forEach((subject, index) => {
+		map[subject.name] = colors[index % colors.length];
+	});
+	return map;
 }
 
 /**
@@ -222,10 +266,29 @@ Generate NOW:`;
 			return getFallbackPlan(subjects, totalWeeks, dailyHours, includeBreaks);
 		}
 
+		const subjectColorMap = {};
+		subjects.forEach((subject, index) => {
+			// Pick a color from the palette, looping back to start if subjects > colors
+			subjectColorMap[subject.name] = colors[index % colors.length];
+		});
+
 		// Validate and enrich tasks
 		const enrichedTasks = (parsed.tasks || []).map((task, idx) => {
 			// Ensure week is within range
 			const week = Math.max(0, Math.min(task.week ?? 0, totalWeeks - 1));
+			const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+			const isBreak = task.isBreak || task.title.toLowerCase().includes('break');
+
+			// Logic: If it's a break, use the dark neutral.
+			// Otherwise, look up the color for the subject type.
+			let taskColor;
+			if (isBreak) {
+				taskColor = { bg: '#171717', text: '#00f57a', name: 'dark-mode-bg' };
+			} else {
+				// Fallback to a random color if the AI returns a subject type not in your list
+				taskColor = subjectColorMap[task.type] || colors[idx % colors.length];
+			}
 
 			return {
 				id: `task-${Date.now()}-${idx}`,
@@ -236,8 +299,8 @@ Generate NOW:`;
 				type: task.type || subjects[0]?.name || 'Study',
 				duration: task.duration || '1h',
 				description: task.description || '',
-				color: task.color || 'bg-primary',
-				subColor: task.subColor || 'text-blue-200',
+				color: taskColor.bg,
+				subColor: taskColor.text,
 				icon: task.icon || null,
 				isBreak: task.isBreak || false
 			};
@@ -294,8 +357,8 @@ Generate NOW:`;
 							title: task.title,
 							type: task.type,
 							duration: task.duration,
-							color: task.color || 'bg-primary',
-							subColor: task.subColor || 'text-blue-200'
+							color:  palette.bg,
+							subColor: palette.text
 						});
 					}
 				}
@@ -428,8 +491,8 @@ Generate NOW:`;
 				title: item.title || 'Study Task',
 				type: item.type || subjects[0]?.name || 'Study',
 				duration: item.duration || '1h',
-				color: item.color || 'bg-primary',
-				subColor: item.subColor || 'text-blue-200'
+				color: isBreak ? '#171717' : subjectColorMap[subject.name]?.bg || '#3d7bff',
+				subColor: isBreak ? '#00f57a' : subjectColorMap[subject.name]?.text || '#ffffff'
 			})),
 			...movedToBacklog
 		];
@@ -500,8 +563,8 @@ function fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks)
 				type: subject.name,
 				duration: durationStr,
 				description: `Continuing ${subject.name} studies`,
-				color: 'bg-primary',
-				subColor: 'text-blue-200',
+				color: isBreak ? '#171717' : subjectColorMap[subject.name]?.bg || '#3d7bff',
+				subColor: isBreak ? '#00f57a' : subjectColorMap[subject.name]?.text || '#ffffff',
 				isBreak: false
 			});
 
@@ -516,8 +579,8 @@ function fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks)
 					type: 'Rest',
 					duration: '15m',
 					description: '',
-					color: 'bg-[#232f48]',
-					subColor: 'text-blue-200',
+					color: palette.bg,
+					subColor: palette.text,
 					isBreak: true
 				});
 			}
@@ -573,8 +636,8 @@ function fillMissingWeeks(existingTasks, subjects, totalWeeks, dailyHours, inclu
 						type: subject.name,
 						duration: durationStr,
 						description: `Continue studying ${subject.name} concepts`,
-						color: 'bg-primary',
-						subColor: 'text-blue-200',
+						color: isBreak ? '#171717' : subjectColorMap[subject.name]?.bg || '#3d7bff',
+						subColor: isBreak ? '#00f57a' : subjectColorMap[subject.name]?.text || '#ffffff',
 						isBreak: false
 					});
 
@@ -592,8 +655,8 @@ function fillMissingWeeks(existingTasks, subjects, totalWeeks, dailyHours, inclu
 							type: 'Rest',
 							duration: '15m',
 							description: '',
-							color: 'bg-[#232f48]',
-							subColor: 'text-blue-200',
+							color: palette.bg,
+							subColor: palette.text,
 							isBreak: true
 						});
 					}
@@ -676,8 +739,8 @@ function getFallbackPlan(subjects, totalWeeks, dailyHours, includeBreaks) {
 					type: subject,
 					duration: durationStr,
 					description: `Study ${subject} concepts for week ${week + 1}`,
-					color: 'bg-primary',
-					subColor: 'text-blue-200',
+					color: palette.bg,
+					subColor: palette.text,
 					isBreak: false
 				});
 
@@ -694,8 +757,8 @@ function getFallbackPlan(subjects, totalWeeks, dailyHours, includeBreaks) {
 						type: 'Rest',
 						duration: '15m',
 						description: '',
-						color: 'bg-primary',
-						subColor: 'text-blue-200',
+						color: palette.bg,
+						subColor: palette.text,
 						isBreak: true
 					});
 				}

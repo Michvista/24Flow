@@ -94,7 +94,9 @@ onMount(() => {
 				></path>
 			</svg>
 		</div>
-		<h2 class="font-monoton text-lg font-bold leading-tight tracking-[-0.015em]">24FLOW</h2>
+		<a href="/">
+			<h2 class="font-monoton text-lg font-bold leading-tight tracking-[-0.015em]">24FLOW</h2>
+		</a>
 	</div>
 
 	<div class="flex items-center gap-4 md:gap-8">

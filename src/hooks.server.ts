@@ -1,11 +1,13 @@
 import { redirect } from '@sveltejs/kit';
+	import { PUBLIC_API_URL } from '$env/static/public';
+
 
 export async function handle({ event, resolve }) {
 	const token = event.cookies.get('accessToken');
 
 	if (token) {
 		try {
-			const res = await fetch('http://localhost:3000/auth/profile', {
+			const res = await fetch(`${PUBLIC_API_URL}/auth/profile`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 					Cookie: `accessToken=${token}`
@@ -39,8 +41,9 @@ export async function handle({ event, resolve }) {
 	}
 
 	const isAuthPage = event.url.pathname === '/auth';
+	const err = event.url.pathname === '/401';
 
-	if (isAuthPage && event.locals.user) {
+	if ( event.locals.user && isAuthPage && !err) {
 		throw redirect(303, '/dashboard');
 		console.log('Redirecting authenticated user from /auth to /dashboard');
 	}

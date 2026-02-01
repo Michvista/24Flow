@@ -116,7 +116,7 @@ export const checkConflicts = async (userId, newClasses) => {
 			});
 		}
 	}
-
+ 
 	return conflicts;
 };
 const colors = [
@@ -176,6 +176,7 @@ export const syncCalendar = async (userId, classes) => {
 
 	const palette = shuffle(colors);
 	const events = [];
+
 
 	const getNextDateForDay = (dayName) => {
 		const daysMap = {

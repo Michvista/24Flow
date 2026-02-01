@@ -16,6 +16,7 @@
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
 	import type { SvelteComponentTyped } from 'svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	// State for the input text
 	let userInput: string = '';
@@ -72,7 +73,7 @@
 		if (isProcessing) return; // prevent duplicates
 		isProcessing = true;
 		try {
-			const response = await fetch('http://localhost:3000/ai/tool', {
+			const response = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
@@ -106,7 +107,7 @@
 							? 'Medium Priority'
 							: event.priority === 'Low'
 								? 'Low Priority'
-								: 'Priority Unknown',
+								: 'Priority Unknown'
 			}));
 
 			notifySuccess('Parsed', 'Events parsed successfully');

@@ -30,14 +30,14 @@
 			link: '/dashboard/studyTimetable/viewPage',
 			disabled: false
 		},
-		{
-			title: 'Hour Block Optimizer',
-			desc: 'Re-organizes fragmented meetings into solid deep work hour blocks for maximum focus.',
-			icon: Hourglass,
-			color: 'primary',
-			link: '/dashboard/AITools/Optimizer',
-			disabled: true
-		},
+		// {
+		// 	title: 'Hour Block Optimizer',
+		// 	desc: 'Re-organizes fragmented meetings into solid deep work hour blocks for maximum focus.',
+		// 	icon: Hourglass,
+		// 	color: 'primary',
+		// 	link: '/dashboard/AITools/Optimizer',
+		// 	disabled: true
+		// },
 		{
 			title: 'Smart Overlap Fixer',
 			desc: 'Detects and resolves scheduling conflicts instantly by proposing optimal alternatives.',

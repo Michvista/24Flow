@@ -6,7 +6,8 @@ import {
 	profile,
 	googleAuth,
 	updateProfile,
-	logOut
+	logOut,
+	deleteAccount
 } from '../../controllers/authController.mjs';
 import { protect } from '../../middlewares/verifyAuth.mjs';
 
@@ -36,6 +37,7 @@ router.post('/login', login);
 router.post('/register', register);
 router.get('/profile', protect, profile);
 router.patch('/update-profile', protect, updateProfile);
-router.post('/logout', logOut)
+router.post('/logout', protect, logOut);
+router.delete('/delete-account', protect, deleteAccount)
 
 export default router;
