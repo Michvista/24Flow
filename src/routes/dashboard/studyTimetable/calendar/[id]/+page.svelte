@@ -69,6 +69,9 @@
 	let isHeaderSticky = $state(false);
 	let scheduleDataBackup = $state<Task[]>([]);
 
+	// Plan id (set on mount)
+	let planId = $state<string>('');
+
 	// Scroll detection for sticky header
 	let mainContent = $state<HTMLElement>();
 
@@ -112,98 +115,135 @@
 	let newTask = $state({ title: '', type: 'Deep Work', duration: '1h', color: 'bg-primary' });
 
 	const hours24 = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0') + ':00');
+// --- Edit Mode Handlers ---
+    function enterEditMode() {
+        // Deep copy to backup
+        scheduleDataBackup = JSON.parse(JSON.stringify(scheduleData));
+        isEditMode = true;
+    }
 
-	// --- Edit Mode Handlers ---
-	function enterEditMode() {
-		// Save current state before editing
-		scheduleDataBackup = JSON.parse(JSON.stringify(scheduleData));
-		isEditMode = true;
-	}
+    function cancelEdit() {
+        // Just restore the local state and close the mode. 
+        // No need to persist to backend on a "Cancel" action.
+        scheduleData = JSON.parse(JSON.stringify(scheduleDataBackup));
+        isEditMode = false;
+        notifySuccess('Cancelled', 'Changes discarded');
+    }
 
-	function cancelEdit() {
-		// Restore to previous state
-		scheduleData = JSON.parse(JSON.stringify(scheduleDataBackup));
-		isEditMode = false;
-	}
+    async function saveEdit() {
+        try {
+            await persistSchedule();
+            notifySuccess('Saved', 'Your changes were saved');
+        } catch (err: any) {
+            console.error('SaveEdit failed', err);
+        } finally {
+            isEditMode = false;
+        }
+    }
 
-	function saveEdit() {
-		// Data is already modified, just exit edit mode
-		isEditMode = false;
-	}
+    // --- Handlers ---
+    async function handleDetailedAdd(data: any) {
+        const id = Math.random(); // Note: Better to use crypto.randomUUID() for strings
+        const dateObj = new Date(data.date);
+        let dayIdx = dateObj.getDay() - 1;
+        if (dayIdx === -1) dayIdx = 6;
+        const formattedTime = data.startTime.split(':')[0] + ':00';
 
-	// --- Handlers ---
-	function handleDetailedAdd(data: any) {
-		const id = Math.random();
-		const dateObj = new Date(data.date);
-		let dayIdx = dateObj.getDay() - 1;
-		if (dayIdx === -1) dayIdx = 6;
-		const formattedTime = data.startTime.split(':')[0] + ':00';
+        const newTaskObj: Task = {
+            id: id, // if Task id is string, use String(id)
+            week: weekOffset,
+            day: dayIdx,
+            time: formattedTime,
+            title: data.title,
+            type: data.subject || data.type,
+            duration: data.duration + 'm',
+            color: 'bg-primary',
+            subColor: 'text-blue-200',
+            description: data.description
+        };
 
-		scheduleData = [
-			...scheduleData,
-			{
-				id,
-				week: weekOffset,
-				day: dayIdx,
-				time: formattedTime,
-				title: data.title,
-				type: data.subject || data.type,
-				duration: data.duration + 'm',
-				color: 'bg-primary',
-				subColor: 'text-blue-200',
-				description: data.description
-			}
-		];
-	}
+        scheduleData = [...scheduleData, newTaskObj];
 
-	function handleDelete(id: number) {
-		scheduleData = scheduleData.filter((i) => i.id !== id);
-	}
+        try {
+            await persistSchedule();
+            notifySuccess('Added', 'Task added to your schedule');
+        } catch (err: any) {
+            console.error('Persist add failed', err);
+        }
+    }
 
-	function createTask() {
-		const id = Math.random();
-		backlog = [...backlog, { ...newTask, id, subColor: 'text-white/70' }];
-		showCreateModal = false;
-		newTask = { title: '', type: 'Deep Work', duration: '1h', color: 'bg-primary' };
-	}
+    // FIX: Added type 'string | number' to handle both formats
+    async function handleDelete(id: string | number) {
+        scheduleData = scheduleData.filter((i) => i.id !== id);
 
-	// Drag & Drop
-	let draggedItem = $state<any>(null);
+        try {
+            await persistSchedule();
+            notifySuccess('Deleted', 'Task removed from schedule');
+        } catch (err: any) {
+            console.error('Persist delete failed', err);
+        }
+    }
 
-	function onDragStart(event: DragEvent, item: any, source: 'backlog' | 'calendar') {
-		draggedItem = { ...item, source };
-		// make the drag source visible to drop targets that only inspect dataTransfer
-		try {
-			if (event.dataTransfer) {
-				event.dataTransfer.effectAllowed = 'move';
-				// include minimal info so children can detect a backlog drag
-				event.dataTransfer.setData('application/json', JSON.stringify({ id: item.id, source }));
-			}
-		} catch (err) {
-			// ignore failures in older browsers/environments
-		}
-	}
+    // --- Drag & Drop ---
+    let draggedItem = $state<any>(null);
 
-	function onDrop(event: DragEvent, day: number, time: string) {
-		event.preventDefault();
-		if (!draggedItem) return;
-		if (draggedItem.source === 'calendar') {
-			scheduleData = scheduleData.filter((i) => i.id !== draggedItem.id);
-		}
-		scheduleData = [
-			...scheduleData,
-			{
-				...draggedItem,
-				id: Math.random(),
-				week: weekOffset,
-				day,
-				time
-			}
-		];
-		isSidebarOpen = false;
-		draggedItem = null;
-	}
+    // FIX: Added types to 'item' and 'source'
+    function onDragStart(event: DragEvent, item: any, source: 'backlog' | 'calendar') {
+        draggedItem = { ...item, source };
+        try {
+            if (event.dataTransfer) {
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('application/json', JSON.stringify({ id: item.id, source }));
+            }
+        } catch (err) { /* ignore */ }
+    }
 
+    async function onDrop(event: DragEvent, day: number, time: string) {
+        event.preventDefault();
+        if (!draggedItem) return;
+        
+        // Remove from old position if it was already on the calendar
+        if (draggedItem.source === 'calendar') {
+            scheduleData = scheduleData.filter((i) => i.id !== draggedItem.id);
+        }
+        
+        scheduleData = [
+            ...scheduleData,
+            {
+                ...draggedItem,
+                id: Math.random(),
+                week: weekOffset,
+                day,
+                time
+            }
+        ];
+        isSidebarOpen = false;
+        draggedItem = null;
+
+        try {
+            await persistSchedule();
+            notifySuccess('Moved', 'Task moved and saved');
+        } catch (err: any) {
+            console.error('Persist drop failed', err);
+        }
+    }
+
+    async function persistSchedule() {
+        if (!planId) {
+            notifyError('Save Failed', 'No plan id available');
+            throw new Error('Missing planId');
+        }
+        const res = await fetch(`http://localhost:3000/study-plans/${planId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ schedule: { tasks: scheduleData, backlog } })
+        });
+
+        const json = await res.json();
+        if (!res.ok) throw new Error(json?.error || 'Failed to persist');
+        return json.plan;
+    }
 	// Helpers
 	const getDayDate = (dayIndex: number) => {
 		const d = new Date();
@@ -233,23 +273,39 @@
 		return Math.ceil(diff / oneWeek);
 	});
 
+	async function createTask() {
+		const id = Math.random();
+		backlog = [...backlog, { ...newTask, id, subColor: 'text-white/70' }];
+		showCreateModal = false;
+		newTask = { title: '', type: 'Deep Work', duration: '1h', color: 'bg-primary' };
+
+		try {
+			await persistSchedule();
+			notifySuccess('Added', 'Backlog item saved');
+		} catch (err: any) {
+			console.error('Persist backlog add failed', err);
+		}
+	}
+
 	function exportCsv() {
 		const rows = scheduleData.map((t) => `${t.title},${t.time},${t.duration}`);
 
 		const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
-		const url = URL.createObjectURL(blob);
+		const url: string = URL.createObjectURL(blob);
 
-		const a = document.createElement('a');
+		const a = document.createElement('a') as HTMLAnchorElement;
 		a.href = url;
 		a.download = 'timetable.csv';
 		a.click();
 	}
 
 	onMount(async () => {
-		const planId = $page.params.id;
+		planId = $page.params.id ?? '';
 
 		try {
 			const res = await fetch(`http://localhost:3000/study-plans/${planId}`, {
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include'
 			});
 
@@ -326,15 +382,35 @@
 				};
 			};
 
-			const normalized = normalizeLocal(json.schedule ?? {});
+			// support multiple response shapes: { schedule: {...} } or { plan: { tasks: [...], backlog: [...] } }
+			const raw = json.schedule ?? json.plan ?? json.plan?.schedule ?? json;
+			const normalized = normalizeLocal(raw ?? {});
 			scheduleData = normalized.tasks;
-			backlog = normalized.backlog;
-			// tips are returned by the API; keep them for Sidebar suggestions
-			tips = Array.isArray(json.tips) ? json.tips : json.tips ? [String(json.tips)] : [];
+			// prefer normalized backlog, otherwise fall back to plan/backlog top-level
+			backlog =
+				normalized.backlog && normalized.backlog.length
+					? normalized.backlog
+					: Array.isArray(json.plan?.backlog)
+						? json.plan.backlog
+						: Array.isArray(json.backlog)
+							? json.backlog
+							: [];
+
+			// map backend 'suggestions' -> simple tip strings when present, otherwise use tips
+			if (Array.isArray(json.plan?.suggestions) && json.plan.suggestions.length > 0) {
+				tips = json.plan.suggestions.map((s: any) => s.message ?? s.title ?? String(s));
+			} else {
+				tips = Array.isArray(json.tips) ? json.tips : json.tips ? [String(json.tips)] : [];
+			}
 			notifySuccess('Plan Loaded', 'Your study plan has been loaded successfully.');
 		} catch (err: any) {
 			console.error('Failed to load plan', err);
-			errorMessage = err?.message ?? 'Failed to load your study plan.';
+			// Distinguish network errors from server-side responses
+			if (err instanceof TypeError && /Failed to fetch/i.test(String(err.message))) {
+				errorMessage = 'Cannot reach backend at http://localhost:3000 — is the backend running?';
+			} else {
+				errorMessage = err?.message ?? 'Failed to load your study plan.';
+			}
 			notifyError('Load Failed', errorMessage);
 		} finally {
 			isLoading = false;
@@ -557,6 +633,7 @@
 			{scheduleData}
 			{weekOffset}
 			{onDragStart}
+			{tips}
 			onOpenCreate={() => (showCreateModal = true)}
 		/>
 	</div>

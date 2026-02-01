@@ -4,7 +4,8 @@ import {
 	getStudyPlan,
 	getAllStudyPlans,
 	regenerateStudyPlan,
-	deleteStudyPlan
+	deleteStudyPlan,
+	updateStudyPlan
 } from '../../controllers/studyPlanController.mjs';
 import { protect } from '../../middlewares/verifyAuth.mjs';
 
@@ -14,6 +15,8 @@ const router = express.Router();
 router.post('/', protect, createStudyPlan);
 router.get('/', protect, getAllStudyPlans);
 router.get('/:id', protect, getStudyPlan);
+// Update (edit) a study plan
+router.put('/:id', protect, updateStudyPlan);
 router.post('/:id/regenerate', protect, regenerateStudyPlan);
 router.delete('/:id', protect, deleteStudyPlan);
 

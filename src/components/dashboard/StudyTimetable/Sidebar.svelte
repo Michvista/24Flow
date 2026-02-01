@@ -200,24 +200,6 @@
 						No suggestions available.
 					</p>
 				{/if}
-				<div class="mt-4 flex gap-2">
-					<button
-						onclick={() => {
-							if (typeof onApply === 'function') onApply();
-							else dispatch('applyOptimization');
-						}}
-						class="flex-1 h-8 bg-primary text-white text-[10px] font-bold uppercase rounded hover:bg-blue-600 transition-colors shadow-sm"
-						>Apply</button
-					>
-					<button
-						onclick={() => {
-							if (typeof onDismiss === 'function') onDismiss();
-							else dispatch('dismissOptimization');
-						}}
-						class="flex-1 h-8 px-2 border border-border-dark text-[#92a4c9] text-[10px] font-bold uppercase rounded hover:text-white hover:bg-white/5 transition-colors"
-						>Dismiss</button
-					>
-				</div>
 			</div>
 
 			<div>

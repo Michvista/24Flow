@@ -1,8 +1,3 @@
-// ============================================================================
-// FIXED GEMINI SERVICE - Outputs Flat Array for Calendar
-// ============================================================================
-// File: src/lib/services/geminiService.mjs
-
 import { GoogleGenAI } from '@google/genai';
 
 const ai = new GoogleGenAI({
@@ -37,91 +32,151 @@ function safeJsonParse(text) {
 }
 
 /**
- * Generate study plan with Gemini AI
- * Returns a FLAT structure that matches your calendar component expectations
+ * Calculate number of weeks until deadline
+ */
+function calculateWeeksUntilDeadline(deadline) {
+	if (!deadline) return 4; // Default 4 weeks
+
+	const now = new Date();
+	const deadlineDate = new Date(deadline);
+	const diffTime = Math.abs(deadlineDate - now);
+	const diffWeeks = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7));
+
+	// Clamp between 1 and 12 weeks
+	return Math.min(Math.max(diffWeeks, 1), 12);
+}
+
+/**
+ * Parse duration string to minutes
+ */
+function parseDurationToMinutes(duration) {
+	if (!duration) return 60;
+	const hMatch = duration.match(/(\d+)h/);
+	const mMatch = duration.match(/(\d+)m/);
+	const hours = hMatch ? parseInt(hMatch[1]) : 0;
+	const minutes = mMatch ? parseInt(mMatch[1]) : 0;
+	return hours * 60 + minutes;
+}
+
+/**
+ * Convert minutes to time string HH:mm
+ */
+function minutesToTimeStr(totalMinutes) {
+	const mins = totalMinutes % 1440; // Wrap at 24 hours
+	const hh = Math.floor(mins / 60);
+	const mm = mins % 60;
+	return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+}
+
+/**
+ * Generate study plan with Gemini AI - MULTI-WEEK VERSION
  */
 export const generateWithGemini = async (preferences) => {
 	try {
 		const { subjects, deadline, dailyHours, includeBreaks, spacedRepetition } = preferences;
 
-		const prompt = `You are an expert study schedule AI. Create a detailed weekly study plan.
+		// Calculate how many weeks to generate
+		const totalWeeks = calculateWeeksUntilDeadline(deadline);
+		console.log(`[Gemini] Generating ${totalWeeks} weeks until deadline: ${deadline}`);
 
-**INPUT:**
-- Deadline: ${deadline || '1 month from now'}
-- Subjects: ${JSON.stringify(subjects)}
-- Daily Hours: ${dailyHours} hours
-- Include Breaks: ${includeBreaks ? 'Yes' : 'No'}
+		// Calculate tasks per week based on daily hours
+		const tasksPerWeek = Math.max(15, dailyHours * 5); // At least 15 tasks per week
+
+		const subjectsList = subjects.map((s) => `"${s.name}"`).join(', ');
+		const subjectsDetails = subjects
+			.map((s) => `  - ${s.name} (${s.topics} topics, ${s.priority} priority)`)
+			.join('\n');
+
+		const prompt = `You are an expert AI study scheduler. Generate a ${totalWeeks}-week study plan with 24-hour intelligent scheduling.
+
+**REQUIREMENTS:**
+- Subjects: ${subjectsList}
+- Total Weeks: ${totalWeeks} (week 0 to week ${totalWeeks - 1})
+- Daily Study Hours: ${dailyHours} hours (NOT including breaks)
+- Include Breaks: ${includeBreaks ? 'Yes (10-15min, NOT counted in study hours)' : 'No'}
 - Spaced Repetition: ${spacedRepetition ? 'Yes' : 'No'}
 
-**CRITICAL INSTRUCTIONS:**
-1. Create a "tasks" array with 20-30 study blocks for the FIRST WEEK
-2. Each task MUST have: time, title, type, duration, description
-3. Distribute tasks across Monday (day=0) to Sunday (day=6)
-4. Start times between 08:00 and 20:00
-5. Each task 1-2 hours max
-6. Add 15-min breaks if includeBreaks is true
-7. Task titles MUST be specific: "Linear Algebra: Eigenvalues" NOT "Study Math"
-8. Task type MUST match one of the subject names EXACTLY
+**SUBJECTS:**
+${subjectsDetails}
 
-**OUTPUT FORMAT (RETURN ONLY THIS JSON):**
+**CRITICAL RULES - FOLLOW EXACTLY:**
+
+1. **COVERAGE**: Generate tasks for ALL ${totalWeeks} weeks AND ALL 7 days per week
+   - Week range: 0 to ${totalWeeks - 1}
+   - Day range: 0 (Monday) to 6 (Sunday)
+   - DO NOT skip any weeks or days
+   
+2. **QUANTITY**: Minimum ${tasksPerWeek * totalWeeks} total study tasks
+   - Distribute evenly: ~${Math.ceil(tasksPerWeek / 7)} tasks per day
+   
+3. **TIME ALLOCATION**:
+   - Each day MUST have EXACTLY ${dailyHours} hours of STUDY time (excluding breaks)
+   - Spread across 2-5 study blocks per day
+   - Use full 24-hour range (00:00-23:59)
+   - Peak hours (08:00-12:00, 15:00-17:00) for complex subjects
+   - Evening (19:00-22:00) for review/creative subjects
+   
+4. **STUDY BLOCKS**:
+   - Complex topics: 1h-2h blocks
+   - Medium topics: 1h 30m-2h 30m blocks
+   - Reviews: 45m-1h 30m blocks
+   
+5. **BREAKS** (if enabled):
+   - 10-15 minutes BETWEEN study blocks
+   - NOT counted toward ${dailyHours} hours
+   - Example: 2h study + 15m break + 2h study = 4h study total
+   
+6. **WEEKENDS** (Saturday=day 5, Sunday=day 6):
+   - Reduce to 60-70% of weekday study hours
+   - Focus on review and practice
+
+7. **PROGRESSION**:
+   - Weeks 0-1: Fundamentals
+   - Middle weeks: Intermediate concepts
+   - Final weeks: Advanced topics + review
+
+**JSON FORMAT (return ONLY valid JSON, NO markdown):**
+
 {
   "tasks": [
-    {
-      "week": 0,
-      "day": 0,
-      "time": "09:00",
-      "title": "Linear Algebra: Matrix Multiplication",
-      "type": "Linear Algebra",
-      "duration": "1h 30m",
-      "description": "Practice matrix operations and properties",
-      "color": "bg-primary",
-      "subColor": "text-blue-200",
-      "isBreak": false
-    },
-    {
-      "week": 0,
-      "day": 0,
-      "time": "11:00",
-      "title": "Morning Break",
-      "type": "Rest",
-      "duration": "15m",
-      "color": "bg-[#232f48]",
-      "isBreak": true
-    }
+    {"week": 0, "day": 0, "time": "08:00", "title": "Subject: Topic", "type": "Subject Name", "duration": "2h 00m", "description": "...", "color": "bg-primary", "subColor": "text-blue-200", "isBreak": false},
+    {"week": 0, "day": 0, "time": "10:00", "title": "Break", "type": "Rest", "duration": "15m", "description": "", "color": "bg-[#232f48]", "subColor": "text-blue-200", "isBreak": true},
+    ... (continue for ALL ${totalWeeks} weeks, ALL 7 days)
   ],
   "backlog": [
-    {
-      "title": "Linear Algebra: Practice Quiz",
-      "type": "Linear Algebra",
-      "duration": "45m",
-      "color": "bg-primary"
-    }
+    {"title": "Extra: Topic", "type": "Subject", "duration": "1h", "color": "bg-primary", "subColor": "text-blue-200"}
   ],
   "suggestions": [
-    {
-      "type": "OPTIMIZATION",
-      "title": "Peak Study Hours",
-      "message": "Schedule high-priority subjects during 9-11 AM",
-      "priority": "HIGH"
-    }
+    {"type": "OPTIMIZATION", "title": "...", "message": "...", "priority": "HIGH"}
+  ],
+  "weeklyGoals": [
+    {"week": 0, "goal": "...", "focus": "..."}
   ]
 }
 
-IMPORTANT:
-- "week" is always 0 for current week
-- "day" is 0-6 (0=Monday, 6=Sunday)
-- "time" format: "HH:mm" (24-hour)
-- Include 20-30 tasks minimum
-- NO markdown, NO code blocks, ONLY JSON`;
+**MANDATORY CHECKLIST BEFORE RESPONDING:**
+☐ Generated tasks for weeks ${totalWeeks - 1} through week ${totalWeeks - 1}? 
+☐ Each week has all 7 days (0-6)?
+☐ Each weekday has ${dailyHours} hours of study (excluding breaks)?
+☐ Tasks use times from 00:00-23:59 based on subject complexity?
+☐ Total task count > ${tasksPerWeek * totalWeeks}?
 
-		console.log('[Gemini] Sending prompt...');
+Generate NOW:`;
+
+		console.log('[Gemini] Sending prompt for', totalWeeks, 'weeks with 24-hour scheduling...');
 
 		const result = await ai.models.generateContent({
 			model: 'gemini-3-flash-preview',
-			contents: [{ role: 'user', parts: [{ text: prompt }] }]
+			contents: [{ role: 'user', parts: [{ text: prompt }] }],
+			generationConfig: {
+				temperature: 0.7,
+				topK: 40,
+				topP: 0.95,
+				maxOutputTokens: 16000 // Doubled for complete multi-week generation
+			}
 		});
 
-		// Extract response text (handles different SDK versions)
+		// Extract response text
 		let responseText = '';
 		try {
 			if (typeof result === 'string') {
@@ -136,103 +191,485 @@ IMPORTANT:
 				if (Array.isArray(parts)) {
 					responseText = parts.map((p) => p.text || '').join('\n');
 				}
-			} else {
-				responseText = JSON.stringify(result || '');
 			}
 		} catch (ex) {
 			console.error('[Gemini] Text extraction error:', ex);
-			responseText = '';
 		}
 
-		console.log('[Gemini] Raw response length:', responseText.length);
-		console.log('[Gemini] First 500 chars:', responseText.slice(0, 500));
+		console.log('[Gemini] Response length:', responseText.length);
 
 		const parsed = safeJsonParse(responseText);
 
 		if (!parsed || !parsed.tasks) {
 			console.error('[Gemini] Failed to parse response');
-			return getFallbackPlan(subjects);
+			return getFallbackPlan(subjects, totalWeeks, dailyHours, includeBreaks);
 		}
 
-		// Ensure all tasks have required fields and proper IDs
-		const enrichedTasks = (parsed.tasks || []).map((task, idx) => ({
-			id: `task-${Date.now()}-${idx}`,
-			week: task.week ?? 0,
-			day: task.day ?? 0,
-			time: task.time || '09:00',
-			title: task.title || 'Study Session',
-			type: task.type || subjects[0]?.name || 'Study',
-			duration: task.duration || '1h',
-			description: task.description || '',
-			color: task.color || 'bg-primary',
-			subColor: task.subColor || 'text-blue-200',
-			icon: task.icon || null,
-			isBreak: task.isBreak || false
-		}));
+		// Validate and enrich tasks
+		const enrichedTasks = (parsed.tasks || []).map((task, idx) => {
+			// Ensure week is within range
+			const week = Math.max(0, Math.min(task.week ?? 0, totalWeeks - 1));
 
-		// Enrich backlog items
-		const enrichedBacklog = (parsed.backlog || []).map((item, idx) => ({
-			id: `backlog-${Date.now()}-${idx}`,
-			title: item.title || 'Study Task',
-			type: item.type || subjects[0]?.name || 'Study',
-			duration: item.duration || '1h',
-			color: item.color || 'bg-primary',
-			subColor: item.subColor || 'text-blue-200'
-		}));
+			return {
+				id: `task-${Date.now()}-${idx}`,
+				week,
+				day: Math.max(0, Math.min(task.day ?? 0, 6)),
+				time: task.time || '09:00',
+				title: task.title || 'Study Session',
+				type: task.type || subjects[0]?.name || 'Study',
+				duration: task.duration || '1h',
+				description: task.description || '',
+				color: task.color || 'bg-primary',
+				subColor: task.subColor || 'text-blue-200',
+				icon: task.icon || null,
+				isBreak: task.isBreak || false
+			};
+		});
 
+		// POST-PROCESS: Validate daily study hours (excluding breaks)
+		const targetDailyMinutes = Math.max(0, Number(preferences.dailyHours || dailyHours) * 60);
+
+		// Group tasks by week+day
+		const tasksByDay = new Map();
+		for (const t of enrichedTasks) {
+			const key = `${t.week}::${t.day}`;
+			if (!tasksByDay.has(key)) tasksByDay.set(key, []);
+			tasksByDay.get(key).push(t);
+		}
+
+		const movedToBacklog = [];
+
+		for (const [key, dayTasks] of tasksByDay.entries()) {
+			// Compute total STUDY minutes for this day (excluding breaks)
+			let totalStudyMinutes = 0;
+			for (const tk of dayTasks) {
+				tk._durationMinutes = parseDurationToMinutes(tk.duration);
+				if (!tk.isBreak) {
+					totalStudyMinutes += tk._durationMinutes;
+				}
+			}
+
+			// If AI overscheduled beyond dailyHours, move least-important tasks to backlog
+			if (targetDailyMinutes > 0 && totalStudyMinutes > targetDailyMinutes) {
+				console.log(
+					`[Gemini] Day ${key} has ${totalStudyMinutes}min study time, target is ${targetDailyMinutes}min. Moving tasks to backlog...`
+				);
+
+				// Sort: keep breaks, move tasks with less priority
+				dayTasks.sort((a, b) => {
+					// Always keep breaks in schedule
+					if (a.isBreak !== b.isBreak) return a.isBreak ? -1 : 1;
+					// Keep tasks with descriptions
+					if ((a.description ? 1 : 0) !== (b.description ? 1 : 0)) {
+						return (b.description ? 1 : 0) - (a.description ? 1 : 0);
+					}
+					return 0;
+				});
+
+				// Remove study tasks (not breaks) until we hit target
+				for (let i = dayTasks.length - 1; i >= 0 && totalStudyMinutes > targetDailyMinutes; i--) {
+					const task = dayTasks[i];
+					if (!task.isBreak) {
+						dayTasks.splice(i, 1);
+						totalStudyMinutes -= task._durationMinutes || 0;
+						movedToBacklog.push({
+							id: `moved-${task.id}`,
+							title: task.title,
+							type: task.type,
+							duration: task.duration,
+							color: task.color || 'bg-primary',
+							subColor: task.subColor || 'text-blue-200'
+						});
+					}
+				}
+			}
+
+			// Validate time spread across 24 hours
+			const times = dayTasks
+				.filter((t) => !t.isBreak) // Only check study tasks
+				.map((d) => {
+					const t = d.time || '09:00';
+					const [hh, mm] = t.split(':').map(Number);
+					return hh * 60 + (mm || 0);
+				})
+				.sort((a, b) => a - b);
+
+			// If all tasks are clustered in small time window, spread them intelligently
+			if (times.length > 1) {
+				const span = times[times.length - 1] - times[0];
+				if (span < 180) {
+					// Less than 3 hours spread
+					console.log(`[Gemini] Tasks on day ${key} are clustered. Spreading across day...`);
+
+					// Intelligently spread based on dailyHours
+					const studyTasks = dayTasks.filter((t) => !t.isBreak);
+					const breaks = dayTasks.filter((t) => t.isBreak);
+
+					let cursor = 8 * 60; // Start at 08:00
+					const scheduledTasks = [];
+
+					for (let i = 0; i < studyTasks.length; i++) {
+						const task = studyTasks[i];
+						task.time = minutesToTimeStr(cursor);
+						scheduledTasks.push(task);
+						cursor += task._durationMinutes;
+
+						// Add break after study block if available and not last task
+						if (breaks.length > 0 && i < studyTasks.length - 1) {
+							const breakTask = breaks.shift();
+							breakTask.time = minutesToTimeStr(cursor);
+							scheduledTasks.push(breakTask);
+							cursor += parseDurationToMinutes(breakTask.duration);
+						}
+
+						// Add gap before next session
+						cursor += 30; // 30 min buffer
+
+						// Wrap to next reasonable time if going too late
+						if (cursor > 22 * 60 && i < studyTasks.length - 1) {
+							cursor = 8 * 60; // Reset to morning
+						}
+					}
+
+					// Update dayTasks with rescheduled tasks
+					tasksByDay.set(key, [...scheduledTasks, ...breaks]);
+				}
+			}
+		}
+
+		// Rebuild enrichedTasks from tasksByDay
+		const finalTasks = [];
+		for (const dayTasks of tasksByDay.values()) {
+			finalTasks.push(...dayTasks);
+		}
+
+		// Check if all weeks are covered
+		const weeksWithTasks = new Set(finalTasks.map((t) => t.week));
+		console.log('[Gemini] Generated tasks for weeks:', Array.from(weeksWithTasks).sort());
+
+		// Check if all days in each week are covered
+		const daysByWeek = new Map();
+		for (const task of finalTasks) {
+			const key = task.week;
+			if (!daysByWeek.has(key)) daysByWeek.set(key, new Set());
+			daysByWeek.get(key).add(task.day);
+		}
+
+		// Log and fill missing days
+		const missingDayTasks = [];
+		for (let week = 0; week < totalWeeks; week++) {
+			const days = daysByWeek.get(week) || new Set();
+			const missingDays = [];
+			for (let day = 0; day < 7; day++) {
+				if (!days.has(day)) missingDays.push(day);
+			}
+			if (missingDays.length > 0) {
+				console.log(`[Gemini] Week ${week} missing days ${missingDays.join(', ')} - filling now`);
+				// Fill missing days immediately
+				const filled = fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks);
+				missingDayTasks.push(...filled);
+			}
+		}
+
+		// Add filled tasks
+		if (missingDayTasks.length > 0) {
+			console.log(`[Gemini] Added ${missingDayTasks.length} tasks to fill missing days`);
+			finalTasks.push(...missingDayTasks);
+		}
+
+		// If entire weeks are missing, fill them
+		if (weeksWithTasks.size < totalWeeks) {
+			console.log('[Gemini] WARNING: Some weeks missing completely, filling gaps...');
+			const filledTasks = fillMissingWeeks(
+				finalTasks,
+				subjects,
+				totalWeeks,
+				dailyHours,
+				includeBreaks
+			);
+			finalTasks.push(...filledTasks);
+		}
+
+		// Enrich backlog (include any moved items)
+		const enrichedBacklog = [
+			...(parsed.backlog || []).map((item, idx) => ({
+				id: `backlog-${Date.now()}-${idx}`,
+				title: item.title || 'Study Task',
+				type: item.type || subjects[0]?.name || 'Study',
+				duration: item.duration || '1h',
+				color: item.color || 'bg-primary',
+				subColor: item.subColor || 'text-blue-200'
+			})),
+			...movedToBacklog
+		];
+
+		const weeklyGoals = parsed.weeklyGoals || generateWeeklyGoals(subjects, totalWeeks);
+
+		console.log(`[Gemini] Final: ${finalTasks.length} tasks across ${totalWeeks} weeks`);
 		console.log(
-			`[Gemini] Generated ${enrichedTasks.length} tasks, ${enrichedBacklog.length} backlog items`
+			`[Gemini] Moved ${movedToBacklog.length} tasks to backlog due to dailyHours constraints`
 		);
 
 		return {
-			tasks: enrichedTasks,
+			tasks: finalTasks,
 			backlog: enrichedBacklog,
-			suggestions: parsed.suggestions || [],
-			tips: parsed.tips || []
+			suggestions: parsed.suggestions || [
+				{
+					type: 'OPTIMIZATION',
+					title: 'Intelligent Scheduling',
+					message: `Tasks scheduled across 24 hours based on cognitive demands. Complex subjects during peak hours (8-12am, 3-5pm).`,
+					priority: 'MEDIUM'
+				}
+			],
+			tips: parsed.tips || [],
+			weeklyGoals
 		};
 	} catch (err) {
 		console.error('[Gemini] Generation error:', err);
-		return getFallbackPlan(subjects);
+		const weeks = calculateWeeksUntilDeadline(preferences.deadline);
+		return getFallbackPlan(subjects, weeks, preferences.dailyHours, preferences.includeBreaks);
 	}
 };
 
 /**
- * Fallback plan if AI fails
+ * Fill specific missing days within a week
  */
-function getFallbackPlan(subjects) {
+function fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks) {
+	const filledTasks = [];
+
+	// Calculate sessions per day
+	const sessionsPerDay = Math.ceil(dailyHours / 2);
+	const studyBlockMinutes = Math.floor((dailyHours * 60) / sessionsPerDay);
+
+	for (const day of missingDays) {
+		const isWeekend = day === 5 || day === 6;
+		const adjustedSessions = isWeekend ? Math.ceil(sessionsPerDay * 0.6) : sessionsPerDay;
+
+		// Rotate through subjects
+		for (let session = 0; session < adjustedSessions; session++) {
+			const subjectIndex = (week * 7 + day + session) % subjects.length;
+			const subject = subjects[subjectIndex];
+
+			// Intelligent time based on session
+			let baseHour = 8;
+			if (session === 1) baseHour = 11;
+			if (session === 2) baseHour = 14;
+			if (session === 3) baseHour = 16;
+			if (session === 4) baseHour = 19;
+
+			const time = minutesToTimeStr(baseHour * 60);
+			const durationStr = `${Math.floor(studyBlockMinutes / 60)}h ${studyBlockMinutes % 60}m`;
+
+			filledTasks.push({
+				id: `filled-day-${week}-${day}-${session}`,
+				week,
+				day,
+				time,
+				title: `${subject.name}: Week ${week + 1} Study`,
+				type: subject.name,
+				duration: durationStr,
+				description: `Continuing ${subject.name} studies`,
+				color: 'bg-primary',
+				subColor: 'text-blue-200',
+				isBreak: false
+			});
+
+			// Add break
+			if (includeBreaks && session < adjustedSessions - 1) {
+				filledTasks.push({
+					id: `filled-day-break-${week}-${day}-${session}`,
+					week,
+					day,
+					time: minutesToTimeStr(baseHour * 60 + studyBlockMinutes),
+					title: 'Break',
+					type: 'Rest',
+					duration: '15m',
+					description: '',
+					color: 'bg-[#232f48]',
+					subColor: 'text-blue-200',
+					isBreak: true
+				});
+			}
+		}
+	}
+
+	return filledTasks;
+}
+
+/**
+ * Fill missing weeks with continuation tasks
+ */
+function fillMissingWeeks(existingTasks, subjects, totalWeeks, dailyHours, includeBreaks) {
+	const weeksWithTasks = new Set(existingTasks.map((t) => t.week));
+	const filledTasks = [];
+
+	for (let week = 0; week < totalWeeks; week++) {
+		if (!weeksWithTasks.has(week)) {
+			console.log(`[Gemini] Filling week ${week} with intelligent scheduling for ALL 7 days`);
+
+			// Calculate how many sessions needed per day based on dailyHours
+			const sessionsPerDay = Math.ceil(dailyHours / 2); // 2-hour blocks
+			const studyBlockDuration = Math.floor((dailyHours * 60) / sessionsPerDay);
+
+			// Generate tasks for ALL 7 days of the week
+			for (let day = 0; day < 7; day++) {
+				// Weekend adjustment: reduce study hours to 50-70% of weekday hours
+				const isWeekend = day === 5 || day === 6; // Saturday or Sunday
+				const adjustedSessions = isWeekend ? Math.ceil(sessionsPerDay * 0.6) : sessionsPerDay;
+
+				subjects.forEach((subject, subIdx) => {
+					// Only add subject if it fits in the day's session count
+					if (subIdx >= adjustedSessions) return;
+
+					// Intelligent time selection based on subject
+					let startTime = '09:00';
+					if (subject.name.match(/math|physics|programming|calculus|algebra/i)) {
+						startTime = '08:00'; // Morning for complex subjects
+					} else if (subject.name.match(/literature|history|art|creative/i)) {
+						startTime = '19:00'; // Evening for creative subjects
+					} else {
+						startTime = '14:00'; // Afternoon for others
+					}
+
+					const durationStr = `${Math.floor(studyBlockDuration / 60)}h ${studyBlockDuration % 60}m`;
+
+					filledTasks.push({
+						id: `filled-${week}-${day}-${subIdx}`,
+						week,
+						day,
+						time: startTime,
+						title: `${subject.name}: Week ${week + 1} ${isWeekend ? 'Weekend' : ''} Study Session`,
+						type: subject.name,
+						duration: durationStr,
+						description: `Continue studying ${subject.name} concepts`,
+						color: 'bg-primary',
+						subColor: 'text-blue-200',
+						isBreak: false
+					});
+
+					// Add break if enabled
+					if (includeBreaks) {
+						const [hh, mm] = startTime.split(':').map(Number);
+						const breakTime = minutesToTimeStr(hh * 60 + mm + studyBlockDuration);
+
+						filledTasks.push({
+							id: `filled-break-${week}-${day}-${subIdx}`,
+							week,
+							day,
+							time: breakTime,
+							title: 'Break',
+							type: 'Rest',
+							duration: '15m',
+							description: '',
+							color: 'bg-[#232f48]',
+							subColor: 'text-blue-200',
+							isBreak: true
+						});
+					}
+				});
+			}
+		}
+	}
+
+	return filledTasks;
+}
+
+/**
+ * Generate weekly goals if AI didn't provide them
+ */
+function generateWeeklyGoals(subjects, totalWeeks) {
+	const goals = [];
+
+	for (let week = 0; week < totalWeeks; week++) {
+		let goal, focus;
+
+		if (week === 0) {
+			goal = 'Establish foundations';
+			focus = 'Core concepts and definitions';
+		} else if (week < totalWeeks / 2) {
+			goal = 'Deepen understanding';
+			focus = 'Intermediate topics and practice';
+		} else if (week < totalWeeks - 1) {
+			goal = 'Advanced applications';
+			focus = 'Complex problems and integration';
+		} else {
+			goal = 'Final review and exam prep';
+			focus = 'Mock tests and weak point reinforcement';
+		}
+
+		goals.push({ week, goal, focus });
+	}
+
+	return goals;
+}
+
+/**
+ * Fallback plan if AI fails - generates multiple weeks with 24-hour scheduling
+ */
+function getFallbackPlan(subjects, totalWeeks, dailyHours, includeBreaks) {
 	const tasks = [];
 	const subjectNames = subjects.map((s) => s.name);
 
-	// Generate basic 5-day schedule
-	for (let day = 0; day < 5; day++) {
-		const subjectIndex = day % subjectNames.length;
-		const subject = subjectNames[subjectIndex];
+	console.log(
+		`[Gemini] Using fallback plan for ${totalWeeks} weeks with ${dailyHours}h daily study`
+	);
 
-		tasks.push({
-			id: `fallback-${day}-0`,
-			week: 0,
-			day,
-			time: '09:00',
-			title: `${subject}: Study Session`,
-			type: subject,
-			duration: '2h',
-			description: 'Review key concepts and practice problems',
-			color: 'bg-primary',
-			subColor: 'text-blue-200',
-			isBreak: false
-		});
+	// Calculate session distribution
+	const sessionsPerDay = Math.ceil(dailyHours / 2); // 2-hour blocks
+	const studyBlockMinutes = Math.floor((dailyHours * 60) / sessionsPerDay);
 
-		tasks.push({
-			id: `fallback-${day}-1`,
-			week: 0,
-			day,
-			time: '11:00',
-			title: 'Break',
-			type: 'Rest',
-			duration: '15m',
-			color: 'bg-[#232f48]',
-			isBreak: true
-		});
+	// Generate tasks for each week
+	for (let week = 0; week < totalWeeks; week++) {
+		// Generate 5 days per week (weekdays)
+		for (let day = 0; day < 5; day++) {
+			const subjectIndex = (week * 5 + day) % subjectNames.length;
+			const subject = subjectNames[subjectIndex];
+
+			// Create study sessions spread throughout the day
+			for (let session = 0; session < sessionsPerDay; session++) {
+				// Intelligent time selection
+				let baseTime = 8; // 8am start
+				if (session === 1) baseTime = 14; // 2pm
+				if (session === 2) baseTime = 19; // 7pm
+
+				const startMinutes = baseTime * 60 + session * 30;
+				const timeStr = minutesToTimeStr(startMinutes);
+				const durationStr = `${Math.floor(studyBlockMinutes / 60)}h ${studyBlockMinutes % 60}m`;
+
+				tasks.push({
+					id: `fallback-${week}-${day}-${session}`,
+					week,
+					day,
+					time: timeStr,
+					title: `${subject}: Week ${week + 1} Session ${session + 1}`,
+					type: subject,
+					duration: durationStr,
+					description: `Study ${subject} concepts for week ${week + 1}`,
+					color: 'bg-primary',
+					subColor: 'text-blue-200',
+					isBreak: false
+				});
+
+				// Add break after study block if not last session
+				if (includeBreaks && session < sessionsPerDay - 1) {
+					const breakTime = minutesToTimeStr(startMinutes + studyBlockMinutes);
+
+					tasks.push({
+						id: `fallback-break-${week}-${day}-${session}`,
+						week,
+						day,
+						time: breakTime,
+						title: 'Break',
+						type: 'Rest',
+						duration: '15m',
+						description: '',
+						color: 'bg-primary',
+						subColor: 'text-blue-200',
+						isBreak: true
+					});
+				}
+			}
+		}
 	}
 
 	return {
@@ -242,10 +679,12 @@ function getFallbackPlan(subjects) {
 			{
 				type: 'WARNING',
 				title: 'AI Generation Failed',
-				message: 'Using fallback schedule. Try regenerating.',
+				message:
+					'Using fallback schedule with 24-hour intelligent scheduling. Try regenerating for better results.',
 				priority: 'HIGH'
 			}
 		],
-		tips: ['AI connection failed. Check your API key.']
+		tips: ['AI connection failed. Check your API key.'],
+		weeklyGoals: generateWeeklyGoals(subjects, totalWeeks)
 	};
 }

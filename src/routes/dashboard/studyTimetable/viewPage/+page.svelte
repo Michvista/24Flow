@@ -21,6 +21,42 @@
 	} from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import StudyTimetable from '$lib/components/dashboard/AIToolsHub/StudyTimetable.svelte';
+    import { goto } from '$app/navigation';
+
+
+    	import { Toaster, toast } from 'svelte-sonner';
+	import SonnerToast from '../../../../components/SonnerToast.svelte';
+
+	function notifySuccess(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'success'
+			},
+			duration: 5000
+		});
+	}
+
+	function notifyError(title: string, message: string) {
+		const id = Math.random().toString(36).substring(2, 9);
+
+		toast.custom(SonnerToast, {
+			id,
+			componentProps: {
+				toastId: id,
+				title: title,
+				message: message,
+				type: 'error'
+			},
+			duration: 5000
+		});
+	}
+
 
 	// --- State Management ---
 	interface Plan {
@@ -76,25 +112,78 @@
 		}
 	];
 
-	// --- Backend Integration Point ---
-	async function fetchPlans() {
-		loading = true;
-		try {
-			// Logic for backend:
-			// const res = await fetch(`/api/plans?page=${currentPage}&search=${searchQuery}`);
-			// const data = await res.json();
-			// plans = data.plans;
 
-			// For now, we simulate a delay and use mock data
-			setTimeout(() => {
-				plans = mockPlans.filter((p) => p.title.toLowerCase().includes(searchQuery.toLowerCase()));
-				loading = false;
-			}, 500);
-		} catch (e) {
-			console.error('Fetch failed', e);
-			loading = false;
-		}
-	}
+interface Subject {
+    id: number;
+    name: string;
+    topics: number;
+    priority: string;
+    topicsArray?: string[];
+}
+
+interface BackendPlan {
+    id: string; // Backend sends string IDs like "cml315..."
+    tasksCount: number;
+    subjects: Subject[];
+    createdAt: string;
+    deadline: string;
+}
+
+async function fetchPlans() {
+    loading = true;
+    try {
+        const params = new URLSearchParams({
+            page: currentPage.toString(),
+            search: searchQuery
+        });
+        
+        const res = await fetch(`http://localhost:3000/study-plans?${params}`, {
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+            // Map the backend data to your UI needs
+            plans = data.plans.map((p: BackendPlan) => ({
+                ...p,
+                // Use the first subject name as the title
+                title: p.subjects.length > 0 ? p.subjects[0].name : 'Untitled Plan',
+                // Flatten all topic names from all subjects into one tag array
+                tags: p.subjects.flatMap(s => s.topicsArray || []),
+                // Format the date
+                date: new Date(p.createdAt).toLocaleDateString()
+            }));
+            if (data.totalPages) totalPages = data.totalPages; 
+        }
+    } catch (e: any) {
+        console.error('Fetch failed', e);
+    } finally {
+        loading = false;
+    }
+}
+
+    // Function to delete a plan
+    async function deletePlan(id: number) {
+        if (!confirm('Are you sure you want to delete this plan?')) return;
+        
+        try {
+            const res = await fetch(`http://localhost:3000/study-plans/${id}`, { method: 'DELETE', credentials: 'include' });
+            const data = await res.json();
+            if (data.success) {
+                plans = plans.filter(p => p.id !== id);
+            }
+        } catch (e) {
+            console.error('Delete failed', e);
+        }
+    }
+
+    // Reactive trigger: Fetch when page or search changes
+$: {
+    currentPage, searchQuery; // Reference them so Svelte tracks them
+    fetchPlans();
+}
 
     	let avatarUrl = '';
 
@@ -214,12 +303,12 @@
 					>
 						<CheckCircle2 size={24} />
 					</div>
-					<div>
-						<p class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">
-							Active Plans
-						</p>
-						<p class="text-2xl font-black">04</p>
-					</div>
+				<div>
+    <p class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">
+        Active Plans
+    </p>
+    <p class="text-2xl font-black">{plans.length.toString().padStart(2, '0')}</p>
+</div>
 				</div>
 				<div class="bg-panel-dark p-6 border-2 border-slate-900 flex items-center gap-5">
 					<div
@@ -300,15 +389,17 @@
 							</div>
 							<div class="grid grid-cols-2 mt-auto border-t-2 border-slate-900">
 								<button
+                                on:click={() => goto(`/studyTimetable/calendar/${plan.id}`)}
 									class="py-4 font-bold uppercase text-sm flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors border-r-2 border-slate-900"
 								>
 									<Fullscreen size={16} /> View
 								</button>
 								<button
-									class="py-4 font-bold uppercase text-sm flex items-center justify-center gap-2 hover:bg-red-600 transition-colors hover:text-black"
-								>
-									<Trash2 size={16} /> Delete
-								</button>
+    on:click={() => deletePlan(plan.id)}
+    class="py-4 font-bold uppercase text-sm flex items-center justify-center gap-2 hover:bg-red-600 transition-colors hover:text-white"
+>
+    <Trash2 size={16} /> Delete
+</button>
 							</div>
 							<div
 								class="absolute -top-1 -right-1 w-full h-full bg-slate-700 -z-10 transition-transform group-hover:translate-x-1 group-hover:translate-y-1"
@@ -382,6 +473,7 @@
 		</footer>
 	{/if}
 </div>
+<Toaster position="bottom-right" expand={false} richColors />
 
 <style>
 	:global(.dark) {

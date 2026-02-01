@@ -1,2 +1,229 @@
-clientID = 984791839404-onu53i6583vtj2e32bcb48048tsmkdel.apps.googleusercontent.com
-clientsecret = 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
+// ============================================================================
+// MERGED GEMINI SERVICE - Flat Calendar Output + Multi-Week Intelligence
+// ============================================================================
+// File: src/lib/services/geminiService.mjs
+
+import { GoogleGenAI } from '@google/genai';
+
+const ai = new GoogleGenAI({
+	apiKey: process.env.GEMINI_API_KEY
+});
+
+/**
+ * Safe JSON parser
+ */
+function safeJsonParse(text) {
+	try {
+		let cleaned = text.trim();
+		if (cleaned.startsWith('```')) {
+			cleaned = cleaned.replace(/```json\n?|```\n?/g, '');
+		}
+		const start = cleaned.indexOf('{');
+		const end = cleaned.lastIndexOf('}');
+		if (start === -1 || end === -1) return null;
+		return JSON.parse(cleaned.slice(start, end + 1));
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Weeks until deadline (1–12)
+ */
+function calculateWeeksUntilDeadline(deadline) {
+	if (!deadline) return 4;
+	const now = new Date();
+	const target = new Date(deadline);
+	const diff = Math.ceil(Math.abs(target - now) / (1000 * 60 * 60 * 24 * 7));
+	return Math.min(Math.max(diff, 1), 12);
+}
+
+/**
+ * Generate weekly goals
+ */
+function generateWeeklyGoals(subjects, totalWeeks) {
+	const goals = [];
+	for (let week = 0; week < totalWeeks; week++) {
+		if (week === 0) {
+			goals.push({ week, goal: 'Foundations', focus: 'Core concepts' });
+		} else if (week < totalWeeks - 1) {
+			goals.push({ week, goal: 'Progress', focus: 'Practice & application' });
+		} else {
+			goals.push({ week, goal: 'Final Review', focus: 'Revision & mock tests' });
+		}
+	}
+	return goals;
+}
+
+/**
+ * Fill missing weeks
+ */
+function fillMissingWeeks(tasks, subjects, totalWeeks) {
+	const weeksWithTasks = new Set(tasks.map(t => t.week));
+	const filled = [];
+
+	for (let week = 0; week < totalWeeks; week++) {
+		if (!weeksWithTasks.has(week)) {
+			subjects.forEach((s, i) => {
+				filled.push({
+					id: `filled-${week}-${i}`,
+					week,
+					day: i % 5,
+					time: '09:00',
+					title: `${s.name}: Week ${week + 1} Study`,
+					type: s.name,
+					duration: '1h 30m',
+					description: 'Auto-filled continuation session',
+					color: 'bg-primary',
+					subColor: 'text-blue-200',
+					isBreak: false
+				});
+			});
+		}
+	}
+	return filled;
+}
+
+/**
+ * MAIN GENERATOR
+ */
+export const generateWithGemini = async (preferences) => {
+	const { subjects, deadline, dailyHours, includeBreaks, spacedRepetition } = preferences;
+	const totalWeeks = calculateWeeksUntilDeadline(deadline);
+
+	const prompt = `
+You are an expert study schedule AI.
+
+INPUT:
+- Subjects: ${JSON.stringify(subjects)}
+- Deadline: ${deadline || 'Not specified'}
+- Weeks to Generate: ${totalWeeks}
+- Daily Hours: ${dailyHours}
+- Include Breaks: ${includeBreaks ? 'Yes' : 'No'}
+- Spaced Repetition: ${spacedRepetition ? 'Yes' : 'No'}
+
+RULES:
+1. Generate tasks for ALL weeks (0 to ${totalWeeks - 1})
+2. Output a FLAT tasks array
+3. Each task MUST include:
+   week, day (0-6), time, title, type, duration, description
+4. Progression:
+   - Early weeks: fundamentals
+   - Middle weeks: practice
+   - Final week: review & tests
+5. Rotate subjects evenly
+6. Each week must include at least 5 days
+7. NO markdown, ONLY valid JSON
+
+OUTPUT FORMAT:
+{
+  "tasks": [],
+  "backlog": [],
+  "suggestions": [],
+  "weeklyGoals": []
+}
+`;
+
+	try {
+		const result = await ai.models.generateContent({
+			model: 'gemini-2.0-flash-exp',
+			contents: [{ role: 'user', parts: [{ text: prompt }] }],
+			generationConfig: {
+				temperature: 0.7,
+				topP: 0.95,
+				maxOutputTokens: 8000
+			}
+		});
+
+		let responseText = '';
+		if (typeof result?.response?.text === 'function') {
+			responseText = await result.response.text();
+		} else {
+			responseText = JSON.stringify(result || '');
+		}
+
+		const parsed = safeJsonParse(responseText);
+		if (!parsed || !parsed.tasks) throw new Error('Invalid AI response');
+
+		// Enrich tasks
+		const enrichedTasks = parsed.tasks.map((task, idx) => ({
+			id: `task-${Date.now()}-${idx}`,
+			week: Math.max(0, Math.min(task.week ?? 0, totalWeeks - 1)),
+			day: Math.max(0, Math.min(task.day ?? 0, 6)),
+			time: task.time || '09:00',
+			title: task.title || 'Study Session',
+			type: task.type || subjects[0]?.name || 'Study',
+			duration: task.duration || '1h',
+			description: task.description || '',
+			color: task.color || 'bg-primary',
+			subColor: task.subColor || 'text-blue-200',
+			icon: null,
+			isBreak: !!task.isBreak
+		}));
+
+		// Fill gaps
+		enrichedTasks.push(
+			...fillMissingWeeks(enrichedTasks, subjects, totalWeeks)
+		);
+
+		// Backlog
+		const enrichedBacklog = (parsed.backlog || []).map((b, i) => ({
+			id: `backlog-${Date.now()}-${i}`,
+			title: b.title || 'Study Task',
+			type: b.type || subjects[0]?.name || 'Study',
+			duration: b.duration || '1h',
+			color: b.color || 'bg-primary',
+			subColor: b.subColor || 'text-blue-200'
+		}));
+
+		return {
+			tasks: enrichedTasks,
+			backlog: enrichedBacklog,
+			suggestions: parsed.suggestions || [],
+			weeklyGoals: parsed.weeklyGoals || generateWeeklyGoals(subjects, totalWeeks)
+		};
+
+	} catch (err) {
+		console.error('[Gemini] Error, using fallback:', err);
+		return getFallbackPlan(subjects, totalWeeks);
+	}
+};
+
+/**
+ * FALLBACK (Multi-week)
+ */
+function getFallbackPlan(subjects, totalWeeks) {
+	const tasks = [];
+	const names = subjects.map(s => s.name);
+
+	for (let week = 0; week < totalWeeks; week++) {
+		for (let day = 0; day < 5; day++) {
+			const subject = names[(week * 5 + day) % names.length];
+			tasks.push({
+				id: `fallback-${week}-${day}`,
+				week,
+				day,
+				time: '09:00',
+				title: `${subject}: Study`,
+				type: subject,
+				duration: '2h',
+				description: 'Fallback study session',
+				color: 'bg-primary',
+				subColor: 'text-blue-200',
+				isBreak: false
+			});
+		}
+	}
+
+	return {
+		tasks,
+		backlog: [],
+		suggestions: [{
+			type: 'WARNING',
+			title: 'Fallback Mode',
+			message: 'AI generation failed. Using basic schedule.',
+			priority: 'HIGH'
+		}],
+		weeklyGoals: generateWeeklyGoals(subjects, totalWeeks)
+	};
+}

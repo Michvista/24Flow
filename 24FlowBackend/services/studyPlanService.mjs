@@ -41,7 +41,7 @@ export const generatePlan = async (userId, preferences) => {
 					backlog: aiResult.backlog || [],
 					suggestions: aiResult.suggestions || []
 				},
-				tips: aiResult.suggestions || []
+				tips: aiResult.tips || []
 			}
 		});
 
@@ -138,4 +138,57 @@ export const deletePlanService = async (userId, id) => {
 
 	console.log('[StudyPlan] Deleted plan:', id);
 	return { success: true };
+};
+
+/**
+ * Update a plan (partial updates supported)
+ * @param {string} userId
+ * @param {string} id
+ * @param {object} updates - may contain { schedule, preferences, tips }
+ */
+export const updatePlanService = async (userId, id, updates) => {
+	console.log('[StudyPlan] Updating plan:', id);
+
+	const existing = await fetchPlan(userId, id);
+	if (!existing) {
+		throw new Error('Plan not found');
+	}
+
+	const data = {};
+
+	if (updates.schedule && typeof updates.schedule === 'object') {
+		// Merge schedule parts defensively
+		data.schedule = {
+			tasks: Array.isArray(updates.schedule.tasks)
+				? updates.schedule.tasks
+				: existing.schedule?.tasks || [],
+			backlog: Array.isArray(updates.schedule.backlog)
+				? updates.schedule.backlog
+				: existing.schedule?.backlog || [],
+			suggestions: Array.isArray(updates.schedule.suggestions)
+				? updates.schedule.suggestions
+				: existing.schedule?.suggestions || []
+		};
+	}
+
+	if (updates.preferences && typeof updates.preferences === 'object') {
+		data.preferences = updates.preferences;
+	}
+
+	if (typeof updates.tips !== 'undefined') {
+		data.tips = updates.tips;
+	}
+
+	if (Object.keys(data).length === 0) {
+		// Nothing to update
+		return existing;
+	}
+
+	const updated = await prisma.studyPlan.update({
+		where: { id },
+		data
+	});
+
+	console.log('[StudyPlan] Updated plan:', updated.id);
+	return updated;
 };
