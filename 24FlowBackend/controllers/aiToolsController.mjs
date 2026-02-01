@@ -77,6 +77,36 @@ export const handleAiTool = async (req, res, next) => {
 				break;
 			}
 
+			case 'LOG_MOOD': {
+				// payload: { mood: "PRODUCTIVE" }
+				aiResponse = await prisma.moodLog.create({
+					data: {
+						userId: req.user.id,
+						mood: payload.mood
+					}
+				});
+				break;
+			}
+
+			case 'GET_INTELLIGENCE_REPORT': {
+				// 1. Find the report the Cron Job already made for today
+				const behaviorReport = await prisma.behaviorSummary.findUnique({
+					where: { userId: req.user.id }
+				});
+
+				if (!behaviorReport) {
+					return res.status(200).json({
+						status: 'success',
+						data: null,
+						message: 'No report generated yet'
+					});
+				}
+
+				// 2. Return the stored summary
+				aiResponse = behaviorReport.summary;
+				break;
+			}
+
 			default:
 				return res.status(400).json({
 					status: 'fail',
@@ -131,11 +161,11 @@ export const getInsights = async (req, res, next) => {
 
 		const prompt = 'Provide 3 actionable study insights for this user as a JSON array of strings.';
 
-			const result = await ai.models.generateContent({
-				model: 'gemini-3-flash-preview',
-				contents: prompt
-			});
-	
+		const result = await ai.models.generateContent({
+			model: 'gemini-3-flash-preview',
+			contents: prompt
+		});
+
 		const responseText =
 			result.text ||
 			result.response?.text?.() ||
