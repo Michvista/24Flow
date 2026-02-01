@@ -15,7 +15,7 @@ const app = express();
 
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://24-flow.vercel.app/'],
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'PUT']
 }));
