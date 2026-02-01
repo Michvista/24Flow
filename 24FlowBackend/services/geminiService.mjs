@@ -87,7 +87,7 @@ export const generateWithGemini = async (preferences) => {
 			.map((s) => `  - ${s.name} (${s.topics} topics, ${s.priority} priority)`)
 			.join('\n');
 
-		const prompt = `You are an expert AI study scheduler. Generate a ${totalWeeks}-week study plan with 24-hour intelligent scheduling.
+		const prompt = `You are an expert AI study scheduler. Generate a COMPLETE ${totalWeeks}-week study plan with 24-hour intelligent scheduling.
 
 **REQUIREMENTS:**
 - Subjects: ${subjectsList}
@@ -101,50 +101,64 @@ ${subjectsDetails}
 
 **CRITICAL RULES - FOLLOW EXACTLY:**
 
-1. **COVERAGE**: Generate tasks for ALL ${totalWeeks} weeks AND ALL 7 days per week
-   - Week range: 0 to ${totalWeeks - 1}
-   - Day range: 0 (Monday) to 6 (Sunday)
-   - DO NOT skip any weeks or days
+1. **COMPLETE COVERAGE - ABSOLUTE REQUIREMENT**: 
+   - Generate tasks for EVERY SINGLE day of ALL ${totalWeeks} weeks
+   - Week range: 0 to ${totalWeeks - 1} (ALL weeks must be included)
+   - Day range: 0 (Monday) to 6 (Sunday) for EACH week
+   - DO NOT skip ANY weeks or days - this is CRITICAL
+   - Weeks 0 through ${totalWeeks - 1} must ALL have detailed, specific tasks
+   - If you generate fewer than ${totalWeeks} weeks, the output is INVALID
    
-2. **QUANTITY**: Minimum ${tasksPerWeek * totalWeeks} total study tasks
+2. **TASK QUALITY - NO GENERIC CONTENT**:
+   - Every task MUST have a SPECIFIC, descriptive title
+   - ✅ GOOD: "Anatomy: Gluteal Muscles - Maximus, Medius, Minimus"
+   - ✅ GOOD: "Biochemistry: TCA Cycle - Entry and Reactions"
+   - ❌ BAD: "Anatomy: Week 3 Study" 
+   - ❌ BAD: "Continue studying biochemistry"
+   - Include detailed descriptions explaining WHAT to study
+   - Add clinical correlations where relevant for anatomy
+   - Specify pathways/mechanisms for biochemistry
+   
+3. **QUANTITY**: Minimum ${tasksPerWeek * totalWeeks} total study tasks
    - Distribute evenly: ~${Math.ceil(tasksPerWeek / 7)} tasks per day
+   - Every week should have similar task counts
    
-3. **TIME ALLOCATION**:
+4. **TIME ALLOCATION**:
    - Each day MUST have EXACTLY ${dailyHours} hours of STUDY time (excluding breaks)
    - Spread across 2-5 study blocks per day
    - Use full 24-hour range (00:00-23:59)
    - Peak hours (08:00-12:00, 15:00-17:00) for complex subjects
    - Evening (19:00-22:00) for review/creative subjects
    
-4. **STUDY BLOCKS**:
+5. **STUDY BLOCKS**:
    - Complex topics: 1h-2h blocks
    - Medium topics: 1h 30m-2h 30m blocks
    - Reviews: 45m-1h 30m blocks
    
-5. **BREAKS** (if enabled):
+6. **BREAKS** (if enabled):
    - 10-15 minutes BETWEEN study blocks
    - NOT counted toward ${dailyHours} hours
    - Example: 2h study + 15m break + 2h study = 4h study total
    
-6. **WEEKENDS** (Saturday=day 5, Sunday=day 6):
+7. **WEEKENDS** (Saturday=day 5, Sunday=day 6):
    - Reduce to 60-70% of weekday study hours
    - Focus on review and practice
 
-7. **PROGRESSION**:
-   - Weeks 0-1: Fundamentals
-   - Middle weeks: Intermediate concepts
-   - Final weeks: Advanced topics + review
+8. **PROGRESSION ACROSS ALL ${totalWeeks} WEEKS**:
+   - Weeks 0-${Math.floor(totalWeeks / 3)}: Fundamentals and basic concepts
+   - Weeks ${Math.floor(totalWeeks / 3)}-${Math.floor(2 * totalWeeks / 3)}: Intermediate concepts and applications
+   - Weeks ${Math.floor(2 * totalWeeks / 3)}-${totalWeeks - 1}: Advanced topics, integration, and comprehensive review
 
 **JSON FORMAT (return ONLY valid JSON, NO markdown):**
 
 {
   "tasks": [
-    {"week": 0, "day": 0, "time": "08:00", "title": "Subject: Topic", "type": "Subject Name", "duration": "2h 00m", "description": "...", "color": "bg-primary", "subColor": "text-blue-200", "isBreak": false},
+    {"week": 0, "day": 0, "time": "08:00", "title": "Anatomy: Specific Topic Name", "type": "Subject Name", "duration": "2h 00m", "description": "Detailed description of what to study", "color": "bg-primary", "subColor": "text-blue-200", "isBreak": false},
     {"week": 0, "day": 0, "time": "10:00", "title": "Break", "type": "Rest", "duration": "15m", "description": "", "color": "bg-[#232f48]", "subColor": "text-blue-200", "isBreak": true},
     ... (continue for ALL ${totalWeeks} weeks, ALL 7 days)
   ],
   "backlog": [
-    {"title": "Extra: Topic", "type": "Subject", "duration": "1h", "color": "bg-primary", "subColor": "text-blue-200"}
+    {"title": "Extra: Specific Topic", "type": "Subject", "duration": "1h", "color": "bg-primary", "subColor": "text-blue-200"}
   ],
   "suggestions": [
     {"type": "OPTIMIZATION", "title": "...", "message": "...", "priority": "HIGH"}
@@ -155,11 +169,13 @@ ${subjectsDetails}
 }
 
 **MANDATORY CHECKLIST BEFORE RESPONDING:**
-☐ Generated tasks for weeks ${totalWeeks - 1} through week ${totalWeeks - 1}? 
+☐ Generated tasks for week 0 through week ${totalWeeks - 1}? 
 ☐ Each week has all 7 days (0-6)?
 ☐ Each weekday has ${dailyHours} hours of study (excluding breaks)?
 ☐ Tasks use times from 00:00-23:59 based on subject complexity?
 ☐ Total task count > ${tasksPerWeek * totalWeeks}?
+☐ NO generic titles like "Week X Study"?
+☐ ALL tasks have specific, detailed descriptions?
 
 Generate NOW:`;
 
@@ -172,7 +188,7 @@ Generate NOW:`;
 				temperature: 0.7,
 				topK: 40,
 				topP: 0.95,
-				maxOutputTokens: 16000 // Doubled for complete multi-week generation
+				maxOutputTokens: 50000 
 			}
 		});
 
@@ -343,9 +359,23 @@ Generate NOW:`;
 			finalTasks.push(...dayTasks);
 		}
 
-		// Check if all weeks are covered
+		// ✅ ENHANCED VALIDATION: Check coverage and quality
 		const weeksWithTasks = new Set(finalTasks.map((t) => t.week));
 		console.log('[Gemini] Generated tasks for weeks:', Array.from(weeksWithTasks).sort());
+		
+		// Check for generic titles (indicator of poor AI generation)
+		const genericTasks = finalTasks.filter(task => 
+			!task.isBreak && (
+				task.title.includes('Week') && task.title.includes('Study') ||
+				task.title.includes('Continue') ||
+				task.description.includes('Continue') ||
+				!task.description || task.description.length < 20
+			)
+		);
+		
+		if (genericTasks.length > finalTasks.length * 0.1) {
+			console.warn(`[Gemini] WARNING: ${genericTasks.length} generic tasks detected (${Math.round(genericTasks.length/finalTasks.length*100)}% of total)`);
+		}
 
 		// Check if all days in each week are covered
 		const daysByWeek = new Map();
@@ -355,7 +385,7 @@ Generate NOW:`;
 			daysByWeek.get(key).add(task.day);
 		}
 
-		// Log and fill missing days
+		// Log and fill missing days ONLY if AI truly missed them
 		const missingDayTasks = [];
 		for (let week = 0; week < totalWeeks; week++) {
 			const days = daysByWeek.get(week) || new Set();
@@ -364,8 +394,8 @@ Generate NOW:`;
 				if (!days.has(day)) missingDays.push(day);
 			}
 			if (missingDays.length > 0) {
-				console.log(`[Gemini] Week ${week} missing days ${missingDays.join(', ')} - filling now`);
-				// Fill missing days immediately
+				console.log(`[Gemini] Week ${week} missing days ${missingDays.join(', ')} - AI failed to generate these`);
+				// Fill missing days as last resort
 				const filled = fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks);
 				missingDayTasks.push(...filled);
 			}
@@ -373,13 +403,13 @@ Generate NOW:`;
 
 		// Add filled tasks
 		if (missingDayTasks.length > 0) {
-			console.log(`[Gemini] Added ${missingDayTasks.length} tasks to fill missing days`);
+			console.log(`[Gemini] Added ${missingDayTasks.length} fallback tasks to fill missing days`);
 			finalTasks.push(...missingDayTasks);
 		}
 
-		// If entire weeks are missing, fill them
+		// If entire weeks are missing, fill them as last resort
 		if (weeksWithTasks.size < totalWeeks) {
-			console.log('[Gemini] WARNING: Some weeks missing completely, filling gaps...');
+			console.log('[Gemini] WARNING: Some weeks missing completely, using fallback generation...');
 			const filledTasks = fillMissingWeeks(
 				finalTasks,
 				subjects,
