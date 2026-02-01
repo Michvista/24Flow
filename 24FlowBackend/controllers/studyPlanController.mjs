@@ -1,14 +1,11 @@
-// ============================================================================
-// FIXED STUDY PLAN CONTROLLER
-// ============================================================================
-// File: src/lib/controllers/studyPlanController.mjs
 
 import {
 	generatePlan,
 	fetchPlan,
 	fetchAllPlans,
 	regeneratePlanService,
-	deletePlanService
+	deletePlanService,
+	updatePlanService
 } from '../services/studyPlanService.mjs';
 
 /**
@@ -177,6 +174,57 @@ export const getAllController = async (req, res) => {
 };
 
 /**
+ * Update (edit) a study plan
+ * PUT /api/study-plan/:id
+ */
+export const updateController = async (req, res) => {
+	try {
+		const userId = req.user?.id || req.locals?.user?.id;
+
+		if (!userId) {
+			return res.status(401).json({
+				success: false,
+				error: 'Unauthorized'
+			});
+		}
+
+		const { id } = req.params;
+
+		if (!id) {
+			return res.status(400).json({
+				success: false,
+				error: 'Plan ID is required'
+			});
+		}
+
+		const updates = req.body || {};
+
+		console.log('[Controller] Updating plan:', id);
+
+		const updated = await updatePlanService(userId, id, updates);
+
+		return res.status(200).json({
+			success: true,
+			plan: {
+				id: updated.id,
+				tasks: updated.schedule?.tasks || [],
+				backlog: updated.schedule?.backlog || [],
+				suggestions: updated.schedule?.suggestions || [],
+				tips: updated.tips || [],
+				preferences: updated.preferences,
+				updatedAt: updated.updatedAt
+			}
+		});
+	} catch (error) {
+		console.error('[Controller] Update error:', error);
+		return res.status(500).json({
+			success: false,
+			error: error.message || 'Failed to update study plan'
+		});
+	}
+};
+
+/**
  * Regenerate study plan (keep preferences, new schedule)
  * POST /api/study-plan/:id/regenerate
  */
@@ -250,11 +298,12 @@ export const deleteController = async (req, res) => {
 	}
 };
 
-
+// Named exports
 export {
 	generateController as createStudyPlan,
 	getByIdController as getStudyPlan,
 	getAllController as getAllStudyPlans,
+	updateController as updateStudyPlan,
 	regenerateController as regenerateStudyPlan,
 	deleteController as deleteStudyPlan
 };

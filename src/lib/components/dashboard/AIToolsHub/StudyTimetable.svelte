@@ -335,6 +335,7 @@
 
 			<button
 				onclick={generateTimetable}
+				disabled={isGenerating}
 				class="relative w-full bg-primary text-white text-xl font-black uppercase py-6 border-2 border-white shadow-neo hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all group overflow-hidden"
 			>
 				<span class="relative z-10 flex items-center justify-center gap-3">
