@@ -78,41 +78,11 @@
 	let totalPages: number = 4;
 	let showGenerator: boolean = false;
 
-	// Mock data representing what your backend will return
-	const mockPlans: Plan[] = [
-		{
-			id: 1,
-			title: 'Advanced Calculus Finals',
-			code: 'MATH-401',
-			tags: ['INTEGRALS', 'LIMITS'],
-			status: 'Active',
-			date: 'Oct 24, 2023',
-			deadline: 'Nov 15',
-			hours: '4h/Day'
-		},
-		{
-			id: 2,
-			title: 'Intro to Thermodynamics',
-			code: 'PHYS-201',
-			tags: ['ENTROPY'],
-			status: 'Completed',
-			date: 'Oct 12, 2023',
-			deadline: 'Oct 30',
-			hours: '2h/Day'
-		},
-		{
-			id: 3,
-			title: 'Computer Vision Project',
-			code: 'CS-502',
-			tags: ['OPENCV', 'CNNs'],
-			status: 'In Progress',
-			date: 'Nov 01, 2023',
-			deadline: 'Dec 05',
-			hours: '6h/Day'
-		}
-	];
+export let data;
+let user = data?.user?.name;
+console.log(user)
 
-
+let totalTasks:number = 0
 interface Subject {
     id: number;
     name: string;
@@ -143,6 +113,7 @@ async function fetchPlans() {
         });
         
         const data = await res.json();
+        totalTasks = data.plans.reduce((sum:number, plan:BackendPlan) => sum + plan.tasksCount, 0);
         
         if (data.success) {
             // Map the backend data to your UI needs
@@ -155,10 +126,12 @@ async function fetchPlans() {
                 // Format the date
                 date: new Date(p.createdAt).toLocaleDateString()
             }));
+            notifySuccess('Plans Loaded', 'Your study plans have been successfully loaded.');
             if (data.totalPages) totalPages = data.totalPages; 
         }
     } catch (e: any) {
         console.error('Fetch failed', e);
+        notifyError('Load Failed', e.message || 'Could not load study plans.');
     } finally {
         loading = false;
     }
@@ -173,9 +146,11 @@ async function fetchPlans() {
             const data = await res.json();
             if (data.success) {
                 plans = plans.filter(p => p.id !== id);
+                notifySuccess('Plan Deleted', 'The study plan has been successfully deleted.');
             }
         } catch (e) {
             console.error('Delete failed', e);
+            notifyError('Delete Failed', 'Could not delete the study plan.');
         }
     }
 
@@ -254,7 +229,7 @@ $: {
 			</nav>
 			<div class="flex items-center gap-4 pl-8 border-l">
 				<div class="text-right">
-					<p class="text-sm font-bold leading-none">Alex Chen</p>
+					<p class="text-sm font-bold leading-none">{user}</p>
 				</div>
 				<div
 			class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-900 overflow-hidden bg-slate-200"
@@ -278,7 +253,7 @@ $: {
 					</p>
 				</div>
 				<div class="flex items-center gap-4">
-					<div class="flex items-center border-2 border-slate-900 bg-panel-dark px-4 py-2">
+					<!-- <div class="flex items-center border-2 border-slate-900 bg-panel-dark px-4 py-2">
 						<Search size={18} class="text-slate-400 mr-2" />
 						<input
 							bind:value={searchQuery}
@@ -286,7 +261,7 @@ $: {
 							placeholder="Search schedules..."
 							type="text"
 						/>
-					</div>
+					</div> -->
 					<button
 						on:click={() => (showGenerator = true)}
 						class="bg-primary text-white px-6 py-3 font-bold uppercase tracking-widest flex items-center gap-2 border-2 border-blue-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
@@ -318,9 +293,9 @@ $: {
 					</div>
 					<div>
 						<p class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">
-							Hours Scheduled
+							Total Tasks Scheduled
 						</p>
-						<p class="text-2xl font-black">142h</p>
+						<p class="text-2xl font-black">{totalTasks}</p>
 					</div>
 				</div>
 				<div class="bg-panel-dark p-6 border-2 border-slate-900 flex items-center gap-5">
@@ -351,7 +326,7 @@ $: {
 									<div
 										class="bg-slate-100 text-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-tighter"
 									>
-										{plan.status}
+										{plan.tasksCount} Tasks
 									</div>
 									<span class="font-mono text-[10px] text-slate-500 uppercase tracking-widest"
 										>{plan.date}</span
@@ -364,10 +339,6 @@ $: {
 								</h3>
 								<div class="space-y-4 mb-6">
 									<div class="flex flex-wrap gap-2">
-										<span
-											class="px-2 py-1 text-[10px] font-bold bg-slate-800 border border-slate-700"
-											>{plan.code}</span
-										>
 										{#each plan.tags as tag}
 											<span
 												class="px-2 py-1 text-[10px] font-bold bg-slate-800 border border-slate-700"
@@ -389,7 +360,7 @@ $: {
 							</div>
 							<div class="grid grid-cols-2 mt-auto border-t-2 border-slate-900">
 								<button
-                                on:click={() => goto(`/studyTimetable/calendar/${plan.id}`)}
+                                on:click={() => window.location.href = `http://localhost:5173/dashboard/studyTimetable/calendar/${plan.id}`}
 									class="py-4 font-bold uppercase text-sm flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors border-r-2 border-slate-900"
 								>
 									<Fullscreen size={16} /> View
@@ -425,7 +396,7 @@ $: {
 				{/if}
 			</div>
 
-			<div class="mt-16 flex flex-col items-center gap-6">
+			<!-- <div class="mt-16 flex flex-col items-center gap-6">
 				<div class="flex items-center gap-4">
 					<button
 						on:click={() => handlePageChange('prev')}
@@ -447,7 +418,7 @@ $: {
 						<ChevronRight size={20} />
 					</button>
 				</div>
-			</div>
+			</div> -->
 		</main>
 
 		<footer class="mt-20 border-t border-slate-200 py-12 bg-panel-dark">

@@ -10,7 +10,7 @@ import {
 
 /**
  * Generate new study plan
- * POST /api/study-plan/generate
+ * POST  study-plan/generate
  */
 export const generateController = async (req, res) => {
 	try {
@@ -78,7 +78,7 @@ export const generateController = async (req, res) => {
 
 /**
  * Get study plan by ID
- * GET /api/study-plan/:id
+ * GET  study-plan/:id
  */
 export const getByIdController = async (req, res) => {
 	try {
@@ -137,7 +137,7 @@ export const getByIdController = async (req, res) => {
 
 /**
  * Get all study plans for user
- * GET /api/study-plan
+ * GET  study-plan
  */
 export const getAllController = async (req, res) => {
 	try {
@@ -175,58 +175,37 @@ export const getAllController = async (req, res) => {
 
 /**
  * Update (edit) a study plan
- * PUT /api/study-plan/:id
+ * PUT  study-plan/:id
  */
 export const updateController = async (req, res) => {
-	try {
-		const userId = req.user?.id || req.locals?.user?.id;
+    try {
+        const userId = req.user?.id || req.locals?.user?.id;
+        const { id: planId } = req.params;
+        const updates = req.body;
 
-		if (!userId) {
-			return res.status(401).json({
-				success: false,
-				error: 'Unauthorized'
-			});
-		}
+        if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-		const { id } = req.params;
+        // CALL THE SERVICE CORRECTLY
+        const updated = await updatePlanService(userId, planId, updates);
 
-		if (!id) {
-			return res.status(400).json({
-				success: false,
-				error: 'Plan ID is required'
-			});
-		}
-
-		const updates = req.body || {};
-
-		console.log('[Controller] Updating plan:', id);
-
-		const updated = await updatePlanService(userId, id, updates);
-
-		return res.status(200).json({
-			success: true,
-			plan: {
-				id: updated.id,
-				tasks: updated.schedule?.tasks || [],
-				backlog: updated.schedule?.backlog || [],
-				suggestions: updated.schedule?.suggestions || [],
-				tips: updated.tips || [],
-				preferences: updated.preferences,
-				updatedAt: updated.updatedAt
-			}
-		});
-	} catch (error) {
-		console.error('[Controller] Update error:', error);
-		return res.status(500).json({
-			success: false,
-			error: error.message || 'Failed to update study plan'
-		});
-	}
+        return res.status(200).json({
+            success: true,
+            plan: {
+                id: updated.id,
+                tasks: updated.schedule?.tasks || [],
+                backlog: updated.schedule?.backlog || [],
+                updatedAt: updated.updatedAt
+            }
+        });
+    } catch (error) {
+        console.error('Update Error:', error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
 };
 
 /**
  * Regenerate study plan (keep preferences, new schedule)
- * POST /api/study-plan/:id/regenerate
+ * POST  study-plan/:id/regenerate
  */
 export const regenerateController = async (req, res) => {
 	try {
@@ -266,7 +245,7 @@ export const regenerateController = async (req, res) => {
 
 /**
  * Delete study plan
- * DELETE /api/study-plan/:id
+ * DELETE  study-plan/:id
  */
 export const deleteController = async (req, res) => {
 	try {

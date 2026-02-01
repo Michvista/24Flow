@@ -136,6 +136,7 @@
             notifySuccess('Saved', 'Your changes were saved');
         } catch (err: any) {
             console.error('SaveEdit failed', err);
+			notifyError('Save Failed', err.message || 'Could not save changes');
         } finally {
             isEditMode = false;
         }
@@ -228,22 +229,31 @@
         }
     }
 
-    async function persistSchedule() {
-        if (!planId) {
-            notifyError('Save Failed', 'No plan id available');
-            throw new Error('Missing planId');
-        }
-        const res = await fetch(`http://localhost:3000/study-plans/${planId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ schedule: { tasks: scheduleData, backlog } })
-        });
-
-        const json = await res.json();
-        if (!res.ok) throw new Error(json?.error || 'Failed to persist');
-        return json.plan;
+ async function persistSchedule() {
+    if (!planId) {
+        notifyError('Save Failed', 'No plan id available');
+        throw new Error('Missing planId');
     }
+
+    // Svelte 5: Use snapshot to get a clean object from $state
+    const payload = {
+        schedule: {
+            tasks: $state.snapshot(scheduleData),
+            backlog: $state.snapshot(backlog)
+        }
+    };
+
+    const res = await fetch(`http://localhost:3000/study-plans/${planId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+    });
+
+    const json = await res.json();
+    if (!res.ok) throw new Error(json?.error || 'Failed to persist');
+    return json.plan;
+}
 	// Helpers
 	const getDayDate = (dayIndex: number) => {
 		const d = new Date();
