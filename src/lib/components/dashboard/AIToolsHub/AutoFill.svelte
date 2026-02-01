@@ -3,6 +3,7 @@
 	import Navbar from '../../../../components/dashboard/Navbar.svelte';
 
 	import { Toaster, toast } from 'svelte-sonner';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
 
 	function notifySuccess(title: string, message: string) {
@@ -96,7 +97,7 @@
 
 	async function AItagGenerator(title: string): Promise<string> {
 		try {
-			const res = await fetch('http://localhost:3000/ai/tool', {
+			const res = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
@@ -138,10 +139,10 @@
 
 	let isGenerating = $state(false);
 	async function handleGenerate() {
-		isGenerating = true; 
+		isGenerating = true;
 
 		try {
-			const res = await fetch('http://localhost:3000/ai/tool', {
+			const res = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
@@ -360,8 +361,8 @@
 
 	<div class="pt-6">
 		<button
-		onclick={handleGenerate}
-		disabled={isGenerating}
+			onclick={handleGenerate}
+			disabled={isGenerating}
 			class="group relative w-full bg-primary py-6 border-2 border-white overflow-hidden shadow-[4px_4px_0px_0px_#ffffff] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all text-white"
 		>
 			<div
@@ -370,10 +371,12 @@
 			<div class="relative flex items-center justify-center gap-3">
 				{#if !isGenerating}
 					<WandSparkles size={28} />
-					{:else}
+				{:else}
 					<RefreshCw size={28} class="animate-spin" />
 				{/if}
-				<span class="text-2xl font-black uppercase tracking-widest">{isGenerating ? "Generating..." : "Generate Schedule"}</span>
+				<span class="text-2xl font-black uppercase tracking-widest"
+					>{isGenerating ? 'Generating...' : 'Generate Schedule'}</span
+				>
 			</div>
 		</button>
 	</div>

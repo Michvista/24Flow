@@ -4,41 +4,92 @@ import { GoogleGenAI } from '@google/genai';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-export const initCron = () => {
-	// Run at 07:00 AM every day
-	schedule.scheduleJob('0 7 * * *', async () => {
-		console.log('--- Generating Morning Intelligence Reports ---');
-		const users = await prisma.user.findMany();
-
-		for (const user of users) {
-			try {
-				const userData = await prisma.user.findUnique({
-					where: { id: user.id },
-					include: { moods: { take: 10 }, events: { take: 10 } }
-				});
-
-				const prompt = `Suggest a task for today based on: Moods: ${JSON.stringify(userData.moods)}, Events: ${JSON.stringify(userData.events)}. Return ONLY JSON: {"eventName": "Title", "eventTime": "09:00 AM", "probability": "85%"}`;
-
-				const response = await ai.models.generateContent({
-					model: 'gemini-3-flash-preview',
-					contents: [{ role: 'user', parts: [{ text: prompt }] }]
-				});
-
-				const cleanJson = response.response
-					.text()
-					.replace(/```json|```/g, '')
-					.trim();
-				const report = JSON.parse(cleanJson);
-
-				// Store in the database so it's ready for the user
-				await prisma.behaviorSummary.upsert({
-					where: { userId: user.id },
-					update: { summary: report, updatedAt: new Date() },
-					create: { userId: user.id, summary: report }
-				});
-			} catch (err) {
-				console.error(`Cron failed for user ${user.id}:`, err);
+export const generateAndStoreReport = async (userId) => {
+	try {
+		const userData = await prisma.user.findUnique({
+			where: { id: userId },
+			include: {
+				moods: { take: 15, orderBy: { createdAt: 'desc' } },
+				events: { take: 20, orderBy: { startTime: 'desc' } }
 			}
+		});
+
+		if (!userData) return null;
+
+		const currentDay = [
+			'Sundays',
+			'Mondays',
+			'Tuesdays',
+			'Wednesdays',
+			'Thursdays',
+			'Fridays',
+			'Saturdays'
+		][new Date().getDay()];
+
+		const prompt = `
+            Act as a Behavioral Intelligence Agent. Analyze the user's data:
+            Current Day: ${currentDay}
+            Recent Moods: ${JSON.stringify(userData.moods)}
+            Recent History: ${JSON.stringify(userData.events)}
+
+            TASK:
+            1. Look for patterns: Does the user usually do something specific on ${currentDay}?
+            2. If no clear pattern for ${currentDay} exists, suggest a task that balances their recent moods (e.g., if TIRED, suggest something light; if PRODUCTIVE, suggest a challenge).
+            3. The "probability" should reflect how certain you are this fits their routine or current state.
+
+            Return ONLY valid JSON:
+            {
+              "eventName": "Title of task",
+              "eventTime": "HH:MM AM/PM",
+              "probability": "XX%"
+            }
+        `;
+
+		const response = await ai.models.generateContent({
+			model: 'gemini-3-flash-preview',
+			contents: prompt
+		});
+
+		let text;
+		if (typeof response?.response?.text === 'function') {
+			text = (await response.response.text()).trim();
+		} else if (typeof response?.text === 'string') {
+			text = response.text.trim();
+		} else if (response?.candidates?.[0]?.content?.parts?.[0]?.text) {
+			text = response.candidates[0].content.parts[0].text.trim();
+		} else {
+			throw new Error('No text returned from Gemini');
+		}
+
+		// Strip markdown code blocks if present
+		const cleanJson = text.replace(/```json|```/g, '').trim();
+
+		let parsed;
+		try {
+			parsed = JSON.parse(cleanJson);
+		} catch {
+			console.error('Failed to parse JSON. Raw text:', text);
+			throw new Error('Gemini returned invalid JSON');
+		}
+
+		return await prisma.behaviorSummary.upsert({
+			where: { userId },
+			update: { summary: parsed, updatedAt: new Date() },
+			create: { userId, summary: parsed }
+		});
+	} catch (err) {
+		console.error(`Generation failed for user ${userId}:`, err);
+		return null;
+	}
+};
+
+export const initCron = () => {
+	// Runs every hour (change if needed)
+	schedule.scheduleJob('0 * * * *', async () => {
+		console.log('--- Running Scheduled Reports ---');
+		const users = await prisma.user.findMany({ select: { id: true } });
+		for (const user of users) {
+			await generateAndStoreReport(user.id);
 		}
 	});
 };

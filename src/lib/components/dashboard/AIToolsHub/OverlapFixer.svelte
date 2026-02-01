@@ -14,8 +14,9 @@
 	import Navbar from '../../../../components/dashboard/Navbar.svelte';
 	import { onMount } from 'svelte';
 
-		import { Toaster, toast } from 'svelte-sonner';
+	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
@@ -92,7 +93,7 @@
 		errorMessage = '';
 
 		try {
-			const res = await fetch('http://localhost:3000/conflicts', {
+			const res = await fetch(`${PUBLIC_API_URL}/conflicts`, {
 				method: 'GET',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include'
@@ -120,7 +121,10 @@
 			}
 		} catch (err) {
 			console.error('Failed to load conflicts', err);
-			notifyError('Error Loading Conflicts', err instanceof Error ? err.message : 'Failed to load conflicts.');
+			notifyError(
+				'Error Loading Conflicts',
+				err instanceof Error ? err.message : 'Failed to load conflicts.'
+			);
 			errorMessage = err instanceof Error ? err.message : 'Failed to load conflicts';
 		} finally {
 			isLoading = false;
@@ -134,7 +138,7 @@
 		isDetecting = true;
 
 		try {
-			const res = await fetch('http://localhost:3000/conflicts/detect', {
+			const res = await fetch(`${PUBLIC_API_URL}/conflicts/detect`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include'
@@ -213,23 +217,23 @@
 		try {
 			// URL encode the conflict ID to handle # character
 			const encodedConflictId = encodeURIComponent(activeConflict.id);
-			
+
 			console.log('Accepting conflict:', activeConflict.id);
 			console.log('Encoded ID:', encodedConflictId);
-			
-			const res = await fetch(
-				`http://localhost:3000/conflicts/${encodedConflictId}/accept`,
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					credentials: 'include'
-				}
-			);
+
+			const res = await fetch(`${PUBLIC_API_URL}/conflicts/${encodedConflictId}/accept`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include'
+			});
 
 			if (!res.ok) {
 				const errorText = await res.text();
 				console.error('Server response:', res.status, errorText);
-				notifyError('Error Applying Resolution', `Failed to apply resolution: ${res.status} ${errorText}`);
+				notifyError(
+					'Error Applying Resolution',
+					`Failed to apply resolution: ${res.status} ${errorText}`
+				);
 				throw new Error(`Failed to apply resolution: ${res.status} ${errorText}`);
 			}
 
@@ -243,7 +247,10 @@
 					allConflicts = result.data.remainingConflicts;
 					currentConflictIdx = 0;
 				}
-				notifySuccess('Conflict Resolved', 'The proposed fix has been applied successfully, please wait a moment');
+				notifySuccess(
+					'Conflict Resolved',
+					'The proposed fix has been applied successfully, please wait a moment'
+				);
 				// Show success briefly then refresh
 				setTimeout(() => {
 					isResolved = false;
@@ -254,7 +261,10 @@
 			}
 		} catch (err) {
 			console.error('Failed to apply fix', err);
-			notifyError('Error Applying Fix', err instanceof Error ? err.message : 'Failed to apply fix. Please try again.');	
+			notifyError(
+				'Error Applying Fix',
+				err instanceof Error ? err.message : 'Failed to apply fix. Please try again.'
+			);
 			errorMessage = err instanceof Error ? err.message : 'Failed to apply fix. Please try again.';
 		} finally {
 			isLoading = false;
@@ -270,18 +280,15 @@
 		try {
 			// URL encode the conflict ID to handle # character
 			const encodedConflictId = encodeURIComponent(activeConflict.id);
-			
+
 			console.log('Declining conflict:', activeConflict.id);
 			console.log('Encoded ID:', encodedConflictId);
-			
-			const res = await fetch(
-				`http://localhost:3000/conflicts/${encodedConflictId}/decline`,
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					credentials: 'include'
-				}
-			);
+
+			const res = await fetch(`${PUBLIC_API_URL}/conflicts/${encodedConflictId}/decline`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include'
+			});
 
 			if (!res.ok) {
 				const errorText = await res.text();
@@ -307,7 +314,10 @@
 		} catch (err) {
 			console.error('Failed to decline', err);
 			errorMessage = err instanceof Error ? err.message : 'Failed to decline resolution.';
-			notifyError('Error Declining Resolution', err instanceof Error ? err.message : 'Failed to decline resolution.');
+			notifyError(
+				'Error Declining Resolution',
+				err instanceof Error ? err.message : 'Failed to decline resolution.'
+			);
 		}
 	}
 
@@ -515,8 +525,7 @@
 												: ''}"
 										>
 											<div class="flex-1 min-w-0">
-												<span class="text-white text-xs font-bold block truncate"
-													>{task.title}</span
+												<span class="text-white text-xs font-bold block truncate">{task.title}</span
 												>
 												<span class="text-[10px] text-primary font-mono block">
 													{isResolved ? 'Scheduled' : 'Optimized Slot'}: {formatTime(

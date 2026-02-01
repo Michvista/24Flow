@@ -24,10 +24,10 @@
 
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../SonnerToast.svelte';
-let { data = {} } = $props();
+	import { PUBLIC_API_URL } from '$env/static/public';
+	let { data = {} } = $props();
 
-
-const user = $derived(data?.user || {});
+	const user = $derived(data?.user || {});
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
@@ -59,32 +59,28 @@ const user = $derived(data?.user || {});
 		});
 	}
 
-	
-
 	// Sidebar State
 	let isSidebarOpen = false;
 	let mobileSidebarElem: HTMLElement;
 
 	// 1. Change your declarations to use $state
-let sleepTime = $state('23:00');
-let wakeTime = $state('07:00');
+	let sleepTime = $state('23:00');
+	let wakeTime = $state('07:00');
 
-// 2. Use $derived for the logic
-let sleepMinutes = $derived.by(() => {
-    const [bH, bM] = sleepTime.split(':').map(Number);
-    const [wH, wM] = wakeTime.split(':').map(Number);
-    let diff = wH * 60 + wM - (bH * 60 + bM);
-    if (diff < 0) diff += 1440; // Handle overnight sleep
-    return diff;
-});
+	// 2. Use $derived for the logic
+	let sleepMinutes = $derived.by(() => {
+		const [bH, bM] = sleepTime.split(':').map(Number);
+		const [wH, wM] = wakeTime.split(':').map(Number);
+		let diff = wH * 60 + wM - (bH * 60 + bM);
+		if (diff < 0) diff += 1440; // Handle overnight sleep
+		return diff;
+	});
 
-let durationFormatted = $derived(
-    `${Math.floor(sleepMinutes / 60)}h ${(sleepMinutes % 60).toString().padStart(2, '0')}m`
-);
+	let durationFormatted = $derived(
+		`${Math.floor(sleepMinutes / 60)}h ${(sleepMinutes % 60).toString().padStart(2, '0')}m`
+	);
 
-let efficiency = $derived(
-    Math.min(Math.round((sleepMinutes / 480) * 100), 100)
-);
+	let efficiency = $derived(Math.min(Math.round((sleepMinutes / 480) * 100), 100));
 
 	function generateRandomAvatar() {
 		const styles = ['adventurer', 'fun-emoji', 'bottts', 'lorelei', 'avataaars'];
@@ -93,77 +89,77 @@ let efficiency = $derived(
 		return `https://api.dicebear.com/7.x/${randomStyle}/svg?seed=${randomSeed}`;
 	}
 
-let displayName = $state('Alex');
-let username = $state('alex_24flower');
-let email = $state('alex@example.com');
-let bio = $state('Product designer and time management enthusiast.');
-let avatarUrl = $state('');
-let isUpdating = $state(false);
-let currentTab = $state('settings'); // 'settings', 'notifications', 'billing'
-// New Preference States
-let timezone = $state('(GMT+00:00) UTC');
-let dateFormat = $state('MM/DD/YYYY');
+	let displayName = $state('Alex');
+	let username = $state('alex_24flower');
+	let email = $state('alex@example.com');
+	let bio = $state('Product designer and time management enthusiast.');
+	let avatarUrl = $state('');
+	let isUpdating = $state(false);
+	let currentTab = $state('settings'); // 'settings', 'notifications', 'billing'
+	// New Preference States
+	let timezone = $state('(GMT+00:00) UTC');
+	let dateFormat = $state('MM/DD/YYYY');
 
-interface UserData {
-    name?: string;
-    username?: string;
-    email?: string;
-    bio?: string;
-    preferences?: {
-        timezone?: string;
-        dateFormat?: string;
-    };
-	sleep?: {
-		sleepTime?: string;
-		wakeTime?: string;
+	interface UserData {
+		name?: string;
+		username?: string;
+		email?: string;
+		bio?: string;
+		preferences?: {
+			timezone?: string;
+			dateFormat?: string;
+		};
+		sleep?: {
+			sleepTime?: string;
+			wakeTime?: string;
+		};
 	}
-}
 
-onMount(async () => {
-    avatarUrl = generateRandomAvatar();
-    
-    // Helper function to assign user data to state variables
-    const assignUserData = (userData:UserData) => {
-        displayName = userData.name || '';
-        username = userData.username || '';
-        email = userData.email || '';
-        bio = userData.bio || '';
-        
-        // Populate preferences if they exist in the record
-        if (userData.preferences) {
-            timezone = userData.preferences.timezone || '(GMT+00:00) UTC';
-            dateFormat = userData.preferences.dateFormat || 'MM/DD/YYYY';
-        }
-		if (userData.sleep){
-			sleepTime = userData.sleep.sleepTime || '23:00';
-			wakeTime = userData.sleep.wakeTime || '7:00';
+	onMount(async () => {
+		avatarUrl = generateRandomAvatar();
+
+		// Helper function to assign user data to state variables
+		const assignUserData = (userData: UserData) => {
+			displayName = userData.name || '';
+			username = userData.username || '';
+			email = userData.email || '';
+			bio = userData.bio || '';
+
+			// Populate preferences if they exist in the record
+			if (userData.preferences) {
+				timezone = userData.preferences.timezone || '(GMT+00:00) UTC';
+				dateFormat = userData.preferences.dateFormat || 'MM/DD/YYYY';
+			}
+			if (userData.sleep) {
+				sleepTime = userData.sleep.sleepTime || '23:00';
+				wakeTime = userData.sleep.wakeTime || '7:00';
+			}
+		};
+
+		// 1. Check if user exists in the data prop
+		if (data?.user) {
+			assignUserData(data.user);
+			console.log('User loaded from props:', data.user);
 		}
-    };
+		// 2. Fallback: Manual fetch if props are missing
+		else {
+			try {
+				const res = await fetch(`${PUBLIC_API_URL}/auth/profile`, {
+					credentials: 'include'
+				});
 
-    // 1. Check if user exists in the data prop
-    if (data?.user) {
-        assignUserData(data.user);
-        console.log('User loaded from props:', data.user);
-    } 
-    // 2. Fallback: Manual fetch if props are missing
-    else {
-        try {
-            const res = await fetch('http://localhost:3000/auth/profile', { 
-                credentials: 'include' 
-            });
-            
-            if (res.ok) {
-                const result = await res.json();
-                if (result.data) {
-                    assignUserData(result.data);
-                    console.log('User loaded from fallback fetch:', result.data);
-                }
-            }
-        } catch (err) {
-            console.error("Could not load user data via fallback:", err);
-        }
-    }
-});
+				if (res.ok) {
+					const result = await res.json();
+					if (result.data) {
+						assignUserData(result.data);
+						console.log('User loaded from fallback fetch:', result.data);
+					}
+				}
+			} catch (err) {
+				console.error('Could not load user data via fallback:', err);
+			}
+		}
+	});
 	function toggleMobileSidebar() {
 		isSidebarOpen = !isSidebarOpen;
 		if (isSidebarOpen) {
@@ -173,72 +169,105 @@ onMount(async () => {
 		}
 	}
 
-const handleUpdate = async () => {
-    if (isUpdating) return; 
-    
-    isUpdating = true;
-    
-    const formData = {
-        name: displayName,
-        username: username,
-        email: email,
-        bio: bio,
-        preferences: {
-            timezone: timezone, 
-            dateFormat: dateFormat
-        },
-		 sleepLog: {
-                sleepTime: sleepTime,
-                wakeTime: wakeTime
-            },
-    };
+	const handleUpdate = async () => {
+		if (isUpdating) return;
 
-    try {
-        const res = await fetch('http://localhost:3000/auth/update-profile', {
-            method: 'PATCH',
-            body: JSON.stringify(formData),
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-        });
+		isUpdating = true;
 
-        const result = await res.json();
+		const formData = {
+			name: displayName,
+			username: username,
+			email: email,
+			bio: bio,
+			preferences: {
+				timezone: timezone,
+				dateFormat: dateFormat
+			},
+			sleepLog: {
+				sleepTime: sleepTime,
+				wakeTime: wakeTime
+			}
+		};
 
-        if (result.requiresLogout) {
-            window.location.href = '/login?message=Email updated. Please log in again.';
-            return;
-        } 
-        
-        if (res.ok) {
-            notifySuccess("Success", "Profile updated!");
-        } else {
-            notifyError("Update Failed", result.message || "Check your details.");
-        }
-    } catch (err) {
-        notifyError("Network Error", "Could not connect to server.");
-    } finally {
-        isUpdating = false; 
-    }
-};
+		try {
+			const res = await fetch(`${PUBLIC_API_URL}/auth/update-profile`, {
+				method: 'PATCH',
+				body: JSON.stringify(formData),
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include'
+			});
 
-const handleLogout = async () => {
-    try {
-        const response = await fetch('http://localhost:3000/auth/logout', {
-            method: 'POST',
-            credentials: 'include' 
-        });
+			const result = await res.json();
 
-        if (response.ok) {
-            // Perform a page reload and redirect to login
-            window.location.href = '/auth'; 
-			notifySuccess("LogOut completed", "redirecting...")
-        }
-    } catch (error) {
-        console.error('Logout failed:', error);
-		notifyError('Logout failed', String(error))
-		
-    }
-};
+			if (result.requiresLogout) {
+				window.location.href = '/login?message=Email updated. Please log in again.';
+				return;
+			}
 
+			if (res.ok) {
+				notifySuccess('Success', 'Profile updated!');
+			} else {
+				notifyError('Update Failed', result.message || 'Check your details.');
+			}
+		} catch (err) {
+			notifyError('Network Error', 'Could not connect to server.');
+		} finally {
+			isUpdating = false;
+		}
+	};
+
+	const handleLogout = async () => {
+		try {
+			const response = await fetch(`${PUBLIC_API_URL}/auth/logout`, {
+				method: 'POST',
+				credentials: 'include'
+			});
+
+			if (response.ok) {
+				// Perform a page reload and redirect to login
+				window.location.href = '/auth';
+				notifySuccess('LogOut completed', 'redirecting...');
+			}
+		} catch (error) {
+			console.error('Logout failed:', error);
+			notifyError('Logout failed', String(error));
+		}
+	};
+	const deleteAccount = async () => {
+		// Disable deletion for the guest user to protect the shared demo account
+		const userEmail = data?.user?.email || '';
+		if (userEmail === 'jane@24flow.io') {
+			notifyError('Disabled', 'Account deletion is disabled for the guest account.');
+			return;
+		}
+
+		if (
+			!confirm(
+				'Are you sure you want to permanently delete your account? This action cannot be undone.'
+			)
+		) {
+			return;
+		}
+
+		try {
+			const res = await fetch(`${PUBLIC_API_URL}/auth/delete-account`, {
+				method: 'DELETE',
+				credentials: 'include'
+			});
+
+			if (res.ok) {
+				notifySuccess('Account Deleted', 'Your account has been removed.');
+				// Redirect to the public auth page
+				setTimeout(() => (window.location.href = '/auth'), 800);
+			} else {
+				const json = await res.json().catch(() => ({}));
+				notifyError('Deletion Failed', json.message || 'Could not delete account.');
+			}
+		} catch (err) {
+			console.error('Account deletion error:', err);
+			notifyError('Network Error', 'Could not connect to the server.');
+		}
+	};
 </script>
 
 <svelte:head>
@@ -278,7 +307,7 @@ const handleLogout = async () => {
 				>
 					<Settings size={22} /> <span>General</span>
 				</button>
-				<button
+				<!-- <button
 					onclick={() => {
 						currentTab = 'notifications';
 						toggleMobileSidebar();
@@ -299,17 +328,17 @@ const handleLogout = async () => {
 						: 'border-transparent text-[#91a9ca]'} border-2 font-bold text-left"
 				>
 					<CreditCard size={22} /> <span>Billing</span>
-				</button>
+				</button> -->
 			</nav>
 		</div>
 		<div class="mt-auto pt-6 border-t-2 border-[#233248]">
-				<button
+			<button
 				onclick={handleLogout}
-					class="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-red-500 text-red-500 font-bold hover:bg-red-500 hover:text-white transition-colors uppercase text-xs"
-				>
-					<LogOut size={18} /> Logout
-				</button>
-			</div>
+				class="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-red-500 text-red-500 font-bold hover:bg-red-500 hover:text-white transition-colors uppercase text-xs"
+			>
+				<LogOut size={18} /> Logout
+			</button>
+		</div>
 	</div>
 
 	<div class="flex flex-1 w-full max-w-[1440px] mx-auto relative">
@@ -327,7 +356,7 @@ const handleLogout = async () => {
 					>
 						<Settings size={20} /> <span class="text-sm">General</span>
 					</button>
-					<button
+					<!-- <button
 						onclick={() => (currentTab = 'notifications')}
 						class="flex items-center gap-3 px-4 py-3 {currentTab === 'notifications'
 							? 'bg-[#233248] border-black shadow-neo-primary'
@@ -342,12 +371,12 @@ const handleLogout = async () => {
 							: 'border-transparent text-[#91a9ca]'} border-2 hover:bg-[#233248]/50 hover:text-white transition-colors text-left w-full"
 					>
 						<CreditCard size={20} /> <span class="text-sm font-medium">Billing</span>
-					</button>
+					</button> -->
 				</nav>
 			</div>
 			<div class="mt-auto pt-6 border-t-2 border-[#233248]">
 				<button
-				onclick={handleLogout}
+					onclick={handleLogout}
 					class="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-red-500 text-red-500 font-bold hover:bg-red-500 hover:text-white transition-colors uppercase text-xs"
 				>
 					<LogOut size={18} /> Logout
@@ -385,24 +414,28 @@ const handleLogout = async () => {
 							system updates.{:else}Review your plan, invoices, and payment methods.{/if}
 					</p>
 				</div>
-			<button
-    onclick={handleUpdate}
-    disabled={isUpdating}
-    class="neo-btn-primary px-6 py-3 text-white font-bold flex items-center gap-2 uppercase transition-all
-    {isUpdating ? 'opacity-70 cursor-not-allowed shadow-none translate-x-1 translate-y-1' : 'hover:cursor-pointer'}"
->
-    {#if isUpdating}
-        <div class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-      Processing...
-    {:else}
-        <Save size={20} /> Save Changes
-    {/if}
-</button>
+				<button
+					onclick={handleUpdate}
+					disabled={isUpdating}
+					class="neo-btn-primary px-6 py-3 text-white font-bold flex items-center gap-2 uppercase transition-all
+    {isUpdating
+						? 'opacity-70 cursor-not-allowed shadow-none translate-x-1 translate-y-1'
+						: 'hover:cursor-pointer'}"
+				>
+					{#if isUpdating}
+						<div
+							class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"
+						></div>
+						Processing...
+					{:else}
+						<Save size={20} /> Save Changes
+					{/if}
+				</button>
 			</div>
 
 			{#if currentTab === 'settings'}
-				<div class="grid grid-cols-1  gap-8">
-					<div class="xl:col-span-2 flex flex-col gap-8">
+				<div class="grid grid-cols-1 gap-8">
+					<div class=" flex flex-col gap-8">
 						<div class="neo-card p-6 md:p-8">
 							<div class="flex items-center justify-between mb-6 border-b-2 border-[#233248] pb-4">
 								<h3 class="text-2xl font-bold text-white uppercase flex items-center gap-2">
@@ -549,7 +582,7 @@ const handleLogout = async () => {
 									>
 									<div class="relative">
 										<select
-										bind:value={timezone}
+											bind:value={timezone}
 											class="neo-input h-12 px-4 w-full text-base font-bold appearance-none cursor-pointer"
 										>
 											<option>(GMT-08:00) Pacific Time</option>
@@ -568,7 +601,7 @@ const handleLogout = async () => {
 									>
 									<div class="relative">
 										<select
-										bind:value={dateFormat}
+											bind:value={dateFormat}
 											class="neo-input h-12 px-4 w-full text-base font-bold appearance-none cursor-pointer"
 										>
 											<option>MM/DD/YYYY</option>
@@ -599,14 +632,18 @@ const handleLogout = async () => {
 								</h3>
 								<p class="text-red-300 text-sm mb-6 font-medium">Actions here cannot be undone.</p>
 								<button
-									class="w-full bg-red-600 text-white font-bold py-4 px-4 border-2 border-black shadow-neo hover:translate-y-1 hover:shadow-none transition-all uppercase tracking-widest text-sm"
-									>Delete Account</button
+									onclick={deleteAccount}
+									disabled={data?.user?.email === 'jane@24flow.io'}
+									class="w-full bg-red-600/40 text-white/70 font-bold py-4 px-4 border-2 border-black shadow-neo transition-all uppercase tracking-widest text-sm"
+									>{data?.user?.email === 'jane@24flow.io'
+										? 'Delete Account (guest - disabled)'
+										: 'Delete Account'}</button
 								>
 							</div>
 						</div>
 					</div>
 				</div>
-			{:else if currentTab === 'notifications'}
+				<!-- {:else if currentTab === 'notifications'}
 				<div class="neo-card p-8 flex flex-col gap-6">
 					<div class="flex items-center gap-4 border-b-2 border-[#233248] pb-6">
 						<ShieldCheck class="text-green-500" size={32} />
@@ -653,12 +690,12 @@ const handleLogout = async () => {
 						>
 					</div>
 				</div>
+			 -->
 			{/if}
 		</main>
 	</div>
 </div>
 <Toaster position="bottom-right" expand={false} richColors />
-
 
 <style lang="postcss">
 	:global(.font-display) {

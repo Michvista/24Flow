@@ -16,6 +16,7 @@
 	} from 'lucide-svelte';
 	import { gsap } from 'gsap';
 	import { z } from 'zod';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	// State Management
 	let isLogin = $state(true);
@@ -186,7 +187,7 @@
 		}
 		loading = true;
 		try {
-			const response = await fetch('http://localhost:3000/auth/login', {
+			const response = await fetch(`${PUBLIC_API_URL}/auth/login`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(requestData),
@@ -200,24 +201,31 @@
 
 				// Redirect to dashboard after a short delay
 				setTimeout(() => (window.location.href = '/dashboard'), 1000);
-			}  else {
-    // Check if result.message is an object or array
-    let displayMessage = 'Invalid credentials';
-    
-    if (typeof result.message === 'string') {
-        displayMessage = result.message;
-    } else if (typeof result.message === 'object') {
-        displayMessage = JSON.stringify(result.message);
-    }
+			} else {
+				// Check if result.message is an object or array
+				let displayMessage = 'Invalid credentials';
 
-    notifyError('Login Failed', displayMessage);
-}
+				if (typeof result.message === 'string') {
+					displayMessage = result.message;
+				} else if (typeof result.message === 'object') {
+					displayMessage = JSON.stringify(result.message);
+				}
+
+				notifyError('Login Failed', displayMessage);
+			}
 		} catch (error) {
 			console.error('Login error:', error);
 			notifyError('Connection Error', 'Could not connect to the server');
 		} finally {
 			loading = false;
 		}
+	};
+
+	const loginAsGuest = async () => {
+		// prefill guest credentials and submit
+		emailInput = 'jane@24flow.io';
+		passwordInput = 'phillip';
+		await handleAuthenticate();
 	};
 
 	const signUp = async () => {
@@ -241,10 +249,10 @@
 		loading = true;
 
 		try {
-			const response = await fetch('http://localhost:3000/auth/register', {
+			const response = await fetch(`${PUBLIC_API_URL}/auth/register`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(apiData), 
+				body: JSON.stringify(apiData),
 				credentials: 'include'
 			});
 
@@ -252,7 +260,6 @@
 
 			if (response.ok) {
 				notifySuccess('Account Created', 'Setting up your profile...');
-
 
 				setTimeout(() => (window.location.href = '/dashboard'), 1500);
 			} else {
@@ -267,9 +274,8 @@
 	};
 
 	const logInWithGoogle = () => {
-		window.location.href = 'http://localhost:3000/auth/google';
+		window.location.href = `${PUBLIC_API_URL}/auth/google`;
 	};
-
 </script>
 
 <svelte:head>
@@ -367,10 +373,18 @@
 										>
 										<!-- <button
 											type="button"
-											disabled
+										onclick={loginAsGuest}
+										disabled={loading}
 											class="text-gray-400 disabled:cursor-not-allowed hover:text-white text-xs underline font-mono decoration-1 underline-offset-4"
 											>FORGOT KEY?</button
 										> -->
+										<button
+											type="button"
+										onclick={loginAsGuest}
+										disabled={loading}
+											class="text-gray-400 uppercase disabled:cursor-not-allowed hover:text-white text-xs underline font-mono decoration-1 underline-offset-4"
+											>Login as Guest</button
+										>
 									</div>
 									<div class="relative">
 										<input
@@ -403,6 +417,16 @@
 											Authenticate <ArrowRight size={20} />
 										{/if}
 									</button>
+
+									<!-- Guest login for demo users -->
+									<!-- <button
+										onclick={loginAsGuest}
+										disabled={loading}
+										type="button"
+										class="mt-3 w-full bg-[#ffffff]/10 border-2 border-white/20 text-white h-12 px-5 font-bold uppercase tracking-widest hover:bg-[#ffffff]/20 transition-all"
+									>
+										Login as Guest
+									</button> -->
 								</div>
 
 								<div class="flex items-center gap-4 pt-1">
@@ -618,7 +642,7 @@
 												<div
 													class=" right-3 translate-y-5 flex gap-2 text-green-500 animate-bounce"
 												>
-													They Match! 
+													They Match!
 												</div>
 											{/if}
 										</div>

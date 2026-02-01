@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	import { gsap } from 'gsap';
 	import {
 		LayoutDashboard,
@@ -116,145 +117,147 @@
 	let newTask = $state({ title: '', type: 'Deep Work', duration: '1h', color: 'bg-primary' });
 
 	const hours24 = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0') + ':00');
-// --- Edit Mode Handlers ---
-    function enterEditMode() {
-        // Deep copy to backup
-        scheduleDataBackup = JSON.parse(JSON.stringify(scheduleData));
-        isEditMode = true;
-    }
+	// --- Edit Mode Handlers ---
+	function enterEditMode() {
+		// Deep copy to backup
+		scheduleDataBackup = JSON.parse(JSON.stringify(scheduleData));
+		isEditMode = true;
+	}
 
-    function cancelEdit() {
-        // Just restore the local state and close the mode. 
-        // No need to persist to backend on a "Cancel" action.
-        scheduleData = JSON.parse(JSON.stringify(scheduleDataBackup));
-        isEditMode = false;
-        notifySuccess('Cancelled', 'Changes discarded');
-    }
+	function cancelEdit() {
+		// Just restore the local state and close the mode.
+		// No need to persist to backend on a "Cancel" action.
+		scheduleData = JSON.parse(JSON.stringify(scheduleDataBackup));
+		isEditMode = false;
+		notifySuccess('Cancelled', 'Changes discarded');
+	}
 
-    async function saveEdit() {
-        try {
-            await persistSchedule();
-            notifySuccess('Saved', 'Your changes were saved');
-        } catch (err: any) {
-            console.error('SaveEdit failed', err);
+	async function saveEdit() {
+		try {
+			await persistSchedule();
+			notifySuccess('Saved', 'Your changes were saved');
+		} catch (err: any) {
+			console.error('SaveEdit failed', err);
 			notifyError('Save Failed', err.message || 'Could not save changes');
-        } finally {
-            isEditMode = false;
-        }
-    }
+		} finally {
+			isEditMode = false;
+		}
+	}
 
-    // --- Handlers ---
-    async function handleDetailedAdd(data: any) {
-        const id = Math.random(); // Note: Better to use crypto.randomUUID() for strings
-        const dateObj = new Date(data.date);
-        let dayIdx = dateObj.getDay() - 1;
-        if (dayIdx === -1) dayIdx = 6;
-        const formattedTime = data.startTime.split(':')[0] + ':00';
+	// --- Handlers ---
+	async function handleDetailedAdd(data: any) {
+		const id = Math.random(); // Note: Better to use crypto.randomUUID() for strings
+		const dateObj = new Date(data.date);
+		let dayIdx = dateObj.getDay() - 1;
+		if (dayIdx === -1) dayIdx = 6;
+		const formattedTime = data.startTime.split(':')[0] + ':00';
 
-        const newTaskObj: Task = {
-            id: id, // if Task id is string, use String(id)
-            week: weekOffset,
-            day: dayIdx,
-            time: formattedTime,
-            title: data.title,
-            type: data.subject || data.type,
-            duration: data.duration + 'm',
-            color: 'bg-primary',
-            subColor: 'text-blue-200',
-            description: data.description
-        };
+		const newTaskObj: Task = {
+			id: id, // if Task id is string, use String(id)
+			week: weekOffset,
+			day: dayIdx,
+			time: formattedTime,
+			title: data.title,
+			type: data.subject || data.type,
+			duration: data.duration + 'm',
+			color: 'bg-primary',
+			subColor: 'text-blue-200',
+			description: data.description
+		};
 
-        scheduleData = [...scheduleData, newTaskObj];
+		scheduleData = [...scheduleData, newTaskObj];
 
-        try {
-            await persistSchedule();
-            notifySuccess('Added', 'Task added to your schedule');
-        } catch (err: any) {
-            console.error('Persist add failed', err);
-        }
-    }
+		try {
+			await persistSchedule();
+			notifySuccess('Added', 'Task added to your schedule');
+		} catch (err: any) {
+			console.error('Persist add failed', err);
+		}
+	}
 
-    // FIX: Added type 'string | number' to handle both formats
-    async function handleDelete(id: string | number) {
-        scheduleData = scheduleData.filter((i) => i.id !== id);
+	// FIX: Added type 'string | number' to handle both formats
+	async function handleDelete(id: string | number) {
+		scheduleData = scheduleData.filter((i) => i.id !== id);
 
-        try {
-            await persistSchedule();
-            notifySuccess('Deleted', 'Task removed from schedule');
-        } catch (err: any) {
-            console.error('Persist delete failed', err);
-        }
-    }
+		try {
+			await persistSchedule();
+			notifySuccess('Deleted', 'Task removed from schedule');
+		} catch (err: any) {
+			console.error('Persist delete failed', err);
+		}
+	}
 
-    // --- Drag & Drop ---
-    let draggedItem = $state<any>(null);
+	// --- Drag & Drop ---
+	let draggedItem = $state<any>(null);
 
-    // FIX: Added types to 'item' and 'source'
-    function onDragStart(event: DragEvent, item: any, source: 'backlog' | 'calendar') {
-        draggedItem = { ...item, source };
-        try {
-            if (event.dataTransfer) {
-                event.dataTransfer.effectAllowed = 'move';
-                event.dataTransfer.setData('application/json', JSON.stringify({ id: item.id, source }));
-            }
-        } catch (err) { /* ignore */ }
-    }
+	// FIX: Added types to 'item' and 'source'
+	function onDragStart(event: DragEvent, item: any, source: 'backlog' | 'calendar') {
+		draggedItem = { ...item, source };
+		try {
+			if (event.dataTransfer) {
+				event.dataTransfer.effectAllowed = 'move';
+				event.dataTransfer.setData('application/json', JSON.stringify({ id: item.id, source }));
+			}
+		} catch (err) {
+			/* ignore */
+		}
+	}
 
-    async function onDrop(event: DragEvent, day: number, time: string) {
-        event.preventDefault();
-        if (!draggedItem) return;
-        
-        // Remove from old position if it was already on the calendar
-        if (draggedItem.source === 'calendar') {
-            scheduleData = scheduleData.filter((i) => i.id !== draggedItem.id);
-        }
-        
-        scheduleData = [
-            ...scheduleData,
-            {
-                ...draggedItem,
-                id: Math.random(),
-                week: weekOffset,
-                day,
-                time
-            }
-        ];
-        isSidebarOpen = false;
-        draggedItem = null;
+	async function onDrop(event: DragEvent, day: number, time: string) {
+		event.preventDefault();
+		if (!draggedItem) return;
 
-        try {
-            await persistSchedule();
-            notifySuccess('Moved', 'Task moved and saved');
-        } catch (err: any) {
-            console.error('Persist drop failed', err);
-        }
-    }
+		// Remove from old position if it was already on the calendar
+		if (draggedItem.source === 'calendar') {
+			scheduleData = scheduleData.filter((i) => i.id !== draggedItem.id);
+		}
 
- async function persistSchedule() {
-    if (!planId) {
-        notifyError('Save Failed', 'No plan id available');
-        throw new Error('Missing planId');
-    }
+		scheduleData = [
+			...scheduleData,
+			{
+				...draggedItem,
+				id: Math.random(),
+				week: weekOffset,
+				day,
+				time
+			}
+		];
+		isSidebarOpen = false;
+		draggedItem = null;
 
-    // Svelte 5: Use snapshot to get a clean object from $state
-    const payload = {
-        schedule: {
-            tasks: $state.snapshot(scheduleData),
-            backlog: $state.snapshot(backlog)
-        }
-    };
+		try {
+			await persistSchedule();
+			notifySuccess('Moved', 'Task moved and saved');
+		} catch (err: any) {
+			console.error('Persist drop failed', err);
+		}
+	}
 
-    const res = await fetch(`http://localhost:3000/study-plans/${planId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(payload)
-    });
+	async function persistSchedule() {
+		if (!planId) {
+			notifyError('Save Failed', 'No plan id available');
+			throw new Error('Missing planId');
+		}
 
-    const json = await res.json();
-    if (!res.ok) throw new Error(json?.error || 'Failed to persist');
-    return json.plan;
-}
+		// Svelte 5: Use snapshot to get a clean object from $state
+		const payload = {
+			schedule: {
+				tasks: $state.snapshot(scheduleData),
+				backlog: $state.snapshot(backlog)
+			}
+		};
+
+		const res = await fetch(`${PUBLIC_API_URL}/study-plans/${planId}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
+			body: JSON.stringify(payload)
+		});
+
+		const json = await res.json();
+		if (!res.ok) throw new Error(json?.error || 'Failed to persist');
+		return json.plan;
+	}
 	// Helpers
 	const getDayDate = (dayIndex: number) => {
 		const d = new Date();
@@ -314,14 +317,13 @@
 		planId = $page.params.id ?? '';
 
 		try {
-			const res = await fetch(`http://localhost:3000/study-plans/${planId}`, {
+			const res = await fetch(`${PUBLIC_API_URL}/study-plans/${planId}`, {
 				method: 'GET',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include'
 			});
 
 			const json = await res.json();
-			console.log(json);
 
 			// Defensive normalization: backend should already normalize, but handle malformed AI shapes here
 			const normalizeLocal = (rawSchedule: any) => {
@@ -418,7 +420,7 @@
 			console.error('Failed to load plan', err);
 			// Distinguish network errors from server-side responses
 			if (err instanceof TypeError && /Failed to fetch/i.test(String(err.message))) {
-				errorMessage = 'Cannot reach backend at http://localhost:3000 — is the backend running?';
+				errorMessage = `Cannot reach backend at ${PUBLIC_API_URL} — is the backend running?`;
 			} else {
 				errorMessage = err?.message ?? 'Failed to load your study plan.';
 			}

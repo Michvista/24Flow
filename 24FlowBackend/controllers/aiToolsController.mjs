@@ -5,6 +5,7 @@ import { GoogleGenAI } from '@google/genai';
 import { generateWithGemini } from '../services/geminiService.mjs';
 import { processAndSaveNLPEvent } from '../services/languageService.mjs';
 import { performOCR } from '../services/OCRService.mjs';
+import { generateAndStoreReport } from '../services/cronService.mjs';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -89,21 +90,28 @@ export const handleAiTool = async (req, res, next) => {
 			}
 
 			case 'GET_INTELLIGENCE_REPORT': {
-				// 1. Find the report the Cron Job already made for today
-				const behaviorReport = await prisma.behaviorSummary.findUnique({
-					where: { userId: req.user.id }
-				});
+				console.log('generate intel for user:', req.user.id);
+
+				let behaviorReport = await generateAndStoreReport(req.user.id);
 
 				if (!behaviorReport) {
-					return res.status(200).json({
-						status: 'success',
-						data: null,
-						message: 'No report generated yet'
-					});
-				}
+					console.error('CRITICAL: generateAndStoreReport returned NULL');
+					aiResponse = null;
+				} else {
+					let finalData = behaviorReport.summary;
 
-				// 2. Return the stored summary
-				aiResponse = behaviorReport.summary;
+					// Handle parsing if it comes back as a string from Prisma
+					if (typeof finalData === 'string') {
+						try {
+							finalData = JSON.parse(finalData);
+						} catch (e) {
+							console.error('JSON Parse Error:', e);
+						}
+					}
+
+					aiResponse = finalData;
+					console.log('SUCCESS: Sending fresh data to frontend:', aiResponse);
+				}
 				break;
 			}
 

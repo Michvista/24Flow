@@ -14,6 +14,7 @@
 	} from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
@@ -115,7 +116,7 @@
 		};
 
 		try {
-			const res = await fetch('http://localhost:3000/study-plans', {
+			const res = await fetch(`${PUBLIC_API_URL}/study-plans`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
@@ -149,7 +150,7 @@
 
 	onMount(async () => {
 		try {
-			const res = await fetch('http://localhost:3000/ai/status', {
+			const res = await fetch(`${PUBLIC_API_URL}/ai/status`, {
 				method: 'GET',
 				credentials: 'include',
 				headers: { 'Content-Type': 'application/json' }
@@ -162,7 +163,7 @@
 		}
 		// Fetch insights automatically
 		try {
-			const r = await fetch('http://localhost:3000/ai/insights', {
+			const r = await fetch(`${PUBLIC_API_URL}/ai/insights`, {
 				method: 'GET',
 				credentials: 'include',
 				headers: { 'Content-Type': 'application/json' }
