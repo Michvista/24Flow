@@ -97,8 +97,8 @@
 
 	async function generateTimetable() {
 		// improved flow with messages
-		if (queuedSubjects.length === 0) {
-			errorMessage = 'Please add at least one subject';
+		if (queuedSubjects.length === 0 && (deadline === '' || deadline === null)) {
+			errorMessage = 'Please add at least one subject and a deadline';
 			return;
 		}
 
