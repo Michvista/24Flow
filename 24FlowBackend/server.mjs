@@ -43,7 +43,7 @@ app.use('/', route);
 
 console.log('ENV CHECK', {
 	nodeEnv: process.env.NODE_ENV,
-	hasJwt: !!process.env.JWT_SECRET,
+	hasJwt: !!process.env.ACCESS_TOKEN_SECRET,
 	hasDb: !!process.env.DATABASE_URL
 });
 
