@@ -185,18 +185,10 @@ export const googleAuth = async (req, res) => {
 	// Generate tokens
 	const accessToken = await signAccessToken(user.id);
 
-	//  STORE TOKEN IN COOKIE
-	res.cookie('accessToken', accessToken, {
-		httpOnly: true,
-		secure: true, // HTTPS required
-		sameSite: 'none', // cross-site
-		path: '/', // root path
-		maxAge: 7 * 24 * 60 * 60 * 1000
-	});
-
-	// REDIRECT BACK TO FRONTEND
+	// REDIRECT BACK TO FRONTEND WITH TOKEN
+	// The frontend will extract the token and store it as a cookie
 	const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:5173';
-	res.redirect(`${FRONTEND}/dashboard`);
+	res.redirect(`${FRONTEND}/auth/callback?token=${accessToken}`);
 };
 
 export const updateProfile = async (req, res, next) => {

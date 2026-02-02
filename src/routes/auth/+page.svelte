@@ -88,7 +88,7 @@
 		);
 	}
 
-	onMount(async() => {
+	onMount(async () => {
 		gsap.to('.tilt', {
 			y: 'random(-25,25)',
 			x: 'random(-25,25)',
@@ -99,14 +99,6 @@
 			ease: 'sine.inOut',
 			stagger: 0.2
 		});
-
-	await	fetch('https://two4flow.onrender.com/__debug', {
-	method: 'POST',
-	credentials: 'include',
-	headers: { 'Content-Type': 'application/json' },
-	body: JSON.stringify({ test: true })
-});
-
 	});
 	function spinAction(node: HTMLElement) {
 		gsap.to(node, {
@@ -195,11 +187,11 @@
 		}
 		loading = true;
 		try {
-			const response = await fetch(`${PUBLIC_API_URL}/auth/login`, {
+			// Use the SvelteKit API proxy to set cookies on the same domain
+			const response = await fetch(`/api/auth/login`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(requestData),
-				credentials: 'include'
+				body: JSON.stringify(requestData)
 			});
 
 			const result = await response.json();
@@ -257,11 +249,11 @@
 		loading = true;
 
 		try {
-			const response = await fetch(`${PUBLIC_API_URL}/auth/register`, {
+			// Use the SvelteKit API proxy to set cookies on the same domain
+			const response = await fetch(`/api/auth/register`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(apiData),
-				credentials: 'include'
+				body: JSON.stringify(apiData)
 			});
 
 			const result = await response.json();
@@ -388,8 +380,8 @@
 										> -->
 										<button
 											type="button"
-										onclick={loginAsGuest}
-										disabled={loading}
+											onclick={loginAsGuest}
+											disabled={loading}
 											class="text-gray-400 uppercase disabled:cursor-not-allowed hover:text-white text-xs underline font-mono decoration-1 underline-offset-4"
 											>Login as Guest</button
 										>
