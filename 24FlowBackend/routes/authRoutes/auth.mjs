@@ -26,7 +26,9 @@ router.get(
 router.get(
 	'/google/callback',
 	passport.authenticate('google', {
-		failureRedirect: 'http://localhost:5173/auth',
+		failureRedirect: process.env.FRONTEND_URL
+			? `${process.env.FRONTEND_URL}/auth`
+			: 'http://localhost:5173/auth',
 		session: false,
 		failureMessage: 'Failed to login with Google'
 	}),
@@ -38,6 +40,6 @@ router.post('/register', register);
 router.get('/profile', protect, profile);
 router.patch('/update-profile', protect, updateProfile);
 router.post('/logout', protect, logOut);
-router.delete('/delete-account', protect, deleteAccount)
+router.delete('/delete-account', protect, deleteAccount);
 
 export default router;
