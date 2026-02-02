@@ -218,15 +218,15 @@
 
 	const handleLogout = async () => {
 		try {
-			const response = await fetch(`${PUBLIC_API_URL}/auth/logout`, {
-				method: 'POST',
-				credentials: 'include'
+			// Use the SvelteKit API proxy to clear the cookie on the same domain
+			const response = await fetch(`/api/auth/logout`, {
+				method: 'POST'
 			});
 
 			if (response.ok) {
+				notifySuccess('LogOut completed', 'redirecting...');
 				// Perform a page reload and redirect to login
 				window.location.href = '/auth';
-				notifySuccess('LogOut completed', 'redirecting...');
 			}
 		} catch (error) {
 			console.error('Logout failed:', error);

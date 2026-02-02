@@ -7,6 +7,11 @@ if (process.env.NODE_ENV !== 'production') {
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
+console.log('CORS Config:', {
+	FRONTEND_URL,
+	allowedOrigins: [FRONTEND_URL, 'http://localhost:5173']
+});
+
 import bodyParser from 'body-parser';
 import route from './routes/router.mjs';
 import passport from './passport-config.mjs';

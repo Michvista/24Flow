@@ -13,21 +13,36 @@ const router = express.Router();
 router.get('/', (req, res) => {
 	res.send('Hello World!');
 });
+
 router.post('/__debug', (req, res) => {
 	console.log('[DEBUG ROUTE HIT]');
-	console.log('Headers:', req.headers);
-	console.log('Body:', req.body);
-	res.json({ ok: true });
+	console.log('Origin:', req.headers.origin);
+	console.log('Cookies:', req.cookies);
+
+	// Set a test cookie
+	res.cookie('testCookie', 'works', {
+		httpOnly: true,
+		secure: true,
+		sameSite: 'none',
+		path: '/',
+		maxAge: 60000
+	});
+
+	res.json({
+		ok: true,
+		origin: req.headers.origin,
+		corsOrigin: process.env.FRONTEND_URL,
+		receivedCookies: req.cookies
+	});
 });
 
-
 router.use('/auth', auth);
-router.use('/events', event)
-router.use('/tasks', task)
-router.use('/ai',tools )
-router.use('/conflicts',overlap )
-router.use('/timetable',timetable )
-router.use('/study-plans',studyPlan)
+router.use('/events', event);
+router.use('/tasks', task);
+router.use('/ai', tools);
+router.use('/conflicts', overlap);
+router.use('/timetable', timetable);
+router.use('/study-plans', studyPlan);
 
 router.use(async (req, res, next) => {
 	next(createError.NotFound('Route not Found'));
