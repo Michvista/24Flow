@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+	dotenv.config();
+}
 
 import bodyParser from 'body-parser';
 import route from './routes/router.mjs';
@@ -36,6 +38,11 @@ initCron();
 
 app.use('/', route);
 
+console.log('ENV CHECK', {
+	nodeEnv: process.env.NODE_ENV,
+	hasJwt: !!process.env.JWT_SECRET,
+	hasDb: !!process.env.DATABASE_URL
+});
 
 app.listen(3000, () => {
 	console.log('Server is running on port 3000');
