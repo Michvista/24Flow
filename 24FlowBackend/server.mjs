@@ -39,11 +39,6 @@ initCron();
 
 
 app.use('/', route);
-app.post('/__debug', (req, res) => {
-	console.log('[DEBUG] headers:', req.headers);
-	console.log('[DEBUG] body:', req.body);
-	res.json({ ok: true });
-});
 
 
 console.log('ENV CHECK', {

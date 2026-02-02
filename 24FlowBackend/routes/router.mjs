@@ -13,6 +13,13 @@ const router = express.Router();
 router.get('/', (req, res) => {
 	res.send('Hello World!');
 });
+router.post('/__debug', (req, res) => {
+	console.log('[DEBUG ROUTE HIT]');
+	console.log('Headers:', req.headers);
+	console.log('Body:', req.body);
+	res.json({ ok: true });
+});
+
 
 router.use('/auth', auth);
 router.use('/events', event)
