@@ -33,11 +33,12 @@ export const register = async (req, res, next) => {
 		const accessToken = await signAccessToken(user.id);
 
 		res.cookie('accessToken', accessToken, {
-		httpOnly: true,
-		secure: true,
-		sameSite: 'none',
-		maxAge: 7 * 24 * 60 * 60 * 1000
-	});
+			httpOnly: true,
+			secure: true, // HTTPS required
+			sameSite: 'none', // cross-site
+			path: '/', // root path
+			maxAge: 7 * 24 * 60 * 60 * 1000
+		});
 
 		res.status(201).json({
 			status: true,
@@ -47,8 +48,7 @@ export const register = async (req, res, next) => {
 	} catch (e) {
 		next(e);
 	}
-}; 
-
+};
 
 export const login = async (req, res, next) => {
 	console.log('[LOGIN] Request received');
@@ -116,8 +116,9 @@ export const login = async (req, res, next) => {
 
 		res.cookie('accessToken', accessToken, {
 			httpOnly: true,
-			secure: true, // REQUIRED for SameSite=None
-			sameSite: 'none',
+			secure: true, // HTTPS required
+			sameSite: 'none', // cross-site
+			path: '/', // root path
 			maxAge: 7 * 24 * 60 * 60 * 1000
 		});
 
@@ -139,7 +140,6 @@ export const login = async (req, res, next) => {
 		});
 	}
 };
-
 
 export const profile = async (req, res, next) => {
 	try {
@@ -188,15 +188,15 @@ export const googleAuth = async (req, res) => {
 	//  STORE TOKEN IN COOKIE
 	res.cookie('accessToken', accessToken, {
 		httpOnly: true,
-		secure: true,
-		sameSite: 'none',
+		secure: true, // HTTPS required
+		sameSite: 'none', // cross-site
+		path: '/', // root path
 		maxAge: 7 * 24 * 60 * 60 * 1000
 	});
 
 	// REDIRECT BACK TO FRONTEND
 	res.redirect('http://localhost:5173/dashboard');
 };
-
 
 export const updateProfile = async (req, res, next) => {
 	try {
@@ -236,24 +236,26 @@ export const updateProfile = async (req, res, next) => {
 							}
 						}
 					: undefined,
-					 sleep: sleepLog ? {
-                    upsert: {
-                        where: { userId: userId },
-                        create: { 
-                            sleepTime: sleepLog.sleepTime, 
-                            wakeTime: sleepLog.wakeTime 
-                        },
-                        update: { 
-                            sleepTime: sleepLog.sleepTime, 
-                            wakeTime: sleepLog.wakeTime 
-                        }
-                    }
-                } : undefined
-            },
-            include: { 
-                preferences: true,
-                sleep: true 
-            } 
+				sleep: sleepLog
+					? {
+							upsert: {
+								where: { userId: userId },
+								create: {
+									sleepTime: sleepLog.sleepTime,
+									wakeTime: sleepLog.wakeTime
+								},
+								update: {
+									sleepTime: sleepLog.sleepTime,
+									wakeTime: sleepLog.wakeTime
+								}
+							}
+						}
+					: undefined
+			},
+			include: {
+				preferences: true,
+				sleep: true
+			}
 		});
 
 		if (email && email !== user.email) {
@@ -274,7 +276,6 @@ export const updateProfile = async (req, res, next) => {
 		next(error);
 	}
 };
-
 
 export const logOut = async (req, res, next) => {
 	try {
