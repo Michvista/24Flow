@@ -15,6 +15,8 @@ import { initCron } from './services/cronService.mjs';
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 app.use(cookieParser());
 app.use(
 	cors({
@@ -37,6 +39,12 @@ initCron();
 
 
 app.use('/', route);
+app.post('/__debug', (req, res) => {
+	console.log('[DEBUG] headers:', req.headers);
+	console.log('[DEBUG] body:', req.body);
+	res.json({ ok: true });
+});
+
 
 console.log('ENV CHECK', {
 	nodeEnv: process.env.NODE_ENV,

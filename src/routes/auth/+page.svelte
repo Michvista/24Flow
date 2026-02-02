@@ -99,6 +99,7 @@
 			ease: 'sine.inOut',
 			stagger: 0.2
 		});
+		
 	});
 	function spinAction(node: HTMLElement) {
 		gsap.to(node, {
