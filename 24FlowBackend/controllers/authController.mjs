@@ -51,20 +51,37 @@ export const register = async (req, res, next) => {
 
 
 export const login = async (req, res, next) => {
+	console.log('[LOGIN] Request received');
+
 	try {
 		const { email, password } = req.body;
 
-		const user = await prisma.user.findUnique({ where: { email } });
+		console.log('[LOGIN] Payload:', { email, hasPassword: !!password });
+
+		if (!email || !password) {
+			console.warn('[LOGIN] Missing email or password');
+			return res.status(400).json({
+				status: false,
+				message: 'Email and password are required'
+			});
+		}
+
+		const user = await prisma.user.findUnique({
+			where: { email }
+		});
+
+		console.log('[LOGIN] User found:', !!user);
 
 		if (!user) {
+			console.warn('[LOGIN] User not found:', email);
 			return res.status(404).json({
 				status: false,
 				message: 'User not registered'
 			});
 		}
 
-		//  Check if user has a password (might be a Google-only user)
 		if (!user.password) {
+			console.warn('[LOGIN] Google-only account:', email);
 			return res.status(400).json({
 				status: false,
 				message: 'Please login with Google for this account'
@@ -73,32 +90,56 @@ export const login = async (req, res, next) => {
 
 		const isMatch = await bcrypt.compare(String(password), String(user.password));
 
+		console.log('[LOGIN] Password match:', isMatch);
+
 		if (!isMatch) {
+			console.warn('[LOGIN] Invalid password for:', email);
 			return res.status(401).json({
 				status: false,
 				message: 'Email address or password not valid'
 			});
 		}
-		delete user.password;
+
+		console.log('[LOGIN] Signing JWT');
 
 		const accessToken = await signAccessToken(user.id);
 
-		res.cookie('accessToken', accessToken, {
-		httpOnly: true,
-		secure: true,
-		sameSite: 'none',
-		maxAge: 7 * 24 * 60 * 60 * 1000
-	});
+		if (!accessToken) {
+			console.error('[LOGIN] Token generation failed');
+			return res.status(500).json({
+				status: false,
+				message: 'Authentication failed'
+			});
+		}
 
-		res.status(200).json({
+		console.log('[LOGIN] Setting cookie');
+
+		res.cookie('accessToken', accessToken, {
+			httpOnly: true,
+			secure: true, // REQUIRED for SameSite=None
+			sameSite: 'none',
+			maxAge: 7 * 24 * 60 * 60 * 1000
+		});
+
+		// NEVER mutate Prisma result directly
+		const { password: _, ...safeUser } = user;
+
+		console.log('[LOGIN] Success for:', email);
+
+		return res.status(200).json({
 			status: true,
 			message: 'Account login successful',
-			data: { ...user, accessToken }
+			data: safeUser
 		});
-	} catch (e) {
-		next(e);
+	} catch (err) {
+		console.error('[LOGIN] FATAL ERROR:', err);
+		return res.status(500).json({
+			status: false,
+			message: 'Internal server error'
+		});
 	}
 };
+
 
 export const profile = async (req, res, next) => {
 	try {
