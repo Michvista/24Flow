@@ -88,7 +88,7 @@
 		);
 	}
 
-	onMount(() => {
+	onMount(async() => {
 		gsap.to('.tilt', {
 			y: 'random(-25,25)',
 			x: 'random(-25,25)',
@@ -99,7 +99,14 @@
 			ease: 'sine.inOut',
 			stagger: 0.2
 		});
-		
+
+	await	fetch('http://localhost:3000/__debug', {
+	method: 'POST',
+	credentials: 'include',
+	headers: { 'Content-Type': 'application/json' },
+	body: JSON.stringify({ test: true })
+});
+
 	});
 	function spinAction(node: HTMLElement) {
 		gsap.to(node, {
