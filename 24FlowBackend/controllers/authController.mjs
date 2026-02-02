@@ -33,12 +33,11 @@ export const register = async (req, res, next) => {
 		const accessToken = await signAccessToken(user.id);
 
 		res.cookie('accessToken', accessToken, {
-    httpOnly: true, 
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 86400000 // 24 hours
-});
+		httpOnly: true,
+		secure: true,
+		sameSite: 'none',
+		maxAge: 7 * 24 * 60 * 60 * 1000
+	});
 
 		res.status(201).json({
 			status: true,
@@ -85,12 +84,11 @@ export const login = async (req, res, next) => {
 		const accessToken = await signAccessToken(user.id);
 
 		res.cookie('accessToken', accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 86400000 // 24 hours
-});
+		httpOnly: true,
+		secure: true,
+		sameSite: 'none',
+		maxAge: 7 * 24 * 60 * 60 * 1000
+	});
 
 		res.status(200).json({
 			status: true,
@@ -149,8 +147,9 @@ export const googleAuth = async (req, res) => {
 	//  STORE TOKEN IN COOKIE
 	res.cookie('accessToken', accessToken, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === 'production',
-		sameSite: 'lax'
+		secure: true,
+		sameSite: 'none',
+		maxAge: 7 * 24 * 60 * 60 * 1000
 	});
 
 	// REDIRECT BACK TO FRONTEND
@@ -241,9 +240,8 @@ export const logOut = async (req, res, next) => {
 		//  Clear the specific cookie by its name (e.g., 'accessToken')
 		res.clearCookie('accessToken', {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'strict',
-			path: '/'
+			secure: true,
+			sameSite: 'none'
 		});
 
 		return res.status(200).json({
@@ -273,9 +271,8 @@ export const deleteAccount = async (req, res, next) => {
 		// Clear authentication cookie
 		res.clearCookie('accessToken', {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'strict',	
-			path: '/'
+			secure: true,
+			sameSite: 'none'
 		});
 
 		res.status(200).json({
