@@ -100,7 +100,7 @@
 			stagger: 0.2
 		});
 
-	await	fetch('http://localhost:3000/__debug', {
+	await	fetch('https://two4flow.onrender.com/__debug', {
 	method: 'POST',
 	credentials: 'include',
 	headers: { 'Content-Type': 'application/json' },
