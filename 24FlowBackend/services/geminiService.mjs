@@ -19,7 +19,7 @@ const colors = [
 
 	// Deep Neutrals (For Heavy Borders & Shadows)
 	{ bg: '#000000', text: '#ffffff', name: 'ink-black' },
-	{ bg: '#1e293b', text: '#ffffff', name: 'stark-white' },
+	{ bg: '#1e293b', text: '#ffffff', name: 'slate-dark' },
 	{ bg: '#475569', text: '#ffffff', name: 'concrete-gray' },
 
 	// Muted Accents (For secondary UI elements)
