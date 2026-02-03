@@ -29,16 +29,16 @@ const colors = [
 ];
 
 // 3. SHUFFLE COLORS
-	const shuffle = (arr) => {
-		const a = arr.slice();
-		for (let i = a.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[a[i], a[j]] = [a[j], a[i]];
-		}
-		return a;
-	};
+const shuffle = (arr) => {
+	const a = arr.slice();
+	for (let i = a.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[a[i], a[j]] = [a[j], a[i]];
+	}
+	return a;
+};
 
-	const palette = shuffle(colors);
+const palette = shuffle(colors);
 
 /**
  * Safe JSON parser that extracts JSON from markdown or raw text
@@ -190,8 +190,8 @@ ${subjectsDetails}
 
 8. **PROGRESSION ACROSS ALL ${totalWeeks} WEEKS**:
    - Weeks 0-${Math.floor(totalWeeks / 3)}: Fundamentals and basic concepts
-   - Weeks ${Math.floor(totalWeeks / 3)}-${Math.floor(2 * totalWeeks / 3)}: Intermediate concepts and applications
-   - Weeks ${Math.floor(2 * totalWeeks / 3)}-${totalWeeks - 1}: Advanced topics, integration, and comprehensive review
+   - Weeks ${Math.floor(totalWeeks / 3)}-${Math.floor((2 * totalWeeks) / 3)}: Intermediate concepts and applications
+   - Weeks ${Math.floor((2 * totalWeeks) / 3)}-${totalWeeks - 1}: Advanced topics, integration, and comprehensive review
 
 **JSON FORMAT (return ONLY valid JSON, NO markdown):**
 
@@ -233,7 +233,7 @@ Generate NOW:`;
 				temperature: 0.7,
 				topK: 40,
 				topP: 0.95,
-				maxOutputTokens: 50000 
+				maxOutputTokens: 50000
 			}
 		});
 
@@ -357,7 +357,7 @@ Generate NOW:`;
 							title: task.title,
 							type: task.type,
 							duration: task.duration,
-							color:  palette.bg,
+							color: palette.bg,
 							subColor: palette.text
 						});
 					}
@@ -426,19 +426,22 @@ Generate NOW:`;
 		// ✅ ENHANCED VALIDATION: Check coverage and quality
 		const weeksWithTasks = new Set(finalTasks.map((t) => t.week));
 		console.log('[Gemini] Generated tasks for weeks:', Array.from(weeksWithTasks).sort());
-		
+
 		// Check for generic titles (indicator of poor AI generation)
-		const genericTasks = finalTasks.filter(task => 
-			!task.isBreak && (
-				task.title.includes('Week') && task.title.includes('Study') ||
-				task.title.includes('Continue') ||
-				task.description.includes('Continue') ||
-				!task.description || task.description.length < 20
-			)
+		const genericTasks = finalTasks.filter(
+			(task) =>
+				!task.isBreak &&
+				((task.title.includes('Week') && task.title.includes('Study')) ||
+					task.title.includes('Continue') ||
+					task.description.includes('Continue') ||
+					!task.description ||
+					task.description.length < 20)
 		);
-		
+
 		if (genericTasks.length > finalTasks.length * 0.1) {
-			console.warn(`[Gemini] WARNING: ${genericTasks.length} generic tasks detected (${Math.round(genericTasks.length/finalTasks.length*100)}% of total)`);
+			console.warn(
+				`[Gemini] WARNING: ${genericTasks.length} generic tasks detected (${Math.round((genericTasks.length / finalTasks.length) * 100)}% of total)`
+			);
 		}
 
 		// Check if all days in each week are covered
@@ -458,7 +461,9 @@ Generate NOW:`;
 				if (!days.has(day)) missingDays.push(day);
 			}
 			if (missingDays.length > 0) {
-				console.log(`[Gemini] Week ${week} missing days ${missingDays.join(', ')} - AI failed to generate these`);
+				console.log(
+					`[Gemini] Week ${week} missing days ${missingDays.join(', ')} - AI failed to generate these`
+				);
 				// Fill missing days as last resort
 				const filled = fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks);
 				missingDayTasks.push(...filled);
@@ -491,8 +496,8 @@ Generate NOW:`;
 				title: item.title || 'Study Task',
 				type: item.type || subjects[0]?.name || 'Study',
 				duration: item.duration || '1h',
-				color: isBreak ? '#171717' : subjectColorMap[subject.name]?.bg || '#3d7bff',
-				subColor: isBreak ? '#00f57a' : subjectColorMap[subject.name]?.text || '#ffffff'
+				color: item.isBreak ? '#171717' : subjectColorMap[item.type]?.bg || '#3d7bff',
+				subColor: item.isBreak ? '#00f57a' : subjectColorMap[item.type]?.text || '#ffffff'
 			})),
 			...movedToBacklog
 		];
@@ -521,7 +526,12 @@ Generate NOW:`;
 	} catch (err) {
 		console.error('[Gemini] Generation error:', err);
 		const weeks = calculateWeeksUntilDeadline(preferences.deadline);
-		return getFallbackPlan(subjects, weeks, preferences.dailyHours, preferences.includeBreaks);
+		return getFallbackPlan(
+			preferences.subjects,
+			weeks,
+			preferences.dailyHours,
+			preferences.includeBreaks
+		);
 	}
 };
 

@@ -19,6 +19,12 @@
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
 
+	interface Props {
+		token?: string;
+	}
+
+	let { token = '' }: Props = $props();
+
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
 
@@ -118,8 +124,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/study-plans`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(payload)
 			});
 
@@ -152,8 +159,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/ai/status`, {
 				method: 'GET',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' }
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' }
 			});
 			const json = await res.json();
 			aiActive = !!json?.data?.active;
@@ -165,8 +173,9 @@
 		try {
 			const r = await fetch(`${PUBLIC_API_URL}/ai/insights`, {
 				method: 'GET',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' }
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' }
 			});
 			const j = await r.json();
 			insights = Array.isArray(j?.data?.insights)

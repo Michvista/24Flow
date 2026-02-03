@@ -71,16 +71,17 @@
 	}
 
 	let searchQuery: string = '';
-	let plans: Plan[] = [];
-	let loading: boolean = true;
-	let currentPage: number = 1;
-	let totalPages: number = 4;
-	let showGenerator: boolean = false;
+	let plans: Plan[] = $state([]);
+	let loading: boolean = $state(true);
+	let currentPage: number = $state(1);
+	let totalPages: number = $state(4);
+	let showGenerator: boolean = $state(false);
 
-	export let data;
-	let user = data?.user?.name;
+	let { data } = $props();
+	let user = $derived(data?.user?.name);
+	let token = $derived(data?.token || '');
 
-	let totalTasks: number = 0;
+	let totalTasks: number = $state(0);
 	interface Subject {
 		id: number;
 		name: string;
@@ -98,6 +99,7 @@
 	}
 
 	async function fetchPlans() {
+		if (!token) return; // Don't fetch without token
 		loading = true;
 		try {
 			const params = new URLSearchParams({
@@ -106,8 +108,10 @@
 			});
 
 			const res = await fetch(`${PUBLIC_API_URL}/study-plans?${params}`, {
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include'
+				headers: {
+					'Content-Type': 'application/json',
+					...(token ? { Authorization: `Bearer ${token}` } : {})
+				}
 			});
 
 			const data = await res.json();
@@ -142,7 +146,7 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/study-plans/${id}`, {
 				method: 'DELETE',
-				credentials: 'include'
+				headers: token ? { Authorization: `Bearer ${token}` } : {}
 			});
 			const data = await res.json();
 			if (data.success) {
@@ -155,13 +159,14 @@
 		}
 	}
 
-	// Reactive trigger: Fetch when page or search changes
-	$: {
-		(currentPage, searchQuery); // Reference them so Svelte tracks them
-		fetchPlans();
-	}
+	// Reactive trigger: Fetch when page or search changes AND token is available
+	$effect(() => {
+		if (token) {
+			fetchPlans();
+		}
+	});
 
-	let avatarUrl = '';
+	let avatarUrl = $state('');
 
 	function generateRandomAvatar() {
 		const styles = ['adventurer', 'fun-emoji', 'bottts', 'lorelei', 'avataaars'];
@@ -175,10 +180,11 @@
 	});
 
 	// Reactive trigger: Fetch when page or search changes
-	$: {
-		(currentPage, searchQuery);
-		fetchPlans();
-	}
+	$effect(() => {
+		if (currentPage || searchQuery) {
+			fetchPlans();
+		}
+	});
 
 	function handlePageChange(dir: 'next' | 'prev') {
 		if (dir === 'next' && currentPage < totalPages) currentPage++;
@@ -189,13 +195,13 @@
 <div class=" relative bg-background-dark text-slate-100 min-h-screen font-display">
 	{#if showGenerator}
 		<div class="absolute z-[700] left-10 top-18 text-white">
-			<button on:click={() => (showGenerator = false)}>
+			<button onclick={() => (showGenerator = false)}>
 				<span class="flex justify-center items-center uppercase font-bold">
 					<ArrowBigLeft size={24} /> Back
 				</span>
 			</button>
 		</div>
-		<StudyTimetable />
+		<StudyTimetable {token} />
 	{:else}
 		<header
 			class="border-b-2 bg-background-dark border-slate-900 bg-panel-dark px-6 py-4 flex items-center justify-between sticky top-0 z-50"
@@ -264,7 +270,7 @@
 						/>
 					</div> -->
 					<button
-						on:click={() => (showGenerator = true)}
+						onclick={() => (showGenerator = true)}
 						class="bg-primary text-white px-6 py-3 font-bold uppercase tracking-widest flex items-center gap-2 border-2 border-blue-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
 					>
 						<Plus size={20} /> Create New
@@ -361,14 +367,14 @@
 							</div>
 							<div class="grid grid-cols-2 mt-auto border-t-2 border-slate-900">
 								<button
-									on:click={() =>
+									onclick={() =>
 										(window.location.href = `http://localhost:5173/dashboard/studyTimetable/calendar/${plan.id}`)}
 									class="py-4 font-bold uppercase text-sm flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors border-r-2 border-slate-900"
 								>
 									<Fullscreen size={16} /> View
 								</button>
 								<button
-									on:click={() => deletePlan(plan.id)}
+									onclick={() => deletePlan(plan.id)}
 									class="py-4 font-bold uppercase text-sm flex items-center justify-center gap-2 hover:bg-red-600 transition-colors hover:text-white"
 								>
 									<Trash2 size={16} /> Delete
@@ -381,7 +387,7 @@
 					{/each}
 
 					<button
-						on:click={() => (showGenerator = true)}
+						onclick={() => (showGenerator = true)}
 						class="group relative bg-slate-900/50 border-2 border-dashed border-slate-800 hover:border-primary transition-all flex flex-col items-center justify-center p-12 min-h-[320px]"
 					>
 						<div

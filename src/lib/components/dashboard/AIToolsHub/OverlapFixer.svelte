@@ -18,6 +18,12 @@
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
 
+	interface Props {
+		token?: string;
+	}
+
+	let { token = '' }: Props = $props();
+
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
 
@@ -70,16 +76,16 @@
 	}
 
 	// State management
-	let isResolved = false;
-	let showAnalysis = true;
-	let currentConflictIdx = 0;
-	let allConflicts: Conflict[] = [];
-	let isLoading = true;
-	let errorMessage = '';
-	let isDetecting = false;
+	let isResolved = $state(false);
+	let showAnalysis = $state(true);
+	let currentConflictIdx = $state(0);
+	let allConflicts: Conflict[] = $state([]);
+	let isLoading = $state(true);
+	let errorMessage = $state('');
+	let isDetecting = $state(false);
 
-	$: activeConflict = allConflicts[currentConflictIdx];
-	$: hasConflicts = allConflicts.length > 0;
+	let activeConflict = $derived(allConflicts[currentConflictIdx]);
+	let hasConflicts = $derived(allConflicts.length > 0);
 
 	onMount(async () => {
 		await fetchConflicts();
@@ -95,8 +101,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/conflicts`, {
 				method: 'GET',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include'
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' }
 			});
 
 			if (!res.ok) {
@@ -140,8 +147,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/conflicts/detect`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include'
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' }
 			});
 
 			const result = await res.json();
@@ -223,8 +231,9 @@
 
 			const res = await fetch(`${PUBLIC_API_URL}/conflicts/${encodedConflictId}/accept`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include'
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' }
 			});
 
 			if (!res.ok) {
@@ -286,8 +295,9 @@
 
 			const res = await fetch(`${PUBLIC_API_URL}/conflicts/${encodedConflictId}/decline`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include'
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' }
 			});
 
 			if (!res.ok) {
@@ -357,14 +367,14 @@
 				<p class="text-slate-300 text-lg font-bold">{errorMessage}</p>
 				<div class="flex gap-4 mt-4">
 					<button
-						on:click={fetchConflicts}
+						onclick={fetchConflicts}
 						class="px-6 py-2 bg-primary text-white rounded font-bold hover:bg-primary/80 flex items-center gap-2"
 					>
 						<RefreshCw size={16} />
 						Refresh
 					</button>
 					<button
-						on:click={detectNewConflicts}
+						onclick={detectNewConflicts}
 						disabled={isDetecting}
 						class="px-6 py-2 bg-slate-700 text-white rounded font-bold hover:bg-slate-600 flex items-center gap-2 disabled:opacity-50"
 					>
@@ -398,7 +408,7 @@
 							{#if allConflicts.length > 1}
 								<div class="flex items-center gap-1 ml-2">
 									<button
-										on:click={prev}
+										onclick={prev}
 										disabled={currentConflictIdx === 0}
 										class="p-1 hover:bg-white/10 rounded disabled:opacity-20 text-white"
 									>
@@ -408,7 +418,7 @@
 										>{currentConflictIdx + 1}/{allConflicts.length}</span
 									>
 									<button
-										on:click={next}
+										onclick={next}
 										disabled={currentConflictIdx === allConflicts.length - 1}
 										class="p-1 hover:bg-white/10 rounded disabled:opacity-20 text-white"
 									>
@@ -570,13 +580,13 @@
 					class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-4 pt-6 border-t-2 border-[#233248] mt-2"
 				>
 					<button
-						on:click={handleDecline}
+						onclick={handleDecline}
 						class="px-8 py-3 rounded border-2 border-slate-600 text-slate-300 font-bold uppercase tracking-wider hover:bg-slate-800 transition-all"
 					>
 						Decline
 					</button>
 					<button
-						on:click={handleAccept}
+						onclick={handleAccept}
 						disabled={isResolved || isLoading}
 						class="relative group px-10 py-3 rounded bg-primary border-2 border-primary text-white font-bold uppercase tracking-wider shadow-[4px_4px_0px_0px_#0e62d8] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
 					>

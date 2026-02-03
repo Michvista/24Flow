@@ -1,6 +1,7 @@
-
-export const load = async ({ locals }) => {
-    return {
-        user: locals.user
-    };
+export const load = async ({ locals, cookies }) => {
+	const token = cookies.get('accessToken');
+	return {
+		user: locals.user,
+		token: token || ''
+	};
 };

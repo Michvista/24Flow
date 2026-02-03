@@ -28,6 +28,7 @@
 	let { data = {} } = $props();
 
 	const user = $derived(data?.user || {});
+	let token = $derived(data?.token || '');
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
@@ -60,8 +61,8 @@
 	}
 
 	// Sidebar State
-	let isSidebarOpen = false;
-	let mobileSidebarElem: HTMLElement;
+	let isSidebarOpen = $state(false);
+	let mobileSidebarElem = $state<HTMLElement | undefined>(undefined);
 
 	// 1. Change your declarations to use $state
 	let sleepTime = $state('23:00');
@@ -145,7 +146,7 @@
 		else {
 			try {
 				const res = await fetch(`${PUBLIC_API_URL}/auth/profile`, {
-					credentials: 'include'
+					headers: token ? { Authorization: `Bearer ${token}` } : {}
 				});
 
 				if (res.ok) {
@@ -162,6 +163,7 @@
 	});
 	function toggleMobileSidebar() {
 		isSidebarOpen = !isSidebarOpen;
+		if (!mobileSidebarElem) return;
 		if (isSidebarOpen) {
 			gsap.to(mobileSidebarElem, { x: 0, duration: 0.4, ease: 'power4.out' });
 		} else {
@@ -193,8 +195,9 @@
 			const res = await fetch(`${PUBLIC_API_URL}/auth/update-profile`, {
 				method: 'PATCH',
 				body: JSON.stringify(formData),
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include'
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' }
 			});
 
 			const result = await res.json();
@@ -252,7 +255,7 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/auth/delete-account`, {
 				method: 'DELETE',
-				credentials: 'include'
+				headers: token ? { Authorization: `Bearer ${token}` } : {}
 			});
 
 			if (res.ok) {

@@ -13,33 +13,50 @@
 		email?: string;
 	}
 
+	interface Props {
+		id?: string;
+		eventTitle?: string;
+		eventDescription?: string;
+		startTime?: string;
+		endTime?: string;
+		eventDate?: string;
+		location?: string;
+		userData?: UserInfo;
+		recurringDays?: number[];
+		token?: string;
+	}
+
 	// Props
-	export let id = '';
-	export let eventTitle = 'Neobrutalism Design Workshop';
-	export let eventDescription = 'some desc';
-	export let startTime = '10:00 AM';
-	export let endTime = '01:00 PM';
-	export let eventDate = 'August 20, 2024';
-	export let location = 'Class';
-	export let userData: UserInfo = {};
-	export let recurringDays: number[] = [];
+	let {
+		id = '',
+		eventTitle = $bindable('Neobrutalism Design Workshop'),
+		eventDescription = $bindable('some desc'),
+		startTime = '10:00 AM',
+		endTime = '01:00 PM',
+		eventDate = 'August 20, 2024',
+		location = $bindable('Class'),
+		userData = {},
+		recurringDays = [],
+		token = ''
+	}: Props = $props();
 
 	// State
-	let isEditing = false;
-	let isUpdating = false;
-	let editTitle = eventTitle;
-	let editDescription = eventDescription;
-	let editLocation = location;
-	let randomGradient = '';
+	let isEditing = $state(false);
+	let isUpdating = $state(false);
+	let editTitle = $state(eventTitle);
+	let editDescription = $state(eventDescription);
+	let editLocation = $state(location);
+	let randomGradient = $state('');
 
 	const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-	$: recurrenceText =
+	let recurrenceText = $derived(
 		recurringDays?.length > 0
 			? recurringDays.length === 7
 				? 'Repeats daily'
 				: `Repeats every ${recurringDays.map((d) => dayNames[d]).join(', ')}`
-			: 'Does not repeat';
+			: 'Does not repeat'
+	);
 
 	// Toast Functions
 	function notifySuccess(title: string, message: string) {
@@ -114,8 +131,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/events/${dbId}`, {
 				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					title: editTitle,
 					description: editDescription,
@@ -150,7 +168,7 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/events/${dbId}`, {
 				method: 'DELETE',
-				credentials: 'include'
+				headers: token ? { Authorization: `Bearer ${token}` } : {}
 			});
 			if (res.ok) {
 				notifySuccess('Deleted', 'Event series removed.');
@@ -164,7 +182,7 @@
 	onMount(() => {
 		randomGradient = generateGradient();
 	});
-	$: duration = calculateDuration(startTime, endTime);
+	let duration = $derived(calculateDuration(startTime, endTime));
 </script>
 
 <div class="dark">

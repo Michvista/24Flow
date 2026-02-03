@@ -17,6 +17,8 @@
 	let { data } = $props();
 	let activeTab = $state('AI Tools Hub');
 
+	let token = $derived(data?.token || '');
+
 	// Function to show the AI Suggestion Toast
 	function triggerIntelToast(data: any) {
 		// attempting to render toast with data (silent)
@@ -53,8 +55,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ toolType: 'GET_INTELLIGENCE_REPORT' })
 			});
 
@@ -97,7 +100,7 @@
 </script>
 
 <Toaster position="bottom-right" expand={false} richColors />
-<MoodModal bind:isOpen={showModal} onConfirm={handleMoodUpdate} />
+<MoodModal bind:isOpen={showModal} onConfirm={handleMoodUpdate} {token} />
 
 <div>
 	<Navbar bind:activeTab />
