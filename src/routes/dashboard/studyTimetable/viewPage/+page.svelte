@@ -367,8 +367,7 @@
 							</div>
 							<div class="grid grid-cols-2 mt-auto border-t-2 border-slate-900">
 								<button
-									onclick={() =>
-										(window.location.href = `http://localhost:5173/dashboard/studyTimetable/calendar/${plan.id}`)}
+									onclick={() => goto(`/dashboard/studyTimetable/calendar/${plan.id}`)}
 									class="py-4 font-bold uppercase text-sm flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors border-r-2 border-slate-900"
 								>
 									<Fullscreen size={16} /> View
