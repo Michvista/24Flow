@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { MapPin, Calendar } from 'lucide-svelte';
 	import { format } from 'date-fns';
 	import { Toaster, toast } from 'svelte-sonner';
@@ -68,16 +67,35 @@
 	let startTimeIndex: number | null = $state(null);
 	let endTimeIndex: number | null = $state(null);
 
-	// Sync props with local state on load
-	onMount(() => {
-		if (initialDate) {
-			date = format(initialDate, 'yyyy-MM-dd');
-		}
-		if (initialTime) {
-			// If the grid click gives us "14:20", we find the closest index in timeSlots
-			const hour = initialTime.split(':')[0];
-			const index = timeSlots.findIndex((t) => t.startsWith(hour));
-			if (index !== -1) startTimeIndex = index;
+	// Dynamic Time Generation (00:00 to 23:00) - defined early so it's available for effects
+	const timeSlots = Array.from({ length: 24 }, (_, i) => {
+		return i.toString().padStart(2, '0') + ':00';
+	});
+
+	// Track last seen props to detect changes
+	let lastSeenDate: Date | null = $state(null);
+	let lastSeenTime: string | null = $state(null);
+
+	// Sync props with local state reactively using $effect
+	$effect(() => {
+		// Check if initialDate has changed
+		const dateChanged =
+			initialDate && (!lastSeenDate || initialDate.getTime() !== lastSeenDate.getTime());
+		const timeChanged = initialTime !== lastSeenTime;
+
+		if (dateChanged || timeChanged) {
+			if (initialDate) {
+				date = format(initialDate, 'yyyy-MM-dd');
+				lastSeenDate = new Date(initialDate.getTime());
+			}
+
+			if (initialTime) {
+				// If the grid click gives us "14:00", we find the closest index in timeSlots
+				const hour = initialTime.split(':')[0];
+				const index = timeSlots.findIndex((t) => t.startsWith(hour));
+				if (index !== -1) startTimeIndex = index;
+				lastSeenTime = initialTime;
+			}
 		}
 	});
 
@@ -174,11 +192,6 @@
 						.map((i) => dayNames[i])
 						.join(', ')}`
 	);
-
-	// 2. Dynamic Time Generation (00:00 to 23:00)
-	const timeSlots = Array.from({ length: 24 }, (_, i) => {
-		return i.toString().padStart(2, '0') + ':00';
-	});
 
 	function handleTimeClick(index: number) {
 		if (startTimeIndex === null || endTimeIndex !== null) {
