@@ -357,8 +357,8 @@ Generate NOW:`;
 							title: task.title,
 							type: task.type,
 							duration: task.duration,
-							color: palette.bg,
-							subColor: palette.text
+							color: task.color || '#3d7bff',
+							subColor: task.subColor || '#ffffff'
 						});
 					}
 				}
@@ -545,6 +545,12 @@ function fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks)
 	const sessionsPerDay = Math.ceil(dailyHours / 2);
 	const studyBlockMinutes = Math.floor((dailyHours * 60) / sessionsPerDay);
 
+	// Create a local color map for subjects
+	const localColorMap = {};
+	subjects.forEach((subject, index) => {
+		localColorMap[subject.name] = colors[index % colors.length];
+	});
+
 	for (const day of missingDays) {
 		const isWeekend = day === 5 || day === 6;
 		const adjustedSessions = isWeekend ? Math.ceil(sessionsPerDay * 0.6) : sessionsPerDay;
@@ -553,6 +559,7 @@ function fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks)
 		for (let session = 0; session < adjustedSessions; session++) {
 			const subjectIndex = (week * 7 + day + session) % subjects.length;
 			const subject = subjects[subjectIndex];
+			const subjectColor = localColorMap[subject.name] || colors[0];
 
 			// Intelligent time based on session
 			let baseHour = 8;
@@ -573,13 +580,17 @@ function fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks)
 				type: subject.name,
 				duration: durationStr,
 				description: `Continuing ${subject.name} studies`,
-				color: isBreak ? '#171717' : subjectColorMap[subject.name]?.bg || '#3d7bff',
-				subColor: isBreak ? '#00f57a' : subjectColorMap[subject.name]?.text || '#ffffff',
+				color: subjectColor.bg,
+				subColor: subjectColor.text,
 				isBreak: false
 			});
 
 			// Add break
 			if (includeBreaks && session < adjustedSessions - 1) {
+				const breakColor = colors.find((c) => c.name === 'dark-mode-bg') || {
+					bg: '#171717',
+					text: '#00f57a'
+				};
 				filledTasks.push({
 					id: `filled-day-break-${week}-${day}-${session}`,
 					week,
@@ -589,8 +600,8 @@ function fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks)
 					type: 'Rest',
 					duration: '15m',
 					description: '',
-					color: palette.bg,
-					subColor: palette.text,
+					color: breakColor.bg,
+					subColor: breakColor.text,
 					isBreak: true
 				});
 			}
@@ -606,6 +617,17 @@ function fillMissingDays(week, missingDays, subjects, dailyHours, includeBreaks)
 function fillMissingWeeks(existingTasks, subjects, totalWeeks, dailyHours, includeBreaks) {
 	const weeksWithTasks = new Set(existingTasks.map((t) => t.week));
 	const filledTasks = [];
+
+	// Create a local color map for subjects
+	const localColorMap = {};
+	subjects.forEach((subject, index) => {
+		localColorMap[subject.name] = colors[index % colors.length];
+	});
+
+	const breakColor = colors.find((c) => c.name === 'dark-mode-bg') || {
+		bg: '#171717',
+		text: '#00f57a'
+	};
 
 	for (let week = 0; week < totalWeeks; week++) {
 		if (!weeksWithTasks.has(week)) {
@@ -624,6 +646,8 @@ function fillMissingWeeks(existingTasks, subjects, totalWeeks, dailyHours, inclu
 				subjects.forEach((subject, subIdx) => {
 					// Only add subject if it fits in the day's session count
 					if (subIdx >= adjustedSessions) return;
+
+					const subjectColor = localColorMap[subject.name] || colors[0];
 
 					// Intelligent time selection based on subject
 					let startTime = '09:00';
@@ -646,8 +670,8 @@ function fillMissingWeeks(existingTasks, subjects, totalWeeks, dailyHours, inclu
 						type: subject.name,
 						duration: durationStr,
 						description: `Continue studying ${subject.name} concepts`,
-						color: isBreak ? '#171717' : subjectColorMap[subject.name]?.bg || '#3d7bff',
-						subColor: isBreak ? '#00f57a' : subjectColorMap[subject.name]?.text || '#ffffff',
+						color: subjectColor.bg,
+						subColor: subjectColor.text,
 						isBreak: false
 					});
 
@@ -665,8 +689,8 @@ function fillMissingWeeks(existingTasks, subjects, totalWeeks, dailyHours, inclu
 							type: 'Rest',
 							duration: '15m',
 							description: '',
-							color: palette.bg,
-							subColor: palette.text,
+							color: breakColor.bg,
+							subColor: breakColor.text,
 							isBreak: true
 						});
 					}
@@ -718,6 +742,17 @@ function getFallbackPlan(subjects, totalWeeks, dailyHours, includeBreaks) {
 		`[Gemini] Using fallback plan for ${totalWeeks} weeks with ${dailyHours}h daily study`
 	);
 
+	// Create a local color map for subjects
+	const localColorMap = {};
+	subjects.forEach((subject, index) => {
+		localColorMap[subject.name] = colors[index % colors.length];
+	});
+
+	const breakColor = colors.find((c) => c.name === 'dark-mode-bg') || {
+		bg: '#171717',
+		text: '#00f57a'
+	};
+
 	// Calculate session distribution
 	const sessionsPerDay = Math.ceil(dailyHours / 2); // 2-hour blocks
 	const studyBlockMinutes = Math.floor((dailyHours * 60) / sessionsPerDay);
@@ -728,6 +763,7 @@ function getFallbackPlan(subjects, totalWeeks, dailyHours, includeBreaks) {
 		for (let day = 0; day < 5; day++) {
 			const subjectIndex = (week * 5 + day) % subjectNames.length;
 			const subject = subjectNames[subjectIndex];
+			const subjectColor = localColorMap[subject] || colors[0];
 
 			// Create study sessions spread throughout the day
 			for (let session = 0; session < sessionsPerDay; session++) {
@@ -749,8 +785,8 @@ function getFallbackPlan(subjects, totalWeeks, dailyHours, includeBreaks) {
 					type: subject,
 					duration: durationStr,
 					description: `Study ${subject} concepts for week ${week + 1}`,
-					color: palette.bg,
-					subColor: palette.text,
+					color: subjectColor.bg,
+					subColor: subjectColor.text,
 					isBreak: false
 				});
 
@@ -767,8 +803,8 @@ function getFallbackPlan(subjects, totalWeeks, dailyHours, includeBreaks) {
 						type: 'Rest',
 						duration: '15m',
 						description: '',
-						color: palette.bg,
-						subColor: palette.text,
+						color: breakColor.bg,
+						subColor: breakColor.text,
 						isBreak: true
 					});
 				}
