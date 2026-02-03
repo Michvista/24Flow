@@ -198,7 +198,10 @@
 								</button>
 							{/if}
 						</div>
-						<div class="w-2 {task.color}"></div>
+						<div
+							class="w-2"
+							style="background-color: {task.color?.startsWith('#') ? task.color : '#3d7bff'}"
+						></div>
 					</div>
 				{/each}
 			</div>

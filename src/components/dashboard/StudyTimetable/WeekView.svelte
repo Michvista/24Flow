@@ -56,10 +56,12 @@
 									ondragstart={(e) => isEditMode && onDragStart(e, entry, 'calendar')}
 									class="w-full {entry.isBreak
 										? 'bg-[#232f48] border-white/5'
-										: entry.color +
-											' border-white/10'} p-2 md:p-3 rounded-sm border shadow-hard transition-all {isEditMode
+										: 'border-white/10'} p-2 md:p-3 rounded-sm border shadow-hard transition-all {isEditMode
 										? 'cursor-grab active:cursor-grabbing hover:border-white/30'
 										: 'hover:-translate-y-0.5 hover:shadow-hard-hover'} flex flex-col justify-between overflow-hidden"
+									style={!entry.isBreak
+										? `background-color: ${entry.color?.startsWith('#') ? entry.color : '#3d7bff'}`
+										: ''}
 								>
 									<div class="flex justify-between items-start">
 										<div class="flex flex-col overflow-hidden">
