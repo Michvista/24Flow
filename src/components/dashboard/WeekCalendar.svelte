@@ -12,7 +12,15 @@
 		addWeeks,
 		subWeeks
 	} from 'date-fns';
-	import { ChevronLeft, ChevronRight, Plus, X, Menu as MenuIcon, Trash2 } from 'lucide-svelte';
+	import {
+		ChevronLeft,
+		ChevronRight,
+		Plus,
+		X,
+		Menu as MenuIcon,
+		Trash2,
+		Loader2
+	} from 'lucide-svelte';
 	import MiniCalendar from './MiniCalendar.svelte';
 	import EventDetails from './EventDetails.svelte';
 	import AddTodo from './AddTodo.svelte';
@@ -20,10 +28,14 @@
 	import gsap from 'gsap';
 	import { Toaster, toast } from 'svelte-sonner';
 	import SonnerToast from '../SonnerToast.svelte';
+	// import { PUBLIC_API_URL } from '$env/static/public';
 
-	export let data;
-	$: user = data?.user;
-	$: console.log(user);
+	let { data } = $props();
+	let user = $derived(data?.user);
+	let token = $derived(data?.token || '');
+	$effect(() => {
+		console.log('User loaded:', user);
+	});
 
 	interface CalendarEvent {
 		id: string;
@@ -41,24 +53,25 @@
 		recurringDays?: number[];
 	}
 
-	let selectedEventData: CalendarEvent | null = null;
-	let isDetailsOpen = false;
-	let detailsOverlay: HTMLDivElement;
-	let detailsContent: HTMLDivElement;
+	let selectedEventData: CalendarEvent | null = $state(null);
+	let isDetailsOpen = $state(false);
+	let detailsOverlay: HTMLDivElement | undefined = $state(undefined);
+	let detailsContent: HTMLDivElement | undefined = $state(undefined);
 
-	let isAddTodoOpen = false;
-	let todoOverlay: HTMLDivElement;
-	let todoContent: HTMLDivElement;
+	let isAddTodoOpen = $state(false);
+	let todoOverlay: HTMLDivElement | undefined = $state(undefined);
+	let todoContent: HTMLDivElement | undefined = $state(undefined);
 
-	let menuOverlay: HTMLDivElement;
-	let menuContent: HTMLDivElement;
-	let container: HTMLDivElement;
+	let menuOverlay: HTMLDivElement | undefined = $state(undefined);
+	let menuContent: HTMLDivElement | undefined = $state(undefined);
+	let container: HTMLDivElement | undefined = $state(undefined);
 
-	let events: CalendarEvent[] = [];
+	let events: CalendarEvent[] = $state([]);
 
 	async function openAddTodo() {
 		isAddTodoOpen = true;
 		await tick();
+		if (!todoOverlay || !todoContent) return;
 		const tl = gsap.timeline();
 		gsap.set(todoOverlay, { opacity: 0 });
 		gsap.set(todoContent, { scale: 0.5, opacity: 0 });
@@ -70,6 +83,10 @@
 	}
 
 	function closeAddTodo() {
+		if (!todoOverlay || !todoContent) {
+			isAddTodoOpen = false;
+			return;
+		}
 		const tl = gsap.timeline({
 			onComplete: () => {
 				isAddTodoOpen = false;
@@ -102,6 +119,7 @@
 	async function openDetails() {
 		isDetailsOpen = true;
 		await tick();
+		if (!detailsOverlay || !detailsContent) return;
 		const tl = gsap.timeline();
 		gsap.set(detailsOverlay, { opacity: 0 });
 		gsap.set(detailsContent, { scale: 0.5, opacity: 0 });
@@ -113,6 +131,11 @@
 	}
 
 	function closeDetails() {
+		if (!detailsOverlay || !detailsContent) {
+			isDetailsOpen = false;
+			selectedEventData = null;
+			return;
+		}
 		const tl = gsap.timeline({
 			onComplete: () => {
 				isDetailsOpen = false;
@@ -126,11 +149,10 @@
 		);
 	}
 
-	let currentDay = startOfToday();
-	let currentView = 'Week';
+	let currentDay = $state(startOfToday());
+	let currentView = $state('Week');
 	const baseDate = startOfWeek(startOfToday());
 	import { PUBLIC_API_URL } from '$env/static/public';
-
 
 	// const events = [
 	// 	{
@@ -219,7 +241,7 @@
 	async function fetchEvents() {
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/events`, {
-				credentials: 'include'
+				headers: token ? { Authorization: `Bearer ${token}` } : {}
 			});
 			const json = await res.json();
 			if (res.ok && json.status === 'success') {
@@ -280,11 +302,11 @@
 	// 	{ id: 2, title: 'Update Documentation', completed: false }
 	// ];
 
-	$: weekStart = startOfWeek(currentDay, { weekStartsOn: 0 });
-	$: weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-	$: timeSlots = Array.from({ length: 24 }, (_, i) => i);
-	$: currentTimeLineTop = getHours(new Date()) * 60 + getMinutes(new Date());
-	$: selectedDayEvents = events.filter((e) => isSameDay(e.date, currentDay));
+	let weekStart = $derived(startOfWeek(currentDay, { weekStartsOn: 0 }));
+	let weekDays = $derived(Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)));
+	let timeSlots = $derived(Array.from({ length: 24 }, (_, i) => i));
+	let currentTimeLineTop = $derived(getHours(new Date()) * 60 + getMinutes(new Date()));
+	let selectedDayEvents = $derived(events.filter((e) => isSameDay(e.date, currentDay)));
 
 	function getEventStyle(event: CalendarEvent): string {
 		const [h, m] = event.start.split(':').map(Number);
@@ -294,8 +316,8 @@
 		return `top: ${start}px; height: ${end - start}px;`;
 	}
 
-	let prefilledDate: Date = new Date();
-	let prefilledTime: string = '';
+	let prefilledDate: Date = $state(new Date());
+	let prefilledTime: string = $state('');
 
 	function handleGridClick(
 		event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement },
@@ -341,18 +363,22 @@
 		currentDay = addDays(currentDay, direction * 7);
 	}
 
-	let isOpen = false;
-	let isAnimating = false;
-	let isMobileSidebarOpen = false;
+	let isOpen = $state(false);
+	let isAnimating = $state(false);
+	let isMobileSidebarOpen = $state(false);
 
-	$: if (typeof document !== 'undefined') {
-		if (isOpen || isDetailsOpen || isAddTodoOpen) document.body.classList.add('no-scroll');
-		else document.body.classList.remove('no-scroll');
-	}
+	$effect(() => {
+		if (typeof document !== 'undefined') {
+			if (isOpen || isDetailsOpen || isAddTodoOpen) document.body.classList.add('no-scroll');
+			else document.body.classList.remove('no-scroll');
+		}
+	});
 
 	onMount(() => {
-		gsap.set(menuOverlay, { clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)' });
-		gsap.set(menuContent, { opacity: 0, rotate: -15, scale: 1.1 });
+		if (menuOverlay && menuContent) {
+			gsap.set(menuOverlay, { clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)' });
+			gsap.set(menuContent, { opacity: 0, rotate: -15, scale: 1.1 });
+		}
 	});
 
 	function menuClick() {
@@ -367,7 +393,7 @@
 	}
 
 	function openMenu() {
-		if (isAnimating || isOpen) return;
+		if (isAnimating || isOpen || !menuOverlay || !menuContent || !container) return;
 		isAnimating = true;
 		gsap.set(menuOverlay, { pointerEvents: 'all' });
 		const tl = gsap.timeline({
@@ -394,13 +420,13 @@
 	}
 
 	function closeMenu() {
-		if (isAnimating || !isOpen) return;
+		if (isAnimating || !isOpen || !menuOverlay || !menuContent || !container) return;
 		isAnimating = true;
 		const tl = gsap.timeline({
 			onComplete: () => {
 				isOpen = false;
 				isAnimating = false;
-				gsap.set(menuOverlay, { pointerEvents: 'none' });
+				if (menuOverlay) gsap.set(menuOverlay, { pointerEvents: 'none' });
 			}
 		});
 		tl.to(container, { rotate: 0, y: 0, scale: 1, duration: 0.8, ease: 'power3.inOut' }, 0)
@@ -422,24 +448,41 @@
 		completed: boolean;
 	}
 
-	let tasks: Task[] = [];
+	let tasks: Task[] = $state([]);
+	let tasksFetched = $state(false);
+	let isLoadingTasks = $state(false);
+	let deletingTaskIds = $state<Set<string>>(new Set());
+	let togglingTaskIds = $state<Set<string>>(new Set());
+	let isLoadingEvents = $state(false);
 
-	// 1. Fetch tasks automatically on load
-	onMount(async () => {
-		await fetchTasks();
+	// 1. Fetch tasks when token becomes available
+	$effect(() => {
+		if (token && !tasksFetched) {
+			tasksFetched = true;
+			fetchTasks();
+		}
 	});
 
 	async function fetchTasks() {
+		if (!token) return; // Don't fetch without token
+		isLoadingTasks = true;
 		try {
-			const res = await fetch(`${PUBLIC_API_URL}/tasks`, { credentials: 'include' });
+			const res = await fetch(`${PUBLIC_API_URL}/tasks`, {
+				headers: token ? { Authorization: `Bearer ${token}` } : {}
+			});
 			const result = await res.json();
 			if (res.ok) tasks = result.data;
 		} catch (err) {
 			console.error('Error fetching tasks:', err);
+		} finally {
+			isLoadingTasks = false;
 		}
 	}
 
 	async function deleteTask(taskId: string) {
+		// Add to deleting set
+		deletingTaskIds = new Set([...deletingTaskIds, taskId]);
+
 		// Optimistically remove the task from UI
 		const originalTasks = [...tasks];
 		tasks = tasks.filter((task) => task.id !== taskId);
@@ -447,7 +490,7 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/tasks/${taskId}`, {
 				method: 'DELETE',
-				credentials: 'include'
+				headers: token ? { Authorization: `Bearer ${token}` } : {}
 			});
 
 			notifySuccess('Task Deleted', 'The task has been successfully deleted.');
@@ -463,6 +506,11 @@
 			tasks = originalTasks;
 			notifyError('Network Error', 'Please check your connection and try again.');
 			console.error('Network error deleting task:', err);
+		} finally {
+			// Remove from deleting set
+			const newSet = new Set(deletingTaskIds);
+			newSet.delete(taskId);
+			deletingTaskIds = newSet;
 		}
 	}
 
@@ -472,13 +520,17 @@
 	}
 
 	async function toggleTask(task: Task) {
+		// Add to toggling set
+		togglingTaskIds = new Set([...togglingTaskIds, task.id]);
 		tasks = [...tasks]; // Trigger UI update for the line-through class
 
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/tasks/${task.id}`, {
 				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+					...(token ? { Authorization: `Bearer ${token}` } : {})
+				},
 				body: JSON.stringify({ completed: task.completed }) // Send the already-flipped value
 			});
 
@@ -492,12 +544,19 @@
 			task.completed = !task.completed;
 			tasks = [...tasks];
 			console.error('Network error updating task:', err);
+		} finally {
+			// Remove from toggling set
+			const newSet = new Set(togglingTaskIds);
+			newSet.delete(task.id);
+			togglingTaskIds = newSet;
 		}
 	}
 
 	let currentViewDate = new Date();
 
 	async function fetchEventsForRange() {
+		if (!token) return; // Don't fetch without token
+		isLoadingEvents = true;
 		const rangeStart = startOfWeek(subWeeks(currentViewDate, 2));
 		const rangeEnd = endOfWeek(addWeeks(currentViewDate, 6));
 
@@ -506,7 +565,7 @@
 
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/events?start=${startStr}&end=${endStr}`, {
-				credentials: 'include'
+				headers: token ? { Authorization: `Bearer ${token}` } : {}
 			});
 
 			const result = await res.json();
@@ -524,24 +583,26 @@
 			}
 		} catch (err) {
 			console.error('Failed to load events', err);
+		} finally {
+			isLoadingEvents = false;
 		}
 	}
 
-	$: {
-		if (currentViewDate) {
+	$effect(() => {
+		if (currentViewDate && token) {
 			fetchEventsForRange();
 		}
-	}
+	});
 </script>
 
 {#if isAddTodoOpen}
 	<div
 		bind:this={todoOverlay}
 		class="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
-		on:click={closeAddTodo}
+		onclick={closeAddTodo}
 		role="button"
 		tabindex="0"
-		on:keydown={(e) => {
+		onkeydown={(e) => {
 			if (e.key === 'Escape' || e.key === 'Enter') {
 				closeAddTodo();
 			}
@@ -550,15 +611,16 @@
 		<div
 			bind:this={todoContent}
 			class="relative w-full max-w-2xl bg-[#0B111C] border-4 border-black shadow-[8px_8px_0px_#000] overflow-hidden"
-			on:click|stopPropagation
+			onclick={(e) => e.stopPropagation()}
+			role="presentation"
 		>
 			<button
-				on:click={closeAddTodo}
+				onclick={closeAddTodo}
 				class="absolute top-6 right-6 z-[130] bg-secondary-yellow p-2 border-2 border-black shadow-[4px_4px_0px_#000] hover:-translate-y-1 transition-transform"
 			>
 				<X size={24} color="black" strokeWidth={3} />
 			</button>
-			<AddTodo onCancel={closeAddTodo} onAdd={handleTaskAdded} />
+			<AddTodo onCancel={closeAddTodo} onAdd={handleTaskAdded} {token} />
 		</div>
 	</div>
 {/if}
@@ -569,14 +631,19 @@
 	style="z-index: 50; pointer-events: none;"
 >
 	<button
-		on:click={closeMenu}
+		onclick={closeMenu}
 		class="fixed top-6 right-8 z-[60] bg-secondary-yellow p-3 border-2 border-black shadow-[4px_4px_0px_#000] hover:-translate-y-1 transition-transform cursor-pointer"
 	>
 		<X size={32} color="black" strokeWidth={3} />
 	</button>
 	<div class="flex justify-center items-start py-20 min-h-full w-full" bind:this={menuContent}>
 		<div class="w-full max-w-4xl px-6">
-			<Create initialDate={prefilledDate} initialTime={prefilledTime} onSuccess={closeMenu} />
+			<Create
+				initialDate={prefilledDate}
+				initialTime={prefilledTime}
+				onSuccess={closeMenu}
+				{token}
+			/>
 		</div>
 	</div>
 </div>
@@ -591,7 +658,7 @@
 		<div class="flex items-center gap-2 sm:gap-4 text-slate-900 dark:text-white">
 			<button
 				class="lg:hidden text-white p-1"
-				on:click={() => (isMobileSidebarOpen = !isMobileSidebarOpen)}
+				onclick={() => (isMobileSidebarOpen = !isMobileSidebarOpen)}
 			>
 				<MenuIcon size={24} />
 			</button>
@@ -615,18 +682,18 @@
 		<div class="flex items-center gap-2 sm:gap-6">
 			<div class="flex items-center gap-1 sm:gap-2">
 				<button
-					on:click={() => navigateWeek(-1)}
+					onclick={() => navigateWeek(-1)}
 					class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center border-2 border-black bg-off-white text-black shadow-[2px_2px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:-translate-y-0.5 transition-all"
 				>
 					<ChevronLeft size={20} strokeWidth={3} />
 				</button>
 				<button
-					on:click={() => (currentDay = startOfToday())}
+					onclick={() => (currentDay = startOfToday())}
 					class="hidden sm:block border-2 border-black bg-off-white px-4 py-2 text-sm font-bold text-black shadow-[4px_4px_0px_#000] hover:-translate-y-0.5 transition-all"
 					>Today</button
 				>
 				<button
-					on:click={() => navigateWeek(1)}
+					onclick={() => navigateWeek(1)}
 					class="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center border-2 border-black bg-off-white text-black shadow-[2px_2px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:-translate-y-0.5 transition-all"
 				>
 					<ChevronRight size={20} strokeWidth={3} />
@@ -634,18 +701,18 @@
 			</div>
 			<div class="hidden md:flex h-10 border-2 border-black bg-primary-bg p-1">
 				<!-- {#each ['Month', 'Week', 'Day'] as view} -->
-				{#each [ 'Week'] as view}
+				{#each ['Week'] as view}
 					<button
 						class="px-3 h-full text-sm font-bold {currentView === view
 							? 'bg-off-white text-black'
 							: ''}"
-						on:click={() => (currentView = view)}>{view}</button
+						onclick={() => (currentView = view)}>{view}</button
 					>
 				{/each}
 			</div>
 			<button
 				class="h-8 sm:h-10 border-2 border-black bg-secondary-yellow px-3 sm:px-5 font-bold text-black shadow-[2px_2px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:-translate-y-0.5 transition-all addeventbtn"
-				on:click={menuClick}
+				onclick={menuClick}
 			>
 				<span class="sm:hidden"><Plus size={16} /></span>
 				<span class="hidden sm:inline">Add Event</span>
@@ -665,7 +732,7 @@
 					{@const isToday = isSameDay(day, startOfToday())}
 					{@const isSelected = isSameDay(day, currentDay)}
 					<button
-						on:click={() => (currentDay = day)}
+						onclick={() => (currentDay = day)}
 						class="p-2 sm:p-4 text-center border-r-2 border-black last:border-r-0 transition-colors {isSelected
 							? 'bg-secondary-yellow text-black'
 							: isToday
@@ -727,10 +794,10 @@
 								)
 									? 'bg-secondary-yellow/5'
 									: ''}"
-								on:click={(e) => handleGridClick(e, day)}
+								onclick={(e) => handleGridClick(e, day)}
 								role="button"
 								tabindex="0"
-								on:keydown={(e) => {
+								onkeydown={(e) => {
 									if (e.key === 'Enter') {
 										handleGridClickKeyboard(day);
 									}
@@ -740,10 +807,13 @@
 									<div
 										class="absolute w-full px-0.5 sm:px-1 z-20"
 										style={getEventStyle(event)}
-										on:click|stopPropagation={() => handleEventClick(event)}
+										onclick={(e) => {
+											e.stopPropagation();
+											handleEventClick(event);
+										}}
 										role="button"
 										tabindex="0"
-										on:keydown={(e) => {
+										onkeydown={(e) => {
 											if (e.key === 'Enter') {
 												handleEventClick(event);
 											}
@@ -785,7 +855,7 @@
 		>
 			<button
 				class="lg:hidden absolute top-4 right-4 text-white"
-				on:click={() => (isMobileSidebarOpen = false)}
+				onclick={() => (isMobileSidebarOpen = false)}
 			>
 				<X size={20} />
 			</button>
@@ -799,13 +869,13 @@
 				{#each selectedDayEvents as event}
 					<div
 						class="flex items-start gap-4 border-2 border-off-white p-4 shadow-[4px_4px_0px_#F0F0F0] bg-primary-bg hover:bg-white/5 transition-colors cursor-pointer"
-						on:click={() => {
+						onclick={() => {
 							handleEventClick(event);
 							isMobileSidebarOpen = false;
 						}}
 						role="button"
 						tabindex="0"
-						on:keydown={(e) => {
+						onkeydown={(e) => {
 							if (e.key === 'Enter') {
 								handleEventClick(event);
 								isMobileSidebarOpen = false;
@@ -828,32 +898,50 @@
 				<div class="flex items-center justify-between mb-4">
 					<p class="text-xs font-bold uppercase text-gray-500">Tasks</p>
 					<button
-						on:click={openAddTodo}
+						onclick={openAddTodo}
 						class="p-1 border-2 border-off-white bg-primary-accent text-white hover:bg-secondary-yellow hover:text-black transition-colors"
 					>
 						<Plus size={14} strokeWidth={4} />
 					</button>
 				</div>
 				<div class="max-h-48 overflow-y-auto">
-					{#each tasks as task}
-						<div class="flex items-center justify-between mb-3">
-							<div class="flex items-center gap-3 mb-3">
-								<input
-									type="checkbox"
-									bind:checked={task.completed}
-									on:change={() => toggleTask(task)}
-									class="h-4 w-4 border-2 border-off-white bg-transparent text-primary-accent focus:ring-0 rounded-none cursor-pointer"
-								/>
-								<span
-									class="text-sm {task.completed ? 'line-through text-gray-500' : 'text-off-white'}"
-									>{task.title}</span
-								>
-							</div>
-							<button on:click={() => deleteTask(task.id)} class="p-1">
-								<Trash2 size={16} color="red" />
-							</button>
+					{#if isLoadingTasks}
+						<div class="flex items-center justify-center py-4">
+							<Loader2 size={20} class="animate-spin text-gray-400" />
 						</div>
-					{/each}
+					{:else if tasks.length === 0}
+						<p class="text-sm text-gray-500 text-center py-4">No tasks yet</p>
+					{:else}
+						{#each tasks as task}
+							<div class="flex items-center justify-between mb-3">
+								<div class="flex items-center gap-3 mb-3">
+									<input
+										type="checkbox"
+										bind:checked={task.completed}
+										onchange={() => toggleTask(task)}
+										disabled={togglingTaskIds.has(task.id)}
+										class="h-4 w-4 border-2 border-off-white bg-transparent text-primary-accent focus:ring-0 rounded-none cursor-pointer disabled:opacity-50"
+									/>
+									<span
+										class="text-sm {task.completed
+											? 'line-through text-gray-500'
+											: 'text-off-white'}">{task.title}</span
+									>
+								</div>
+								<button
+									onclick={() => deleteTask(task.id)}
+									class="p-1 disabled:opacity-50"
+									disabled={deletingTaskIds.has(task.id)}
+								>
+									{#if deletingTaskIds.has(task.id)}
+										<Loader2 size={16} class="animate-spin text-red-500" />
+									{:else}
+										<Trash2 size={16} color="red" />
+									{/if}
+								</button>
+							</div>
+						{/each}
+					{/if}
 				</div>
 			</div>
 		</aside>
@@ -863,10 +951,10 @@
 		<div
 			bind:this={detailsOverlay}
 			class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4"
-			on:click={closeDetails}
+			onclick={closeDetails}
 			role="button"
 			tabindex="0"
-			on:keydown={(e) => {
+			onkeydown={(e) => {
 				if (e.key === 'Escape' || e.key === 'Enter') {
 					closeDetails();
 				}
@@ -875,10 +963,11 @@
 			<div
 				bind:this={detailsContent}
 				class="relative w-full max-w-6xl max-h-[95vh] overflow-y-auto bg-white dark:bg-[#101822] border-4 border-black shadow-[8px_8px_0px_#000]"
-				on:click|stopPropagation
+				onclick={(e) => e.stopPropagation()}
+				role="presentation"
 			>
 				<button
-					on:click={closeDetails}
+					onclick={closeDetails}
 					class="absolute top-2 right-2 sm:top-4 sm:right-4 z-[110] bg-secondary-yellow p-2 border-2 border-black shadow-[4px_4px_0px_#000] hover:-translate-y-1 transition-transform"
 				>
 					<X size={24} color="black" strokeWidth={3} />
@@ -894,6 +983,7 @@
 						location={selectedEventData.location}
 						userData={user}
 						recurringDays={selectedEventData.recurringDays || []}
+						{token}
 					/>
 				{/if}
 			</div>

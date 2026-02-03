@@ -6,6 +6,12 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
 
+	interface Props {
+		token?: string;
+	}
+
+	let { token = '' }: Props = $props();
+
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
 
@@ -99,8 +105,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					toolType: 'GENERATE_TAG',
 					payload: { title }
@@ -144,8 +151,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					toolType: 'AUTO_FILL',
 					payload: {
@@ -177,88 +185,100 @@
 	const formattedTotal = $derived(`${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`);
 </script>
 
-<div class="pb-6">
+<div class="pb-6 px-4 sm:px-6">
 	<Navbar />
 </div>
-<div class="flex flex-col gap-10 pb-6 max-w-3xl mx-auto w-full font-display">
-	<section class="flex flex-col gap-6">
-		<div class="mb-12 text-center">
-			<h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white mb-4">
+<div
+	class="flex flex-col gap-6 sm:gap-8 md:gap-10 pb-6 px-4 sm:px-6 max-w-3xl mx-auto w-full font-display"
+>
+	<section class="flex flex-col gap-4 sm:gap-6">
+		<div class="mb-6 sm:mb-8 md:mb-12 text-center">
+			<h1
+				class="text-2xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter text-white mb-2 sm:mb-4"
+			>
 				AI Auto-Fill <span class="text-primary">Scheduler</span>
 			</h1>
-			<p class="text-gray-400 text-lg font-mono uppercase tracking-wide max-w-2xl mx-auto">
+			<p
+				class="text-gray-400 text-sm sm:text-base md:text-lg font-mono uppercase tracking-wide max-w-2xl mx-auto px-2"
+			>
 				Input your tasks and availability. Let AI optimize your day.
 			</p>
 		</div>
 		<div class="flex items-center gap-3">
 			<div
-				class="bg-primary text-white font-bold w-8 h-8 flex items-center justify-center border border-white"
+				class="bg-primary text-white font-bold w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center border border-white text-sm sm:text-base"
 			>
 				1
 			</div>
-			<h2 class="text-2xl font-bold uppercase tracking-tight text-white">Your Events</h2>
+			<h2 class="text-xl sm:text-2xl font-bold uppercase tracking-tight text-white">Your Events</h2>
 		</div>
 
-		<div class="bg-[#16202c] border-2 border-[#2d4059] p-6 md:p-8 shadow-[4px_4px_0px_0px_#1973f0]">
-			<div class="flex flex-col md:flex-row gap-4 items-end mb-8">
-				<label class="flex flex-col flex-1 gap-2 w-full">
+		<div
+			class="bg-[#16202c] border-2 border-[#2d4059] p-4 sm:p-6 md:p-8 shadow-[4px_4px_0px_0px_#1973f0]"
+		>
+			<div class="flex flex-col gap-4 mb-6 sm:mb-8">
+				<label class="flex flex-col gap-2 w-full">
 					<span class="text-xs font-bold uppercase text-primary tracking-widest">Task Name</span>
 					<input
 						bind:value={newTaskTitle}
-						class="w-full bg-[#101822] border-2 border-[#2d4059] text-white placeholder-gray-600 px-4 py-3 focus:outline-none focus:border-primary transition-all font-mono text-sm"
+						class="w-full bg-[#101822] border-2 border-[#2d4059] text-white placeholder-gray-600 px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:border-primary transition-all font-mono text-sm"
 						placeholder="e.g. Q3 Report Review"
 						type="text"
 					/>
 				</label>
-				<label class="flex flex-col w-full md:w-32 gap-2">
-					<span class="text-xs font-bold uppercase text-primary tracking-widest">Mins</span>
-					<input
-						bind:value={newTaskMins}
-						class="w-full bg-[#101822] border-2 border-[#2d4059] text-white placeholder-gray-600 px-4 py-3 focus:outline-none focus:border-primary transition-all font-mono text-sm"
-						placeholder="45"
-						type="number"
-					/>
-				</label>
-				<button
-					onclick={addTask}
-					disabled={isAddingTask}
-					class=" {isAddingTask
-						? 'opacity-50 cursor-not-allowed'
-						: ''} w-full md:w-auto h-[50px] px-8 bg-white text-black font-black uppercase border-2 border-gray-400 hover:bg-primary hover:text-white hover:border-white hover:shadow-[4px_4px_0px_0px_#ffffff] transition-all flex items-center justify-center gap-2"
-				>
-					{#if isAddingTask}
-						Generating...
-					{:else}
-						<Plus size={18} /> Add
-					{/if}
-				</button>
+				<div class="flex flex-col sm:flex-row gap-4">
+					<label class="flex flex-col w-full sm:w-32 gap-2">
+						<span class="text-xs font-bold uppercase text-primary tracking-widest">Mins</span>
+						<input
+							bind:value={newTaskMins}
+							class="w-full bg-[#101822] border-2 border-[#2d4059] text-white placeholder-gray-600 px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:border-primary transition-all font-mono text-sm"
+							placeholder="45"
+							type="number"
+						/>
+					</label>
+					<button
+						onclick={addTask}
+						disabled={isAddingTask}
+						class="w-full sm:w-auto h-[42px] sm:h-[50px] px-6 sm:px-8 bg-white text-black font-black uppercase border-2 border-gray-400 hover:bg-primary hover:text-white hover:border-white hover:shadow-[4px_4px_0px_0px_#ffffff] transition-all flex items-center justify-center gap-2 self-end {isAddingTask
+							? 'opacity-50 cursor-not-allowed'
+							: ''}"
+					>
+						{#if isAddingTask}
+							Generating...
+						{:else}
+							<Plus size={18} /> Add
+						{/if}
+					</button>
+				</div>
 			</div>
 
-			<div class="space-y-4">
+			<div class="space-y-3 sm:space-y-4">
 				{#each tasks as task, i}
 					<div
-						class="flex items-center justify-between p-4 bg-[#101822] border-l-4 {task.color} border-y border-r border-[#2d4059] group hover:border-primary transition-all"
+						class="flex items-center justify-between p-3 sm:p-4 bg-[#101822] border-l-4 {task.color} border-y border-r border-[#2d4059] group hover:border-primary transition-all"
 					>
-						<div class="flex items-center gap-4">
+						<div class="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
 							<div
-								class="w-8 h-8 flex items-center justify-center bg-primary/10 text-primary font-bold border border-primary/20"
+								class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0 flex items-center justify-center bg-primary/10 text-primary font-bold border border-primary/20 text-xs sm:text-sm"
 							>
 								{i + 1}
 							</div>
-							<div>
-								<h3 class="font-bold text-base uppercase text-white">{task.title}</h3>
-								<p class="text-xs text-gray-500 font-mono mt-0.5">{task.tag}</p>
+							<div class="min-w-0 flex-1">
+								<h3 class="font-bold text-sm sm:text-base uppercase text-white truncate">
+									{task.title}
+								</h3>
+								<p class="text-[10px] sm:text-xs text-gray-500 font-mono mt-0.5">{task.tag}</p>
 							</div>
 						</div>
-						<div class="flex items-center gap-6">
-							<span class="font-mono text-white bg-[#2d4059] px-2 py-1 text-sm font-bold"
+						<div class="flex items-center gap-3 sm:gap-6 flex-shrink-0">
+							<span class="font-mono text-white bg-[#2d4059] px-2 py-1 text-xs sm:text-sm font-bold"
 								>{task.duration}m</span
 							>
 							<button
 								onclick={() => deleteTask(task.id)}
 								class="text-gray-500 hover:text-red-500 transition-colors"
 							>
-								<Trash2 size={18} />
+								<Trash2 size={16} class="sm:w-[18px] sm:h-[18px]" />
 							</button>
 						</div>
 					</div>
@@ -266,7 +286,7 @@
 			</div>
 
 			<div
-				class="mt-6 pt-4 border-t-2 border-[#2d4059] flex justify-between items-center text-sm font-bold uppercase text-gray-400"
+				class="mt-4 sm:mt-6 pt-4 border-t-2 border-[#2d4059] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs sm:text-sm font-bold uppercase text-gray-400"
 			>
 				<span>{tasks.length} Tasks Queued</span>
 				<span class="text-white">Total: {formattedTotal}</span>
@@ -274,46 +294,50 @@
 		</div>
 	</section>
 
-	<section class="flex flex-col gap-6">
+	<section class="flex flex-col gap-4 sm:gap-6">
 		<div class="flex items-center gap-3">
 			<div
-				class="bg-primary text-white font-bold w-8 h-8 flex items-center justify-center border border-white"
+				class="bg-primary text-white font-bold w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center border border-white text-sm sm:text-base"
 			>
 				2
 			</div>
-			<h2 class="text-2xl font-bold uppercase tracking-tight text-white">Availability</h2>
+			<h2 class="text-xl sm:text-2xl font-bold uppercase tracking-tight text-white">
+				Availability
+			</h2>
 		</div>
 
-		<div class="bg-[#16202c] border-2 border-[#2d4059] p-6 md:p-8 shadow-[4px_4px_0px_0px_#1973f0]">
-			<div class="flex flex-col md:flex-row items-center gap-8">
+		<div
+			class="bg-[#16202c] border-2 border-[#2d4059] p-4 sm:p-6 md:p-8 shadow-[4px_4px_0px_0px_#1973f0]"
+		>
+			<div class="flex flex-col gap-6">
 				<div class="flex items-center gap-4 w-full">
-					<div class="bg-[#2d4059] p-3 rounded-sm">
-						<Clock class="text-primary" size={24} />
+					<div class="bg-[#2d4059] p-2 sm:p-3 rounded-sm">
+						<Clock class="text-primary w-5 h-5 sm:w-6 sm:h-6" />
 					</div>
 					<div>
-						<h3 class="text-lg font-bold uppercase text-white">Daily Work Window</h3>
-						<p class="text-sm text-gray-500">Set the boundaries for your schedule.</p>
+						<h3 class="text-base sm:text-lg font-bold uppercase text-white">Daily Work Window</h3>
+						<p class="text-xs sm:text-sm text-gray-500">Set the boundaries for your schedule.</p>
 					</div>
 				</div>
-				<div class="flex items-center gap-4 w-full md:w-auto">
-					<label class="flex-1 min-w-[140px]">
+				<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+					<label class="flex-1">
 						<span class="block text-xs font-bold text-primary mb-2 uppercase tracking-wider"
 							>Start Time</span
 						>
 						<input
 							bind:value={startTime}
-							class="w-full bg-[#101822] border-2 border-[#2d4059] text-white px-4 py-3 font-mono text-lg focus:border-primary focus:outline-none transition-all"
+							class="w-full bg-[#101822] border-2 border-[#2d4059] text-white px-3 sm:px-4 py-2 sm:py-3 font-mono text-base sm:text-lg focus:border-primary focus:outline-none transition-all"
 							type="time"
 						/>
 					</label>
-					<span class="text-gray-500 text-2xl mt-6 font-thin">/</span>
-					<label class="flex-1 min-w-[140px]">
+					<span class="text-gray-500 text-2xl font-thin hidden sm:block mt-6">/</span>
+					<label class="flex-1">
 						<span class="block text-xs font-bold text-primary mb-2 uppercase tracking-wider"
 							>End Time</span
 						>
 						<input
 							bind:value={endTime}
-							class="w-full bg-[#101822] border-2 border-[#2d4059] text-white px-4 py-3 font-mono text-lg focus:border-primary focus:outline-none transition-all"
+							class="w-full bg-[#101822] border-2 border-[#2d4059] text-white px-3 sm:px-4 py-2 sm:py-3 font-mono text-base sm:text-lg focus:border-primary focus:outline-none transition-all"
 							type="time"
 						/>
 					</label>
@@ -322,35 +346,37 @@
 		</div>
 	</section>
 
-	<section class="flex flex-col gap-6">
+	<section class="flex flex-col gap-4 sm:gap-6">
 		<div class="flex items-center gap-3">
 			<div
-				class="bg-primary text-white font-bold w-8 h-8 flex items-center justify-center border border-white"
+				class="bg-primary text-white font-bold w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center border border-white text-sm sm:text-base"
 			>
 				3
 			</div>
-			<h2 class="text-2xl font-bold uppercase tracking-tight text-white">Target Date</h2>
+			<h2 class="text-xl sm:text-2xl font-bold uppercase tracking-tight text-white">Target Date</h2>
 		</div>
 
-		<div class="bg-[#16202c] border-2 border-[#2d4059] p-6 md:p-8 shadow-[4px_4px_0px_0px_#1973f0]">
-			<div class="flex flex-col md:flex-row items-center gap-8">
+		<div
+			class="bg-[#16202c] border-2 border-[#2d4059] p-4 sm:p-6 md:p-8 shadow-[4px_4px_0px_0px_#1973f0]"
+		>
+			<div class="flex flex-col gap-6">
 				<div class="flex items-center gap-4 w-full">
-					<div class="bg-[#2d4059] p-3 rounded-sm">
-						<Calendar class="text-primary" size={24} />
+					<div class="bg-[#2d4059] p-2 sm:p-3 rounded-sm">
+						<Calendar class="text-primary w-5 h-5 sm:w-6 sm:h-6" />
 					</div>
 					<div>
-						<h3 class="text-lg font-bold uppercase text-white">Schedule Day</h3>
-						<p class="text-sm text-gray-500">Which day should the AI fill?</p>
+						<h3 class="text-base sm:text-lg font-bold uppercase text-white">Schedule Day</h3>
+						<p class="text-xs sm:text-sm text-gray-500">Which day should the AI fill?</p>
 					</div>
 				</div>
-				<div class="w-full md:w-auto">
+				<div class="w-full">
 					<label class="block">
 						<span class="block text-xs font-bold text-primary mb-2 uppercase tracking-wider"
 							>Pick Date</span
 						>
 						<input
 							bind:value={selectedDate}
-							class="w-full md:w-64 bg-[#101822] border-2 border-[#2d4059] text-white px-4 py-3 font-mono text-lg focus:border-primary focus:outline-none transition-all"
+							class="w-full bg-[#101822] border-2 border-[#2d4059] text-white px-3 sm:px-4 py-2 sm:py-3 font-mono text-base sm:text-lg focus:border-primary focus:outline-none transition-all"
 							type="date"
 						/>
 					</label>
@@ -359,22 +385,22 @@
 		</div>
 	</section>
 
-	<div class="pt-6">
+	<div class="pt-4 sm:pt-6">
 		<button
 			onclick={handleGenerate}
 			disabled={isGenerating}
-			class="group relative w-full bg-primary py-6 border-2 border-white overflow-hidden shadow-[4px_4px_0px_0px_#ffffff] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all text-white"
+			class="group relative w-full bg-primary py-4 sm:py-6 border-2 border-white overflow-hidden shadow-[4px_4px_0px_0px_#ffffff] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all text-white"
 		>
 			<div
 				class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
 			></div>
-			<div class="relative flex items-center justify-center gap-3">
+			<div class="relative flex items-center justify-center gap-2 sm:gap-3">
 				{#if !isGenerating}
-					<WandSparkles size={28} />
+					<WandSparkles size={24} class="sm:w-7 sm:h-7" />
 				{:else}
-					<RefreshCw size={28} class="animate-spin" />
+					<RefreshCw size={24} class="animate-spin sm:w-7 sm:h-7" />
 				{/if}
-				<span class="text-2xl font-black uppercase tracking-widest"
+				<span class="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-widest"
 					>{isGenerating ? 'Generating...' : 'Generate Schedule'}</span
 				>
 			</div>

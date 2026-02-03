@@ -36,9 +36,19 @@
 		});
 	}
 
-	export let initialDate: Date = new Date();
-	export let initialTime: string = '';
-	export let onSuccess = () => {};
+	interface Props {
+		initialDate?: Date;
+		initialTime?: string;
+		onSuccess?: () => void;
+		token?: string;
+	}
+
+	let {
+		initialDate = new Date(),
+		initialTime = '',
+		onSuccess = () => {},
+		token = ''
+	}: Props = $props();
 
 	interface NeoColor {
 		bg: string;
@@ -48,15 +58,15 @@
 	}
 
 	// Form State
-	let title = '';
-	let location = '';
-	let date = '';
-	let description = '';
+	let title = $state('');
+	let location = $state('');
+	let date = $state('');
+	let description = $state('');
 
-	let selectedDays = [1, 3]; // Indices for M, W
+	let selectedDays = $state([1, 3]); // Indices for M, W
 
-	let startTimeIndex: number | null = null;
-	let endTimeIndex: number | null = null;
+	let startTimeIndex: number | null = $state(null);
+	let endTimeIndex: number | null = $state(null);
 
 	// Sync props with local state on load
 	onMount(() => {
@@ -125,9 +135,10 @@
 		try {
 			const response = await fetch(`${PUBLIC_API_URL}/events`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload),
-				credentials: 'include'
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload)
 			});
 
 			if (response.ok) {
@@ -153,25 +164,16 @@
 	const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-	$: recurrenceText =
+	let recurrenceText = $derived(
 		selectedDays.length === 0
 			? 'No repeats selected'
 			: selectedDays.length === dayNames.length
 				? 'Repeats every day'
-				: `Repeats every ${selectedDays
+				: `Repeats every ${[...selectedDays]
 						.sort()
 						.map((i) => dayNames[i])
-						.join(', ')}`;
-
-	$: if (initialDate) {
-		date = format(initialDate, 'yyyy-MM-dd');
-	}
-
-	$: if (initialTime) {
-		const hour = initialTime.split(':')[0];
-		const index = timeSlots.findIndex((t) => t.startsWith(hour));
-		if (index !== -1) startTimeIndex = index;
-	}
+						.join(', ')}`
+	);
 
 	// 2. Dynamic Time Generation (00:00 to 23:00)
 	const timeSlots = Array.from({ length: 24 }, (_, i) => {
@@ -194,7 +196,7 @@
 	}
 
 	// Update the visual selection logic to handle the "wrap around"
-	$: isSelected = (index: number) => {
+	function isSelected(index: number) {
 		if (startTimeIndex === null) return false;
 		if (endTimeIndex === null) return index === startTimeIndex;
 
@@ -205,7 +207,7 @@
 			// Overnight range: select from start to end of day, AND start of day to end index
 			return index >= startTimeIndex || index <= endTimeIndex;
 		}
-	};
+	}
 </script>
 
 <svelte:head>
@@ -215,61 +217,67 @@
 	/>
 </svelte:head>
 
-<div class="font-display bg-background-dark min-h-screen text-text-primary p-4 md:p-10">
+<div class="font-display bg-background-dark min-h-screen text-text-primary p-3 sm:p-4 md:p-10">
 	<div class="max-w-3xl mx-auto">
-		<div class="mb-8">
-			<h1 class="text-5xl font-black leading-tight tracking-[-0.033em]">Create New Event</h1>
+		<div class="mb-6 sm:mb-8">
+			<h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-[-0.033em]">
+				Create New Event
+			</h1>
 		</div>
 
-		<form class="space-y-10" on:submit|preventDefault={handleSubmit}>
+		<form class="space-y-6 sm:space-y-8 md:space-y-10" on:submit|preventDefault={handleSubmit}>
 			<div class="flex flex-col gap-2">
-				<label class="text-sm font-bold uppercase tracking-widest">Title</label>
+				<label class="text-xs sm:text-sm font-bold uppercase tracking-widest">Title</label>
 				<input
 					bind:value={title}
-					class="form-input w-full border-4 border-black bg-surface h-14 p-[15px] focus:ring-4 focus:ring-primary/50 outline-none"
+					class="form-input w-full border-2 sm:border-4 border-black bg-surface h-12 sm:h-14 p-3 sm:p-[15px] focus:ring-4 focus:ring-primary/50 outline-none text-sm sm:text-base"
 					placeholder="Enter event title"
 				/>
 			</div>
 
 			<div class="flex flex-col gap-2">
-				<label class="text-sm font-bold uppercase tracking-widest">Location</label>
+				<label class="text-xs sm:text-sm font-bold uppercase tracking-widest">Location</label>
 				<div class="relative flex w-full items-stretch">
 					<input
 						bind:value={location}
-						class="form-input flex-1 border-t-4 border-l-4 border-b-4 border-black bg-surface h-14 p-[15px] outline-none"
+						class="form-input flex-1 border-t-2 border-l-2 border-b-2 sm:border-t-4 sm:border-l-4 sm:border-b-4 border-black bg-surface h-12 sm:h-14 p-3 sm:p-[15px] outline-none text-sm sm:text-base"
 						placeholder="Add location"
 					/>
-					<div class="flex border-4 border-black bg-surface items-center justify-center px-4">
-						<MapPin size={24} class="text-text-secondary" />
+					<div
+						class="flex border-2 sm:border-4 border-black bg-surface items-center justify-center px-3 sm:px-4"
+					>
+						<MapPin size={20} class="text-text-secondary sm:w-6 sm:h-6" />
 					</div>
 				</div>
 			</div>
 
-			<div class="flex flex-col gap-2 max-w-xs">
-				<label class="text-sm font-bold uppercase tracking-widest">Date</label>
+			<div class="flex flex-col gap-2 w-full sm:max-w-xs">
+				<label class="text-xs sm:text-sm font-bold uppercase tracking-widest">Date</label>
 				<div class="relative flex w-full items-stretch">
 					<input
 						type="date"
 						bind:value={date}
-						class="form-input flex-1 border-t-4 border-l-4 border-b-4 border-black bg-surface h-14 p-[15px] outline-none"
+						class="form-input flex-1 border-t-2 border-l-2 border-b-2 sm:border-t-4 sm:border-l-4 sm:border-b-4 border-black bg-surface h-12 sm:h-14 p-3 sm:p-[15px] outline-none text-sm sm:text-base"
 					/>
-					<div class="flex border-4 border-black bg-surface items-center justify-center px-4">
-						<Calendar size={24} class="text-text-secondary" />
+					<div
+						class="flex border-2 sm:border-4 border-black bg-surface items-center justify-center px-3 sm:px-4"
+					>
+						<Calendar size={20} class="text-text-secondary sm:w-6 sm:h-6" />
 					</div>
 				</div>
 			</div>
 
 			<div>
-				<p class="text-sm font-bold pb-2 uppercase tracking-widest">
+				<p class="text-xs sm:text-sm font-bold pb-2 uppercase tracking-widest">
 					Select Time Range (Click start, then end)
 				</p>
 				<div
-					class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 p-4 border-4 border-black bg-surface"
+					class="grid grid-cols-3 xs:grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1.5 sm:gap-2 p-3 sm:p-4 border-2 sm:border-4 border-black bg-surface"
 				>
 					{#each timeSlots as time, i}
 						<button
 							type="button"
-							class="h-12 border-2 transition-all {isSelected(i)
+							class="h-10 sm:h-12 text-xs sm:text-sm border-2 transition-all {isSelected(i)
 								? 'bg-primary border-black text-white ring-2 ring-primary shadow-neobrutalist'
 								: 'bg-[#0B111C] border-border-color text-text-secondary hover:border-primary'}"
 							on:click={() => handleTimeClick(i)}
@@ -281,13 +289,15 @@
 			</div>
 
 			<div>
-				<p class="text-sm font-bold pb-2 uppercase tracking-widest">Recurring Event</p>
-				<div class="flex flex-col gap-4 p-4 border-4 border-black bg-surface">
-					<div class="grid grid-cols-7 gap-2">
+				<p class="text-xs sm:text-sm font-bold pb-2 uppercase tracking-widest">Recurring Event</p>
+				<div
+					class="flex flex-col gap-3 sm:gap-4 p-3 sm:p-4 border-2 sm:border-4 border-black bg-surface"
+				>
+					<div class="grid grid-cols-7 gap-1.5 sm:gap-2">
 						{#each days as day, i}
 							<button
 								type="button"
-								class="aspect-square flex items-center justify-center font-bold border-2 transition-all {selectedDays.includes(
+								class="aspect-square flex items-center justify-center text-xs sm:text-sm font-bold border-2 transition-all {selectedDays.includes(
 									i
 								)
 									? 'bg-primary border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
@@ -302,35 +312,39 @@
 							</button>
 						{/each}
 					</div>
-					<p class="text-text-secondary text-xs font-mono pt-2 border-t-2 border-border-color/30">
+					<p
+						class="text-text-secondary text-[10px] sm:text-xs font-mono pt-2 border-t-2 border-border-color/30"
+					>
 						{recurrenceText}
 					</p>
 				</div>
 			</div>
 
-			<div class="flex flex-col gap-4">
+			<div class="flex flex-col gap-3 sm:gap-4">
 				<label class="flex flex-col w-full">
 					<p
-						class="text-text-primary text-sm font-bold leading-normal pb-2 uppercase tracking-widest"
+						class="text-text-primary text-xs sm:text-sm font-bold leading-normal pb-2 uppercase tracking-widest"
 					>
 						Description
 					</p>
 					<textarea
 						bind:value={description}
-						class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden text-text-primary focus:outline-0 focus:ring-4 focus:ring-primary/50 border-4 border-black bg-surface h-40 placeholder:text-text-secondary p-[15px] text-base font-normal leading-normal"
+						class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden text-text-primary focus:outline-0 focus:ring-4 focus:ring-primary/50 border-2 sm:border-4 border-black bg-surface h-32 sm:h-40 placeholder:text-text-secondary p-3 sm:p-[15px] text-sm sm:text-base font-normal leading-normal"
 						placeholder="Add a description for your event..."
 					></textarea>
 				</label>
 			</div>
 
-			<div class="flex items-center gap-6 pt-4">
+			<div
+				class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6 pt-2 sm:pt-4"
+			>
 				<button
-					class="min-w-[180px] h-14 bg-primary font-bold uppercase border-4 border-black shadow-neobrutalist hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+					class="w-full sm:w-auto sm:min-w-[180px] h-12 sm:h-14 bg-primary font-bold uppercase border-2 sm:border-4 border-black shadow-neobrutalist hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all text-sm sm:text-base"
 					>Schedule</button
 				>
 				<button
 					type="button"
-					class="min-w-[140px] h-14 border-4 border-black bg-surface text-text-secondary font-bold uppercase hover:text-white transition-colors"
+					class="w-full sm:w-auto sm:min-w-[140px] h-12 sm:h-14 border-2 sm:border-4 border-black bg-surface text-text-secondary font-bold uppercase hover:text-white transition-colors text-sm sm:text-base"
 				>
 					Cancel
 				</button>

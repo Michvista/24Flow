@@ -30,6 +30,12 @@
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
 
+	interface Props {
+		token?: string;
+	}
+
+	let { token = '' }: Props = $props();
+
 	// Intelligent Icon Logic
 	function getIconBySubject(subject: string) {
 		const name = subject.toLowerCase();
@@ -107,8 +113,9 @@
 
 			const res = await fetch(`${PUBLIC_API_URL}/timetable/check-conflicts`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ classes })
 			});
 
@@ -127,7 +134,9 @@
 	// LOAD DATA ON REFRESH
 	onMount(async () => {
 		try {
-			const res = await fetch(`${PUBLIC_API_URL}/timetable`, { credentials: 'include' });
+			const res = await fetch(`${PUBLIC_API_URL}/timetable`, {
+				headers: token ? { Authorization: `Bearer ${token}` } : {}
+			});
 			if (res.ok) {
 				const json = await res.json();
 				const data = json.data;
@@ -153,8 +162,9 @@
 	async function persist() {
 		await fetch(`${PUBLIC_API_URL}/timetable/persist`, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			credentials: 'include',
+			headers: token
+				? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+				: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ classes })
 		});
 	}
@@ -219,8 +229,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/timetable/export/sheets`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ classes })
 			});
 
@@ -246,8 +257,9 @@
 
 			const res = await fetch(`${PUBLIC_API_URL}/timetable/sync-calendar`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ classes })
 			});
 
@@ -292,8 +304,9 @@
 			try {
 				const response = await fetch(`${PUBLIC_API_URL}/events/${conflict.event.id}/reschedule`, {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					credentials: 'include',
+					headers: token
+						? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+						: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						newStartTime: option.newStartTime,
 						newEndTime: option.newEndTime
@@ -410,10 +423,13 @@
 				</h3>
 				<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
 					<div class="md:col-span-3 space-y-2">
-						<label class="text-[10px] font-bold text-primary uppercase tracking-wider ml-1"
+						<label
+							for="day-select"
+							class="text-[10px] font-bold text-primary uppercase tracking-wider ml-1"
 							>Day of Week</label
 						>
 						<select
+							id="day-select"
 							bind:value={newClass.day}
 							class="w-full bg-[#111822] border-2 border-[#233248] text-white font-bold h-12 px-4 rounded-sm focus:border-primary outline-none"
 						>
@@ -421,10 +437,13 @@
 						</select>
 					</div>
 					<div class="md:col-span-5 space-y-2">
-						<label class="text-[10px] font-bold text-primary uppercase tracking-wider ml-1"
+						<label
+							for="subject-name"
+							class="text-[10px] font-bold text-primary uppercase tracking-wider ml-1"
 							>Subject Name</label
 						>
 						<input
+							id="subject-name"
 							bind:value={newClass.name}
 							type="text"
 							placeholder="e.g. Physiology"
@@ -432,12 +451,15 @@
 						/>
 					</div>
 					<div class="md:col-span-4 space-y-2">
-						<label class="text-[10px] font-bold text-primary uppercase tracking-wider ml-1"
+						<label
+							for="room-location"
+							class="text-[10px] font-bold text-primary uppercase tracking-wider ml-1"
 							>Room / Location</label
 						>
 						<div class="relative">
 							<MapPin size={16} class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
 							<input
+								id="room-location"
 								bind:value={newClass.room}
 								type="text"
 								placeholder="Room 402"
@@ -447,20 +469,25 @@
 					</div>
 					<div class="md:col-span-6 grid grid-cols-2 gap-2">
 						<div class="space-y-2">
-							<label class="text-[10px] font-bold text-primary uppercase tracking-wider ml-1"
+							<label
+								for="start-time"
+								class="text-[10px] font-bold text-primary uppercase tracking-wider ml-1"
 								>Start</label
 							>
 							<input
+								id="start-time"
 								bind:value={newClass.start}
 								type="time"
 								class="w-full bg-[#111822] border-2 border-[#233248] text-white font-bold h-12 px-2 rounded-sm"
 							/>
 						</div>
 						<div class="space-y-2">
-							<label class="text-[10px] font-bold text-primary uppercase tracking-wider ml-1"
-								>End</label
+							<label
+								for="end-time"
+								class="text-[10px] font-bold text-primary uppercase tracking-wider ml-1">End</label
 							>
 							<input
+								id="end-time"
 								bind:value={newClass.end}
 								type="time"
 								class="w-full bg-[#111822] border-2 border-[#233248] text-white font-bold h-12 px-2 rounded-sm"

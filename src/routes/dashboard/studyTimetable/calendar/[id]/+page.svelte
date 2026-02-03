@@ -29,6 +29,9 @@
 	import SonnerToast from '../../../../../components/SonnerToast.svelte';
 	import Navbar from '../../../../../components/dashboard/Navbar.svelte';
 
+	let { data } = $props();
+	let token = $derived(data?.token || '');
+
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
 
@@ -249,8 +252,9 @@
 
 		const res = await fetch(`${PUBLIC_API_URL}/study-plans/${planId}`, {
 			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			credentials: 'include',
+			headers: token
+				? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+				: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(payload)
 		});
 
@@ -319,8 +323,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/study-plans/${planId}`, {
 				method: 'GET',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include'
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' }
 			});
 
 			const json = await res.json();

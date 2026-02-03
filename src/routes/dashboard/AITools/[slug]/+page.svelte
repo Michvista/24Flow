@@ -17,10 +17,13 @@
 	interface Props {
 		data: {
 			post: PostData;
+			token?: string;
 		};
 	}
 
 	let { data }: Props = $props();
+
+	let token = $derived(data.token || '');
 
 	const componentMap: Record<string, Component<any>> = {
 		AutoFill,
@@ -32,7 +35,7 @@
 		TaskDigitizer
 	};
 
-	const SelectedComponent = componentMap[data.post.slug];
+	let SelectedComponent = $derived(componentMap[data.post.slug]);
 </script>
 
 <div class="min-h-screen bg-[#0B111C]">
@@ -50,7 +53,7 @@
 
 		<div class="tool-container">
 			{#if SelectedComponent}
-				<SelectedComponent />
+				<SelectedComponent {token} />
 			{:else}
 				<div
 					class="p-10 border-4 border-dashed border-red-500 text-red-500 font-bold uppercase text-center"

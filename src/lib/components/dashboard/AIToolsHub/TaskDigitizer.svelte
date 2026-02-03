@@ -18,6 +18,12 @@
 	import SonnerToast from '../../../../components/SonnerToast.svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
 
+	interface Props {
+		token?: string;
+	}
+
+	let { token = '' }: Props = $props();
+
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
 
@@ -64,29 +70,26 @@
 		dimensions: string;
 	}
 
-	let tasks: TaskItem[] = [];
-	let showOverlay = false;
-	let images: ImageItem[] = [];
-	let activeImageIndex = 0;
-	let fileInput: HTMLInputElement | null = null;
-	let isProcessing = false;
-	let isSaving = false;
+	let tasks: TaskItem[] = $state([]);
+	let showOverlay = $state(false);
+	let images: ImageItem[] = $state([]);
+	let activeImageIndex = $state(0);
+	let fileInput: HTMLInputElement | null = $state(null);
+	let isProcessing = $state(false);
+	let isSaving = $state(false);
 
 	// --- Derived (reactive) State ---
-	let selectedCount = 0;
-	$: selectedCount = tasks.filter((t) => t.checked).length;
+	let selectedCount = $derived(tasks.filter((t) => t.checked).length);
 
-	let currentFile: ImageItem | null = null;
-	$: currentFile = images[activeImageIndex] ?? null;
+	let currentFile = $derived(images[activeImageIndex] ?? null);
 
-	let fileName = 'No image uploaded';
-	$: fileName = currentFile ? currentFile.file.name : 'No image uploaded';
+	let fileName = $derived(currentFile ? currentFile.file.name : 'No image uploaded');
 
-	let fileSize = '0 MB';
-	$: fileSize = currentFile ? (currentFile.file.size / (1024 * 1024)).toFixed(2) + ' MB' : '0 MB';
+	let fileSize = $derived(
+		currentFile ? (currentFile.file.size / (1024 * 1024)).toFixed(2) + ' MB' : '0 MB'
+	);
 
-	let dimensions = '0x0';
-	$: dimensions = currentFile ? currentFile.dimensions : '0x0';
+	let dimensions = $derived(currentFile ? currentFile.dimensions : '0x0');
 
 	// Helper to convert File to Base64
 	const toBase64 = (file: File): Promise<string> =>
@@ -135,10 +138,9 @@
 
 			const response = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					toolType: 'DIGITIZE_OCR',
 					payload: {
@@ -237,10 +239,9 @@
 		try {
 			const response = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					toolType: 'BULK_SAVE_TASKS',
 					// backend expects payload.tasks: Array<{ title: string, description?: string }>
@@ -337,8 +338,16 @@
 
 				<div class="bg-surface-dark border-2 border-border-dark p-1 shadow-neo">
 					<div
-						class="relative w-full aspect-[4/3] bg-black overflow-hidden border border-border-dark group"
+						role="button"
+						tabindex="0"
+						class="relative w-full aspect-[4/3] bg-black overflow-hidden border border-border-dark group cursor-pointer"
 						onclick={() => (showOverlay = !showOverlay)}
+						onkeydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault();
+								showOverlay = !showOverlay;
+							}
+						}}
 					>
 						{#if currentFile}
 							<div

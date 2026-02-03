@@ -37,7 +37,7 @@
 		});
 	}
 
-	let { toastId, eventName, eventTime, probability } = $props();
+	let { toastId, eventName, eventTime, probability, token = '' } = $props();
 	let isSaving = $state(false);
 
 	// Fix: Add currentDay and days array
@@ -77,8 +77,9 @@
 
 			const res = await fetch(`${PUBLIC_API_URL}/events`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					title: eventName,
 					startTime: startTime.toISOString(),

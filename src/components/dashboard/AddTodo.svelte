@@ -34,9 +34,14 @@
 		});
 	}
 
-	let { onCancel, onAdd } = $props<{
+	let {
+		onCancel,
+		onAdd,
+		token = ''
+	} = $props<{
 		onCancel: () => void;
 		onAdd: (task: any) => void;
+		token?: string;
 	}>();
 
 	let title = $state('');
@@ -51,8 +56,9 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_URL}/tasks`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ title, description })
 			});
 

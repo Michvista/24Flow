@@ -37,7 +37,7 @@
 	}
 
 	// Props
-	let { isOpen = $bindable(false), onConfirm } = $props();
+	let { isOpen = $bindable(false), onConfirm, token = '' } = $props();
 
 	// State
 	let selectedMood = $state('PRODUCTIVE');
@@ -55,8 +55,9 @@
 		try {
 			const response = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					toolType: 'LOG_MOOD',
 					payload: { mood: selectedMood }

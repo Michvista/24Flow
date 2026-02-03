@@ -18,9 +18,15 @@
 	import type { SvelteComponentTyped } from 'svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
 
+	interface Props {
+		token?: string;
+	}
+
+	let { token = '' }: Props = $props();
+
 	// State for the input text
-	let userInput: string = '';
-	let isProcessing: boolean = false;
+	let userInput: string = $state('');
+	let isProcessing: boolean = $state(false);
 
 	// Parsed events returned from the AI
 	type ComponentCtor = new (...args: any[]) => SvelteComponentTyped<any, any, any>;
@@ -37,7 +43,7 @@
 		keywords?: string[];
 	}
 
-	let parsedEvents: ParsedEvent[] = [];
+	let parsedEvents: ParsedEvent[] = $state([]);
 
 	function notifySuccess(title: string, message: string) {
 		const id = Math.random().toString(36).substring(2, 9);
@@ -75,8 +81,9 @@
 		try {
 			const response = await fetch(`${PUBLIC_API_URL}/ai/tool`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
+				headers: token
+					? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+					: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					toolType: 'NATURAL_LANGUAGE',
 					payload: { userInput }
