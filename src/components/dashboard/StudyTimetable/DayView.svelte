@@ -138,9 +138,14 @@
 				{/if}
 
 				<div
-					class="w-full {task.color} border-2 border-white/10 rounded-xl p-6 md:p-8 flex flex-col md:flex-row gap-6 relative overflow-hidden shadow-hard-sm transition-all {isEditMode
+					class="w-full border-2 border-white/10 rounded-xl p-6 md:p-8 flex flex-col md:flex-row gap-6 relative overflow-hidden shadow-hard-sm transition-all {isEditMode
 						? 'cursor-grab active:cursor-grabbing'
 						: ''}"
+					style="background-color: {task.color?.startsWith('#')
+						? task.color
+						: task.color?.startsWith('bg-')
+							? ''
+							: '#3d7bff'}"
 				>
 					<div class="absolute top-0 right-0 p-4 opacity-10">
 						{#if task.isBreak}<Coffee size={80} />{:else}<Timer size={80} />{/if}
