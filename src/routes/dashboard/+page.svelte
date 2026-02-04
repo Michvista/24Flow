@@ -30,7 +30,8 @@
 				toastId: id,
 				eventName: data?.eventName || 'Pattern Analysis',
 				eventTime: data?.eventTime || 'Scheduled Time',
-				probability: data?.probability || '85%'
+				probability: data?.probability || '85%',
+				token: token
 			},
 			duration: Infinity
 		});
