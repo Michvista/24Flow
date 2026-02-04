@@ -72,29 +72,32 @@
 		return i.toString().padStart(2, '0') + ':00';
 	});
 
-	// Track last seen props to detect changes
-	let lastSeenDate: Date | null = $state(null);
-	let lastSeenTime: string | null = $state(null);
+	// Track last seen props to detect changes (not reactive - just plain variables)
+	let lastSeenDateTimestamp: number | null = null;
+	let lastSeenTimeValue: string | null = null;
 
 	// Sync props with local state reactively using $effect
 	$effect(() => {
-		// Check if initialDate has changed
-		const dateChanged =
-			initialDate && (!lastSeenDate || initialDate.getTime() !== lastSeenDate.getTime());
-		const timeChanged = initialTime !== lastSeenTime;
+		// Only read the props we want to react to
+		const currentDateTimestamp = initialDate?.getTime() ?? null;
+		const currentTimeValue = initialTime;
+
+		// Check if props have changed (comparing against non-reactive tracking vars)
+		const dateChanged = currentDateTimestamp !== null && currentDateTimestamp !== lastSeenDateTimestamp;
+		const timeChanged = currentTimeValue !== lastSeenTimeValue;
 
 		if (dateChanged || timeChanged) {
-			if (initialDate) {
+			if (initialDate && dateChanged) {
 				date = format(initialDate, 'yyyy-MM-dd');
-				lastSeenDate = new Date(initialDate.getTime());
+				lastSeenDateTimestamp = currentDateTimestamp;
 			}
 
-			if (initialTime) {
+			if (initialTime && timeChanged) {
 				// If the grid click gives us "14:00", we find the closest index in timeSlots
 				const hour = initialTime.split(':')[0];
 				const index = timeSlots.findIndex((t) => t.startsWith(hour));
 				if (index !== -1) startTimeIndex = index;
-				lastSeenTime = initialTime;
+				lastSeenTimeValue = currentTimeValue;
 			}
 		}
 	});

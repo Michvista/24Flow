@@ -19,7 +19,7 @@
 		LayoutDashboard,
 		ArrowBigLeft
 	} from 'lucide-svelte';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import StudyTimetable from '$lib/components/dashboard/AIToolsHub/StudyTimetable.svelte';
 	import { goto } from '$app/navigation';
@@ -159,9 +159,28 @@
 		}
 	}
 
-	// Reactive trigger: Fetch when page or search changes AND token is available
+	// Track last fetched values to prevent duplicate fetches
+	let lastFetchedPage = $state(0);
+	let lastFetchedSearch = $state('');
+	let hasFetchedOnce = $state(false);
+
+	// Single consolidated effect for fetching plans
 	$effect(() => {
-		if (token) {
+		// Only fetch when token is available
+		if (!token) return;
+
+		// Track dependencies
+		const page = currentPage;
+		const search = searchQuery;
+
+		// Fetch if: first time with token, OR page changed, OR search changed
+		if (!hasFetchedOnce || page !== lastFetchedPage || search !== lastFetchedSearch) {
+			// Update tracking state without triggering this effect
+			untrack(() => {
+				lastFetchedPage = page;
+				lastFetchedSearch = search;
+				hasFetchedOnce = true;
+			});
 			fetchPlans();
 		}
 	});
@@ -177,13 +196,6 @@
 
 	onMount(() => {
 		avatarUrl = generateRandomAvatar();
-	});
-
-	// Reactive trigger: Fetch when page or search changes
-	$effect(() => {
-		if (currentPage || searchQuery) {
-			fetchPlans();
-		}
 	});
 
 	function handlePageChange(dir: 'next' | 'prev') {
