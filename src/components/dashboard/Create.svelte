@@ -83,7 +83,8 @@
 		const currentTimeValue = initialTime;
 
 		// Check if props have changed (comparing against non-reactive tracking vars)
-		const dateChanged = currentDateTimestamp !== null && currentDateTimestamp !== lastSeenDateTimestamp;
+		const dateChanged =
+			currentDateTimestamp !== null && currentDateTimestamp !== lastSeenDateTimestamp;
 		const timeChanged = currentTimeValue !== lastSeenTimeValue;
 
 		if (dateChanged || timeChanged) {
