@@ -1,8 +1,5 @@
 import prisma from '../db.mjs';
-import {
-	checkTimetableConflicts,
-	detectLargeGaps
-} from '../services/timetableService.mjs';
+import { checkTimetableConflicts, detectLargeGaps } from '../services/timetableService.mjs';
 import { generateSheetsData } from '../services/aiService.mjs';
 
 export const getTimetable = async (req, res, next) => {
@@ -44,80 +41,24 @@ export const persistTimetable = async (req, res, next) => {
 };
 
 // This is the service function your checkConflicts controller calls
-export const checkConflicts = async (userId, newClasses) => {
-	// 1. Get all existing events for the user
-	const existingEvents = await prisma.event.findMany({
-		where: { userId },
-		select: {
-			title: true,
-			startTime: true,
-			endTime: true
-		}
-	});
+export const checkConflicts = async (req, res, next) => {
+	try {
+		const userId = req.user && req.user.id;
+		const { classes } = req.body;
 
-	const conflicts = [];
+		if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+		if (!classes || !Array.isArray(classes))
+			return res.status(400).json({ success: false, error: 'Missing classes array' });
 
-	// Helper to calculate the next occurrence of a class (same logic as sync)
-	const getNextDateForDay = (dayName) => {
-		const daysMap = {
-			Sunday: 0,
-			Monday: 1,
-			Tuesday: 2,
-			Wednesday: 3,
-			Thursday: 4,
-			Friday: 5,
-			Saturday: 6
-		};
-		const targetDay = daysMap[dayName];
-		const now = new Date();
-		const resultDate = new Date(now);
-		resultDate.setDate(now.getDate() + ((targetDay + 7 - now.getDay()) % 7));
-		return resultDate;
-	};
+		// Delegate to service which contains the actual conflict logic
+		const conflicts = await checkTimetableConflicts(userId, classes);
+		const tips = detectLargeGaps(classes || []);
 
-	for (const c of newClasses) {
-		const classDate = getNextDateForDay(c.day);
-		const [sh, sm] = c.startTime.split(':');
-		const [eh, em] = c.endTime.split(':');
-
-		const startTime = new Date(classDate);
-		startTime.setHours(parseInt(sh), parseInt(sm), 0, 0);
-
-		const endTime = new Date(classDate);
-		endTime.setHours(parseInt(eh), parseInt(em), 0, 0);
-
-		// --- THE DEDUPLICATION CHECK ---
-		// Find if this EXACT class already exists
-		const isExactMatch = existingEvents.some(
-			(existing) =>
-				// Check for variations like "Bio" vs "Class: Bio"
-				(existing.title === c.name || existing.title === `Class: ${c.name}`) &&
-				existing.startTime.getTime() === startTime.getTime() &&
-				existing.endTime.getTime() === endTime.getTime()
-		);
-
-		if (isExactMatch) {
-			continue; // Skip this class; it's already there, no conflict to report
-		}
-		// -------------------------------
-
-		// 2. NOW check for real overlaps with other events
-		const overlap = existingEvents.find((existing) => {
-			return startTime < existing.endTime && endTime > existing.startTime;
-		});
-
-		if (overlap) {
-			conflicts.push({
-				type: 'overlap',
-				newClass: c.name,
-				existingEvent: overlap.title,
-				timeSlot: `${c.startTime}-${c.endTime}`,
-				strategy: overlap.title.includes(c.name) ? 'MOVE_EVENT' : 'CHOICE'
-			});
-		}
+		return res.json({ success: true, conflicts, tips });
+	} catch (err) {
+		console.error('checkConflicts controller error:', err);
+		return next(err);
 	}
- 
-	return conflicts;
 };
 const colors = [
 	// Original Palette
@@ -176,7 +117,6 @@ export const syncCalendar = async (userId, classes) => {
 
 	const palette = shuffle(colors);
 	const events = [];
-
 
 	const getNextDateForDay = (dayName) => {
 		const daysMap = {
