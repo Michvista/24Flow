@@ -1,3 +1,4 @@
+import { generateContentWithFallback } from '../services/geminiModel.mjs';
 import prisma from '../db.mjs';
 import { generateAutoFill } from '../services/autoFillService.mjs';
 import { getOverlapFixes, applyOverlapFix } from '../services/overlapFixerService.mjs';
@@ -28,8 +29,7 @@ export const handleAiTool = async (req, res, next) => {
 			case 'GENERATE_TAG': {
 				const { title } = payload;
 
-				const response = await ai.models.generateContent({
-					model: 'gemini-3-flash-preview',
+				const response = await generateContentWithFallback(ai, {
 					contents: `Generate a one-word category tag for this task: "${title}". Return ONLY the word.`
 				});
 
@@ -169,8 +169,7 @@ export const getInsights = async (req, res, next) => {
 
 		const prompt = 'Provide 3 actionable study insights for this user as a JSON array of strings.';
 
-		const result = await ai.models.generateContent({
-			model: 'gemini-3-flash-preview',
+		const result = await generateContentWithFallback(ai, {
 			contents: prompt
 		});
 

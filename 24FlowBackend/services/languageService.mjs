@@ -1,3 +1,4 @@
+import { generateContentWithFallback } from './geminiModel.mjs';
 import prisma from '../db.mjs';
 import { GoogleGenAI } from '@google/genai';
 
@@ -47,8 +48,7 @@ export const processAndSaveNLPEvent = async (payload, userId) => {
         USER INPUT: "${userInput}"
     `;
 
-	const response = await ai.models.generateContent({
-		model: 'gemini-3-flash-preview',
+	const response = await generateContentWithFallback(ai, {
 		contents: prompt
 	});
 

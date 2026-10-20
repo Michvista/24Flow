@@ -1,3 +1,4 @@
+import { generateContentWithFallback } from './geminiModel.mjs';
 // import { GoogleGenAI } from '@google/genai';
 // import prisma from '../db.mjs';
 
@@ -49,7 +50,7 @@
 //                - "proposals": Array of same events but with corrected startTime/endTime.
 //         `;
 
-//         const response = await ai.models.generateContent({
+//         const response = await generateContentWithFallback(ai, {
 //             model: "gemini-3-flash-preview",
 //             contents: prompt,
 //         });
@@ -291,8 +292,7 @@ async function generateAIProposal(overlappingEvents, allUserEvents) {
 
 		for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
 			try {
-				response = await ai.models.generateContent({
-					model: 'gemini-3-flash-preview',
+				response = await generateContentWithFallback(ai, {
 					contents: prompt,
 					generationConfig: {
 						temperature: 0.2,

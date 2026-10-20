@@ -1,3 +1,4 @@
+import { generateContentWithFallback } from './geminiModel.mjs';
 import { GoogleGenAI } from '@google/genai';
 
 const ai = new GoogleGenAI({
@@ -20,8 +21,7 @@ export const performOCR = async ({ image, mimeType }) => {
         }
     `; 
 
-	const result = await ai.models.generateContent({
-		model: 'gemini-3-flash-preview',
+	const result = await generateContentWithFallback(ai, {
 		contents: [{ inlineData: { mimeType, data: image } }, { text: prompt }]
 	});
 

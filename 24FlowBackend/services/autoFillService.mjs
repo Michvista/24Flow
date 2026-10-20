@@ -1,3 +1,4 @@
+import { generateContentWithFallback } from './geminiModel.mjs';
 import prisma from '../db.mjs';
 import { GoogleGenAI } from '@google/genai';
 
@@ -61,8 +62,7 @@ export const generateAutoFill = async (payload, userId) => {
         5. Return ONLY a JSON array: [{"title": string, "startTime": "ISO String", "endTime": "ISO String", "color": string}]
     `;
 
-	const response = await ai.models.generateContent({
-		model: 'gemini-3-flash-preview',
+	const response = await generateContentWithFallback(ai, {
 		contents: prompt
 	});
 

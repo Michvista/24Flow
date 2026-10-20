@@ -1,3 +1,4 @@
+import { generateContentWithFallback } from './geminiModel.mjs';
 import { GoogleGenAI } from '@google/genai';
 
 const ai = new GoogleGenAI({
@@ -226,8 +227,7 @@ Generate NOW:`;
 
 		console.log('[Gemini] Sending prompt for', totalWeeks, 'weeks with 24-hour scheduling...');
 
-		const result = await ai.models.generateContent({
-			model: 'gemini-3-flash-preview',
+		const result = await generateContentWithFallback(ai, {
 			contents: [{ role: 'user', parts: [{ text: prompt }] }],
 			generationConfig: {
 				temperature: 0.7,

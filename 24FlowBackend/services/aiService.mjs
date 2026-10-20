@@ -1,3 +1,4 @@
+import { generateContentWithFallback } from './geminiModel.mjs';
 import { GoogleGenAI } from '@google/genai';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -24,8 +25,7 @@ Schema:
 `;
 
 	try {
-		const result = await ai.models.generateContent({
-			model: 'gemini-3-flash-preview',
+		const result = await generateContentWithFallback(ai, {
 			contents: prompt
 		});
 
@@ -57,8 +57,7 @@ export const generateSheetsData = async (classes) => {
 	const prompt = `Convert these classes to CSV (Day,Subject,Start,End,Room): ${JSON.stringify(classes)}. Return raw CSV only.`;
 
 	try {
-		const result = await ai.models.generateContent({
-			model: 'gemini-3-flash-preview',
+		const result = await generateContentWithFallback(ai, {
 			contents: prompt
 		});
 

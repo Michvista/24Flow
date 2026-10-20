@@ -1,3 +1,4 @@
+import { generateContentWithFallback } from './geminiModel.mjs';
 import schedule from 'node-schedule';
 import prisma from '../db.mjs';
 import { GoogleGenAI } from '@google/genai';
@@ -45,8 +46,7 @@ export const generateAndStoreReport = async (userId) => {
             }
         `;
 
-		const response = await ai.models.generateContent({
-			model: 'gemini-3-flash-preview',
+		const response = await generateContentWithFallback(ai, {
 			contents: prompt
 		});
 

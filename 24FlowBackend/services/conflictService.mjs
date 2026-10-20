@@ -1,3 +1,4 @@
+import { generateContentWithFallback } from './geminiModel.mjs';
 import prisma from '../db.mjs';
 import { GoogleGenAI } from '@google/genai';
 
@@ -226,8 +227,7 @@ CRITICAL:
 
 		for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
 			try {
-				response = await ai.models.generateContent({
-					model: 'gemini-3-flash-preview',
+				response = await generateContentWithFallback(ai, {
 					contents: prompt,
 					generationConfig: {
 						temperature: 0.3 // Lower temp for more consistent priority handling
