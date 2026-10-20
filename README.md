@@ -4,7 +4,8 @@
 
 ## Gemini model configuration
 
-The backend uses `gemini-3.8-flash` by default. Set `GEMINI_MODEL` and the
+The backend uses Google's `gemini-flash-latest` alias by default, which follows
+the latest Flash text model. Set `GEMINI_MODEL` and the
 comma-separated `GEMINI_FALLBACK_MODELS` in the backend deployment environment
 to change model order or add newer supported models without editing individual
 AI features. The fallback defaults are listed in `24FlowBackend/.env.example`.

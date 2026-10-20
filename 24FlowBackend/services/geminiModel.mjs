@@ -1,5 +1,5 @@
-const DEFAULT_MODEL = 'gemini-3.8-flash';
-const DEFAULT_FALLBACK_MODELS = ['gemini-3.6-flash', 'gemini-3-flash-preview'];
+const DEFAULT_MODEL = 'gemini-flash-latest';
+const DEFAULT_FALLBACK_MODELS = ['gemini-3.8-flash', 'gemini-3.6-flash'];
 
 function configuredModels() {
 	const primary = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
