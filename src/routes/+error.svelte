@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { LayoutDashboard, RefreshCw, Terminal } from 'lucide-svelte';
 	let errorCode = 'ERR_500_INTERNAL_SERVER_ERROR';
 	let errorId = '#8392-FKA';
 	let timestamp = new Date().toISOString();
@@ -20,10 +21,6 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" />
 	<link
 		href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap"
-		rel="stylesheet"
-	/>
-	<link
-		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
 		rel="stylesheet"
 	/>
 </svelte:head>
@@ -98,14 +95,14 @@
 						href="/dashboard"
 						class="flex items-center justify-center gap-2 h-14 px-8 bg-[#1973f0] text-white text-base font-bold uppercase tracking-wider border-2 border-transparent hover:border-white transition-all shadow-[6px_6px_0px_0px_#ffffff] hover:translate-y-1 hover:shadow-none w-full sm:w-auto"
 					>
-						<span class="material-symbols-outlined">dashboard</span>
+						<LayoutDashboard size={22} />
 						Return to Dashboard
 					</a>
 					<button
 						on:click={handleTryAgain}
 						class="flex items-center justify-center gap-2 h-14 px-8 bg-transparent text-white border-2 border-gray-600 text-base font-bold uppercase tracking-wider hover:border-[#1973f0] hover:text-[#1973f0] transition-colors w-full sm:w-auto"
 					>
-						<span class="material-symbols-outlined">refresh</span>
+						<RefreshCw size={22} />
 						Try Again
 					</button>
 				</div>
@@ -115,7 +112,7 @@
 				<div class="border border-[#233248] bg-[#0d1219] p-4 rounded-lg">
 					<div class="flex items-start gap-4">
 						<div class="mt-1 p-2 bg-red-500/10 rounded border border-red-500/20 text-red-500">
-							<span class="material-symbols-outlined">terminal</span>
+							<Terminal size={22} />
 						</div>
 						<div class="flex-1 font-mono text-sm">
 							<div class="flex items-center justify-between mb-2">

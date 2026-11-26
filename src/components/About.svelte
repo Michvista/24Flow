@@ -1,106 +1,103 @@
-<script>
-	import { onMount } from 'svelte';
-	import gsap from 'gsap';
+<script lang="ts">
+	import { ListPlus, Wand2, Activity } from 'lucide-svelte';
 
-	import calendarImg from '$lib/imgs/calendar-71.svg';
-	import checklist2 from '$lib/imgs/checklist-2.svg';
-	import checklist36 from '$lib/imgs/checklist-36.svg';
-	import reminderNote from '$lib/imgs/reminder-note-96.svg';
-	import time57 from '$lib/imgs/time-57.svg';
+	const steps = [
+		{
+			icon: ListPlus,
+			title: 'Drop in your day',
+			text: 'Add tasks, classes and habits — type them, paste them, or snap a photo of a handwritten list.'
+		},
+		{
+			icon: Wand2,
+			title: 'Let AI arrange it',
+			text: '24Flow fits everything into your free hours, fixes overlaps and keeps your priorities first.'
+		},
+		{
+			icon: Activity,
+			title: 'Stay in flow',
+			text: 'Follow one clear timeline from 12AM to 12AM, track your mood and sleep, and adjust as you go.'
+		}
+	];
 
-	const floatingImgs = [calendarImg, checklist2, checklist36, reminderNote, time57];
-
-	// Orbit radius
-	const orbitRadius = 350;
-
-	// Precompute positions around the text
-	const positions = floatingImgs.map((_, i) => {
-		const angle = (i / floatingImgs.length) * 2 * Math.PI;
-		return {
-			x: orbitRadius * Math.cos(angle),
-			y: orbitRadius * Math.sin(angle)
-		};
-	});
-
-	onMount(() => {
-		// Rotate wrapper for orbit effect
-		gsap.to('.orbit-wrapper', {
-			rotate: 360,
-			duration: 40,
-			ease: 'none',
-			repeat: -1,
-			transformOrigin: '50% 50%'
-		});
-
-		// Subtle floating/wobble for each image
-		gsap.to('.floating-img', {
-			x: '+=15',
-			y: '+=15',
-			duration: 4,
-			yoyo: true,
-			repeat: -1,
-			ease: 'sine.inOut',
-			stagger: 0.2
-		});
-
-		// Headline animation
-		const letters = document.querySelectorAll('.headline span');
-		gsap.from(letters, {
-			y: -50,
-			opacity: 0,
-			duration: 1,
-			stagger: 0.05,
-			ease: 'back.out(1.7)'
-		});
-
-		// Subtext animation
-		gsap.from('.subtext', {
-			opacity: 0,
-			y: 20,
-			duration: 1,
-			delay: 1.2,
-			ease: 'power2.out'
-		});
-	});
+	// A sample day for the 24h timeline (start hour, length in hours)
+	const blocks = [
+		{ label: 'Sleep', start: 0, len: 7, color: '#334155' },
+		{ label: 'Gym', start: 7, len: 1, color: '#00F57A' },
+		{ label: 'Classes', start: 9, len: 4, color: '#1973f0' },
+		{ label: 'Lunch', start: 13, len: 1, color: '#facc15' },
+		{ label: 'Study', start: 14, len: 3, color: '#AF52DE' },
+		{ label: 'Free', start: 18, len: 3, color: '#78c2ed' },
+		{ label: 'Sleep', start: 23, len: 1, color: '#334155' }
+	];
+	const ticks = [0, 6, 12, 18, 24];
+	const fmt = (h: number) => (h === 0 || h === 24 ? '12AM' : h === 12 ? '12PM' : h < 12 ? `${h}AM` : `${h - 12}PM`);
 </script>
 
-<div
-	class="w-full h-screen relative mt-32 flex items-center justify-center bg-[url('/blob.svg')] bg-center bg-cover"
->
-	<div
-		class="orbit-wrapper absolute w-full h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-	>
-		{#each floatingImgs as img, i}
-			<img
-				src={img}
-				class="floating-img absolute w-16 h-16"
-				style="top: 50%; left: 50%; transform: translate(calc(-50% + {positions[i]
-					.x}px), calc(-50% + {positions[i].y}px));"
-				alt="floating icon"
-			/>
-		{/each}
-	</div>
+<section id="how-it-works" class="border-b-2 border-slate-800 bg-[#0e1624] py-20 md:py-28">
+	<div class="mx-auto max-w-7xl px-4 sm:px-6">
+		<div class="max-w-2xl">
+			<p class="font-display-mono text-xs uppercase tracking-widest text-[#78c2ed]">
+				// How it works
+			</p>
+			<h2 class="mt-3 font-robson text-5xl leading-none tracking-tight md:text-6xl">
+				Own your <span class="text-[#1973f0]">24h</span>
+			</h2>
+			<p class="mt-5 text-lg text-slate-300">
+				See your entire day clearly and take control — every hour accounted for, nothing forgotten.
+			</p>
+		</div>
 
-	<div class="relative z-10 max-w-4xl text-center px-6">
-		<h1
-			class="headline text-3xl md:text-7xl font-extrabold mb-6 leading-tight drop-shadow-[3px_3px_0_#78c2Ed]"
-			style="color:#154e94cf; font-family:'Monoton', cursive;"
-		>
-			{#each Array.from('Own Your 24h') as letter}
-				<span>{letter}</span>
+		<!-- 24h timeline -->
+		<div class="mt-14 border-2 border-slate-700 bg-[#151f2e] p-5 shadow-[8px_8px_0_0_#1973f0] sm:p-8">
+			<div class="mb-4 flex items-center justify-between">
+				<p class="font-bold uppercase tracking-wider">A day in 24Flow</p>
+				<p class="font-display-mono text-xs text-slate-400">24 / 24 hrs planned</p>
+			</div>
+			<div class="relative h-14 w-full overflow-hidden border-2 border-slate-600 bg-[#0b111c]">
+				{#each blocks as b}
+					<div
+						class="absolute top-0 flex h-full items-center justify-center overflow-hidden border-r-2 border-[#0b111c] text-[10px] font-bold uppercase text-[#0b111c] sm:text-xs"
+						style="left:{(b.start / 24) * 100}%; width:{(b.len / 24) * 100}%; background:{b.color}; {b.color === '#334155' ? 'color:#cbd5e1' : ''}"
+						title="{b.label}: {fmt(b.start)} – {fmt(b.start + b.len)}"
+					>
+						<span class="hidden truncate px-1 sm:inline">{b.label}</span>
+					</div>
+				{/each}
+			</div>
+			<div class="relative mt-2 h-4 font-display-mono text-[10px] text-slate-400 sm:text-xs">
+				{#each ticks as t}
+					<span
+						class="absolute -translate-x-1/2 first:translate-x-0 last:-translate-x-full"
+						style="left:{(t / 24) * 100}%">{fmt(t)}</span
+					>
+				{/each}
+			</div>
+			<ul class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-300 sm:hidden">
+				{#each blocks.slice(0, 6) as b}
+					<li class="flex items-center gap-2">
+						<span class="inline-block h-3 w-3" style="background:{b.color}"></span>{b.label}
+					</li>
+				{/each}
+			</ul>
+		</div>
+
+		<!-- Steps -->
+		<ol class="mt-14 grid gap-6 md:grid-cols-3">
+			{#each steps as step, i}
+				<li class="relative border-2 border-slate-700 bg-[#151f2e] p-7">
+					<span
+						class="absolute right-5 top-4 font-robson text-5xl text-slate-700"
+						aria-hidden="true">0{i + 1}</span
+					>
+					<div
+						class="flex h-12 w-12 items-center justify-center border-2 border-[#1973f0] text-[#1973f0]"
+					>
+						<step.icon size={24} />
+					</div>
+					<h3 class="mt-6 text-xl font-bold uppercase">{step.title}</h3>
+					<p class="mt-3 leading-relaxed text-slate-400">{step.text}</p>
+				</li>
 			{/each}
-		</h1>
-
-		<p
-			class="subtext text-sm md:text-xl font-semibold max-w-2xl mx-auto text-brand-accent-two font-montserrat"
-		>
-			Plan, track, and master every hour of your day. Schedule tasks, classes, and activities from
-			12AM to 12AM without the headache of Excel spreadsheets. See your entire day clearly and take
-			control.
-		</p>
+		</ol>
 	</div>
-</div>
-
-<style>
-	@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Monoton&display=swap');
-</style>
+</section>

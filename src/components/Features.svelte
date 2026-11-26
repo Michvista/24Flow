@@ -1,230 +1,124 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import gsap from 'gsap';
-	import unBox from '$lib/imgs/unbox.png';
+	import {
+		LayoutGrid,
+		Wand2,
+		ScanText,
+		GraduationCap,
+		GitMerge,
+		MessageSquareText,
+		ArrowRight
+	} from 'lucide-svelte';
 	import meditating from '$lib/imgs/meditating.png';
 
-	function randomPalette() {
-		const hue = Math.floor(Math.random() * 360);
-
-		return {
-			bg: `hsl(${hue}, 70%, 94%)`, // soft pastel
-			accent: `hsl(${hue}, 60%, 40%)` // darker shade
-		};
-	}
-
-	let features = [
+	const features = [
 		{
-			title: 'A Better Way to Plan Your Day',
+			icon: LayoutGrid,
+			title: 'A better way to plan your day',
 			description:
-				'No messy spreadsheets. Visualize your entire day in one place — clear, structured, and built for people who want order.'
+				'No messy spreadsheets. Visualize your entire day in one place — clear, structured, and built for people who want order.',
+			accent: '#1973f0'
 		},
 		{
-			title: 'AI Auto-Fill My Day',
+			icon: Wand2,
+			title: 'AI auto-fill my day',
 			description:
-				'Give the app your tasks and free hours — it automatically arranges everything into a perfect, balanced 12AM–12AM schedule.'
+				'Give the app your tasks and free hours — it arranges everything into a balanced 12AM–12AM schedule.',
+			accent: '#00F57A'
 		},
 		{
-			title: 'AI OCR ',
+			icon: ScanText,
+			title: 'AI OCR task digitizer',
 			description:
-				'The AI extracts text from images of handwritten or printed schedules, converting them into editable digital timetables.'
+				'Snap a photo of a handwritten or printed schedule and get an editable digital timetable back.',
+			accent: '#facc15'
 		},
 		{
-			title: 'AI Study Timetable Generator',
+			icon: GraduationCap,
+			title: 'AI study timetable',
 			description:
-				'Students can enter subjects, topics, deadlines, and available hours. The AI generates a full weekly study timetable instantly.'
+				'Enter subjects, topics, deadlines and available hours. Get a full weekly study plan instantly.',
+			accent: '#AF52DE'
 		},
 		{
-			title: 'AI Smart Overlap Fixer',
+			icon: GitMerge,
+			title: 'Smart overlap fixer',
 			description:
-				'If two tasks clash or run past their time, the system auto-adjusts the schedule while keeping your priorities intact.'
+				'When two tasks clash or run over, the schedule auto-adjusts while keeping your priorities intact.',
+			accent: '#78c2ed'
 		},
 		{
-			title: 'Natural Language → Smart Scheduling',
+			icon: MessageSquareText,
+			title: 'Natural language scheduling',
 			description:
-				'Type anything like “Study 10–1, gym at 4, cook for 1 hour after”, and the AI instantly converts it into a clean 24H timetable.'
+				'Type “Study 10–1, gym at 4, cook for an hour after” and watch it become a clean 24h timetable.',
+			accent: '#f97316'
 		}
-	].map((f) => {
-		const palette = randomPalette();
-		return {
-			...f,
-			bgColor: palette.bg,
-			accentColor: palette.accent
-		};
-	});
-
-	onMount(() => {
-		const cards = document.querySelectorAll('.feature-card') as NodeListOf<HTMLElement>;
-
-		cards.forEach((card, index) => {
-			if (index !== 0 && index !== cards.length - 1) return; // only first + last
-
-			const img = card.querySelector('.hover-pop-img') as HTMLElement | null;
-			if (!img) return;
-
-			let moveTL = gsap.timeline({ paused: true });
-
-			// Initial reveal animation
-			const revealTL = gsap
-				.timeline({ paused: true })
-				.fromTo(
-					img,
-					{ opacity: 0, y: 60, scale: 0.85, rotate: -8 },
-					{ opacity: 1, y: 0, scale: 1, rotate: 0, duration: 0.6, ease: 'power3.out' }
-				);
-
-			// Magnetic follow animation (cursor inside card)
-			const follow = (e: MouseEvent) => {
-				const rect = card.getBoundingClientRect();
-				const x = e.clientX - rect.left - rect.width / 2;
-				const y = e.clientY - rect.top - rect.height / 2;
-
-				gsap.to(img, {
-					x: x * 0.12, // horizontal pull
-					y: y * 0.12 - 20, // vertical pull + offset
-					rotate: x * 0.03,
-					scale: 1.05,
-					duration: 0.4,
-					ease: 'power2.out'
-				});
-			};
-
-			card.addEventListener('mouseenter', () => {
-				revealTL.play();
-				moveTL.play();
-				card.addEventListener('mousemove', follow as EventListener);
-			});
-
-			card.addEventListener('mouseleave', () => {
-				revealTL.reverse();
-				card.removeEventListener('mousemove', follow as EventListener);
-
-				// Reset position
-				gsap.to(img, {
-					x: 0,
-					y: 0,
-					rotate: 0,
-					scale: 0.9,
-					duration: 0.4,
-					ease: 'power2.inOut'
-				});
-			});
-		});
-	});
+	];
 </script>
 
-<div
-	id="features"
-	class="cont bg-white py-20 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center font-montserrat"
->
-	<div class="max-w-7xl mx-auto w-[75%] text-center mb-16">
-		<p class="text-3xl md:text-5xl lg:text-6xl font-semibold text-gray-800">
-			Take Time Management to the Next Level
-		</p>
-	</div>
-
-	<div class="cards max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10">
-		{#each features as feature, i}
-			<div
-				class={`feature-card 
-                    ${i === 0 ? 'md:col-span-2 lg:col-span-2' : ''} 
-                    ${i === features.length - 1 ? 'md:col-span-2 lg:col-span-2' : ''}`}
-				style="--accent-color: {feature.accentColor}"
-			>
-				<div class="card-content-inner" style="background-color: {feature.bgColor};">
-					<h3 class="text-3xl font-bold text-gray-900">
-						{feature.title}
-					</h3>
-
-					<p
-						class="text-base text-gray-600 font-medium {i === 0 ? 'w-[50%]' : ''} 
-                    {i === features.length - 1 ? 'w-[50%]' : ''}"
-					>
-						{feature.description}
-					</p>
-				</div>
-				{#if i === 0}
-					<img src={meditating} alt="" class="hover-pop-img" />
-				{/if}
-				{#if i === features.length - 1}
-					<img src={unBox} alt="" class="hover-pop-img" />
-				{/if}
+<section id="features" class="py-20 md:py-28">
+	<div class="mx-auto max-w-7xl px-4 sm:px-6">
+		<div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+			<div class="max-w-2xl">
+				<p class="font-display-mono text-xs uppercase tracking-widest text-[#78c2ed]">
+					// Features
+				</p>
+				<h2 class="mt-3 font-robson text-5xl leading-none tracking-tight md:text-6xl">
+					Time management,<br /><span class="text-[#1973f0]">next level</span>
+				</h2>
 			</div>
-		{/each}
+			<p class="max-w-md text-slate-400">
+				Seven AI tools that do the boring part of planning, so you can spend your hours on what
+				matters.
+			</p>
+		</div>
+
+		<div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+			{#each features as f}
+				<article
+					class="group flex flex-col border-2 border-slate-700 bg-[#151f2e] p-7 transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:border-white"
+					style="--accent:{f.accent}"
+				>
+					<div
+						class="flex h-12 w-12 items-center justify-center border-2"
+						style="border-color:{f.accent}; color:{f.accent}"
+					>
+						<f.icon size={24} />
+					</div>
+					<h3 class="mt-6 text-xl font-bold uppercase leading-tight">{f.title}</h3>
+					<p class="mt-3 leading-relaxed text-slate-400">{f.description}</p>
+				</article>
+			{/each}
+		</div>
+
+		<!-- CTA -->
+		<div
+			class="mt-24 grid items-center gap-10 border-2 border-white bg-[#1973f0] p-8 shadow-[10px_10px_0_0_#fff] md:grid-cols-[1.4fr_1fr] md:p-12"
+		>
+			<div>
+				<h2 class="font-robson text-4xl leading-none tracking-tight sm:text-5xl md:text-6xl">
+					Ready to take back your day?
+				</h2>
+				<p class="mt-5 max-w-lg text-lg text-blue-50">
+					Create a free account and have your first 24-hour plan in under a minute.
+				</p>
+				<a
+					href="/auth"
+					data-sveltekit-preload-data="false"
+					class="mt-8 inline-flex h-14 items-center gap-2 border-2 border-[#0b111c] bg-white px-8 font-bold uppercase tracking-wider text-[#0b111c] shadow-[5px_5px_0_0_#0b111c] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[2px_2px_0_0_#0b111c]"
+				>
+					Get started free <ArrowRight size={18} />
+				</a>
+			</div>
+			<div class="hidden border-2 border-[#0b111c] bg-white p-4 md:block">
+				<img src={meditating} alt="Calm person meditating" class="w-full" />
+			</div>
+		</div>
 	</div>
-</div>
+</section>
 
 <style>
-	.feature-card {
-		border-radius: 1rem;
-		border: 1px solid black;
-		transition: all 0.25s ease;
-		position: relative;
-
-		box-shadow:
-			0 0 0 2px black,
-			14px 14px 0 var(--accent-color);
-	}
-
-	/* Hover animation */
-	.feature-card:hover {
-		transform: translate(-4px, -4px) scale(1.02);
-
-		box-shadow:
-			0 0 0 2px black,
-			20px 20px 0 var(--accent-color);
-	}
-
-	.card-content-inner {
-		border-radius: 0.8rem;
-		padding: 1.7rem;
-		min-height: 200px;
-
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-
-		border: 3px solid var(--accent-color);
-
-		flex-grow: 1;
-		flex-shrink: 0;
-	}
-
-	/* prevent ellipsis in cases */
-	.card-content-inner p,
-	.card-content-inner h3 {
-		overflow: visible;
-		white-space: normal;
-		text-overflow: unset;
-	}
-
-	/* Smooth appearance */
-	.feature-card {
-		opacity: 0;
-		animation: fadeInUp 0.7s ease forwards;
-	}
-	@keyframes fadeInUp {
-		from {
-			opacity: 0;
-			transform: translateY(20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	/* Pop-out hover image */
-	.hover-pop-img {
-		position: absolute;
-		bottom: -30px;
-		right: -40px;
-		width: 30rem;
-		height: auto;
-		pointer-events: none;
-		opacity: 0;
-		transform-origin: bottom right;
-		z-index: 50; /* above everything */
-		will-change: transform, opacity;
+	article:hover {
+		box-shadow: 6px 6px 0 0 var(--accent);
 	}
 </style>

@@ -1,88 +1,102 @@
 <script lang="ts">
 	import { scrollToId } from '$lib/scrollToId';
-	import { Menu, X } from 'lucide-svelte';
-	import gsap from 'gsap';
+	import { Menu, X, ArrowRight } from 'lucide-svelte';
 
 	const NAV_HEIGHT = 72;
-	let isOpen: boolean = false;
-	let sidebarElement: HTMLElement | null = null; // This is now the "Curtain"
-	let menuLinks: HTMLElement[] = [];
+	let isOpen = $state(false);
 
-	const buttonClass =
-		'px-6 py-2 h-12 bg-brand-primary text-white mt-1 mb-[-5] rounded-md cursor-pointer text-lg ' +
-		'shadow-[5px_5px_0_var(--brand-secondary)] transition-all duration-500 ease-in-out ' +
-		'hover:translate-x-1 text-center hover:translate-y-1 hover:shadow-none font-poppins  ';
+	const links = [
+		{ id: 'how-it-works', label: 'How it works' },
+		{ id: 'features', label: 'Features' },
+		{ id: 'footer', label: 'Contact' }
+	];
 
-	function toggleMobileMenu() {
-		isOpen = !isOpen;
-
-		if (isOpen) {
-			gsap.to(sidebarElement, { y: '0%', duration: 0.6, ease: 'expo.out' });
-
-			// 2. Stagger links in (sliding from Y: 20 and fading in)
-			gsap.fromTo(
-				menuLinks,
-				{ y: 20, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.4, stagger: 0.1, delay: 0.3, ease: 'power2.out' }
-			);
-		} else {
-			// 3. Slide the curtain back up
-			gsap.to(sidebarElement, { y: '-100%', duration: 0.5, ease: 'expo.in' });
-			// Reset links instantly so they are ready for next time
-			gsap.set(menuLinks, { opacity: 0 });
-		}
-	}
-
-	const handleNavClick = (id: string) => {
-		if (isOpen) toggleMobileMenu();
+	function go(id: string) {
+		isOpen = false;
 		scrollToId(id, NAV_HEIGHT);
-	};
+	}
 </script>
 
-<nav class="w-full p-4 flex justify-center items-center relative h-full bg-white z-[60]">
-	<div class="hidden md:flex gap-6 items-center">
-		<button class={buttonClass} on:click={() => scrollToId('home', NAV_HEIGHT)}>Home</button>
-		<button class={buttonClass}
-			><a href="/auth" data-sveltekit-preload-data="false"> Get Started </a></button
+<header class="sticky top-0 z-50 border-b-2 border-slate-800 bg-[#0b111c]/90 backdrop-blur">
+	<div class="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6">
+		<button
+			type="button"
+			onclick={() => go('home')}
+			class="font-robson text-2xl tracking-tight text-white"
+			aria-label="24Flow home"
 		>
-		<button class={buttonClass} on:click={() => scrollToId('features', NAV_HEIGHT)}>Features</button
-		>
-		<button class={buttonClass} on:click={() => scrollToId('footer', NAV_HEIGHT)}>Contact</button>
-	</div>
-</nav>
-<div class="absolute left-4 md:hidden">
-	<button
-		class="p-2 rounded border-2 border-brand-primary shadow-neobrutal bg-white relative z-[85]"
-		on:click={toggleMobileMenu}
-	>
-		{#if isOpen}
-			<X size={24} color="black" />
-		{:else}
-			<Menu size={24} color="black" />
-		{/if}
-	</button>
-</div>
-<div
-	bind:this={sidebarElement}
-	class="fixed top-0 left-0 w-full h-[70vh] bg-white border-b-4 border-brand-primary z-[70] flex flex-col items-center justify-center gap-4 md:hidden shadow-2xl transform -translate-y-full"
->
-	<button class={buttonClass} on:click={() => handleNavClick('home')} bind:this={menuLinks[0]}>
-		Home
-	</button>
-	<button class={buttonClass} bind:this={menuLinks[1]}>
-		<a href="/auth" data-sveltekit-preload-data="false"> Get Started </a>
-	</button>
-	<button class={buttonClass} on:click={() => handleNavClick('features')} bind:this={menuLinks[2]}>
-		Features
-	</button>
-	<button class={buttonClass} on:click={() => handleNavClick('footer')} bind:this={menuLinks[3]}>
-		Contact
-	</button>
-</div>
+			24FLOW<span class="text-[#1973f0]">.</span>
+		</button>
 
-<style>
-	/* Prevents content from being clickable through the menu when open */
-	:global(body.menu-open) {
-		overflow: hidden;
-	}
-</style>
+		<nav class="hidden items-center gap-8 md:flex" aria-label="Main">
+			{#each links as link}
+				<button
+					type="button"
+					onclick={() => go(link.id)}
+					class="text-sm font-bold uppercase tracking-wider text-slate-300 transition-colors hover:text-white"
+				>
+					{link.label}
+				</button>
+			{/each}
+		</nav>
+
+		<div class="hidden items-center gap-3 md:flex">
+			<a
+				href="/auth"
+				data-sveltekit-preload-data="false"
+				class="px-4 py-2 text-sm font-bold uppercase tracking-wider text-slate-300 transition-colors hover:text-white"
+			>
+				Log in
+			</a>
+			<a
+				href="/auth"
+				data-sveltekit-preload-data="false"
+				class="flex h-11 items-center gap-2 border-2 border-white bg-[#1973f0] px-5 text-sm font-bold uppercase tracking-wider text-white shadow-[4px_4px_0_0_#fff] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#fff]"
+			>
+				Get started <ArrowRight size={16} />
+			</a>
+		</div>
+
+		<button
+			type="button"
+			class="border-2 border-slate-600 p-2 text-white md:hidden"
+			onclick={() => (isOpen = !isOpen)}
+			aria-label={isOpen ? 'Close menu' : 'Open menu'}
+			aria-expanded={isOpen}
+		>
+			{#if isOpen}<X size={22} />{:else}<Menu size={22} />{/if}
+		</button>
+	</div>
+
+	{#if isOpen}
+		<div class="border-t-2 border-slate-800 bg-[#0b111c] px-4 pb-6 pt-2 md:hidden">
+			<nav class="flex flex-col" aria-label="Mobile">
+				{#each links as link}
+					<button
+						type="button"
+						onclick={() => go(link.id)}
+						class="border-b border-slate-800 py-4 text-left text-base font-bold uppercase tracking-wider text-slate-200"
+					>
+						{link.label}
+					</button>
+				{/each}
+			</nav>
+			<div class="mt-6 grid grid-cols-2 gap-3">
+				<a
+					href="/auth"
+					data-sveltekit-preload-data="false"
+					class="flex h-12 items-center justify-center border-2 border-slate-600 text-sm font-bold uppercase tracking-wider"
+				>
+					Log in
+				</a>
+				<a
+					href="/auth"
+					data-sveltekit-preload-data="false"
+					class="flex h-12 items-center justify-center border-2 border-white bg-[#1973f0] text-sm font-bold uppercase tracking-wider shadow-[4px_4px_0_0_#fff]"
+				>
+					Get started
+				</a>
+			</div>
+		</div>
+	{/if}
+</header>

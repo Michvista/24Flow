@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Lock, Ban, ShieldX, LogIn, House } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import gsap from 'gsap';
 
@@ -42,10 +43,6 @@
 		href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
 		rel="stylesheet"
 	/>
-	<link
-		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-		rel="stylesheet"
-	/>
 </svelte:head>
 
 <div
@@ -72,10 +69,10 @@
 	<main class="flex-grow flex items-center justify-center relative w-full p-6 bg-grid-pattern">
 		<div class="absolute inset-0 overflow-hidden pointer-events-none">
 			<div class="absolute tilt top-20 left-20 text-[#233248] opacity-50 select-none">
-				<span class="material-symbols-outlined text-9xl">lock</span>
+				<Lock size={128} strokeWidth={1.5} />
 			</div>
 			<div class="absolute tilt bottom-20 right-20 text-[#233248] opacity-50 select-none">
-				<span class="material-symbols-outlined text-9xl">block</span>
+				<Ban size={128} strokeWidth={1.5} />
 			</div>
 			<div class="absolute tilt top-1/2 left-10 w-4 h-4 bg-[#1973f0]"></div>
 			<div class="absolute tilt bottom-1/3 right-1/4 w-4 h-4 bg-white"></div>
@@ -90,7 +87,7 @@
 				<div
 					class="relative w-48 h-48 bg-[#192434] border-2 border-white flex items-center justify-center mb-6 shadow-[4px_4px_0px_0px_#ffffff]"
 				>
-					<span class="material-symbols-outlined text-8xl text-[#1973f0]">gpp_bad</span>
+					<ShieldX size={96} strokeWidth={1.5} class="text-[#1973f0]" />
 					<div
 						class="absolute -top-3 -right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 border border-white"
 					>
@@ -130,10 +127,7 @@
 					>
 						<span class="flex items-center justify-center gap-2">
 							Return to Login
-							<span
-								class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform"
-								>login</span
-							>
+							<LogIn size={18} class="group-hover:translate-x-1 transition-transform" />
 						</span>
 					</a>
 
@@ -144,7 +138,7 @@
 					>
 						<span class="flex items-center justify-center gap-2">
 							Go Home
-							<span class="material-symbols-outlined text-lg">home</span>
+							<House size={18} />
 						</span>
 					</a>
 				</div>

@@ -1,134 +1,86 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { scrollToId } from '$lib/scrollToId';
-	import gsap from 'gsap';
+	import { Mail } from 'lucide-svelte';
 
 	const NAV_HEIGHT = 72;
+	const year = new Date().getFullYear();
 
-	onMount(() => {
-		gsap.from('.footer-logo', {
-			opacity: 0,
-			y: 40,
-			scale: 0.92,
-			duration: 1.4,
-			ease: 'power3.out'
-		});
-
-		gsap.to('.footer-logo', {
-			y: -10,
-			repeat: -1,
-			yoyo: true,
-			duration: 5,
-			ease: 'sine.inOut'
-		});
-	});
-
-	const handleNavClick = (id: string) => {
-		scrollToId(id, NAV_HEIGHT);
-	};
+	const links = [
+		{ id: 'home', label: 'Home' },
+		{ id: 'how-it-works', label: 'How it works' },
+		{ id: 'features', label: 'Features' }
+	];
 </script>
 
-<footer
-	id="footer"
-	class="w-full bg-[#09090f] font-montserrat text-white rounded-3xl px-10 py-20 relative overflow-hidden"
->
-	<div class="absolute inset-0 z-10 pointer-events-none">
-		<!-- Deep primary glow -->
-		<div class="w-full h-full bg-[#123F76] opacity-45 blur-[150px] absolute inset-0"></div>
+<footer id="footer" class="border-t-2 border-slate-800 bg-[#080d16]">
+	<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
+		<div class="grid gap-12 md:grid-cols-[2fr_1fr_1fr]">
+			<div>
+				<p class="font-display-mono text-xs uppercase tracking-widest text-[#78c2ed]">
+					// Contact us
+				</p>
+				<h2 class="mt-4 max-w-xl text-2xl font-bold leading-snug text-white/90 md:text-3xl">
+					Questions about 24Flow, or want to see how it can plan your day? We'd love to hear from
+					you.
+				</h2>
+				<a
+					href="mailto:support@24flow.ai"
+					class="mt-6 inline-flex items-center gap-2 border-b-2 border-[#1973f0] pb-1 text-lg font-bold transition-colors hover:text-[#78c2ed]"
+				>
+					<Mail size={18} /> support@24flow.ai
+				</a>
+			</div>
 
-		<!-- Soft secondary blue glow -->
-		<div
-			class="w-[70%] h-[70%] bg-[#78C2ED] opacity-45 blur-[200px] absolute top-10 right-10 rounded-full"
-		></div>
+			<nav aria-label="Footer">
+				<p class="text-xs font-bold uppercase tracking-widest text-slate-500">Explore</p>
+				<ul class="mt-4 space-y-3">
+					{#each links as link}
+						<li>
+							<button
+								type="button"
+								class="text-slate-300 transition-colors hover:text-white"
+								onclick={() => scrollToId(link.id, NAV_HEIGHT)}
+							>
+								{link.label}
+							</button>
+						</li>
+					{/each}
+				</ul>
+			</nav>
 
-		<!-- Light neutral highlight glow -->
-		<div
-			class="w-[60%] h-[60%] bg-[#DCDCDC] opacity-40 blur-[220px] absolute bottom-10 left-10 rounded-full"
-		></div>
-	</div>
-
-	<div class="flex flex-col md:flex-row justify-between w-full">
-		<div class="max-w-xl">
-			<p class="text-lg text-brand-accent-two mb-4">✦ Contact Us</p>
-
-			<h2 class="text-3xl md:text-4xl font-semibold leading-tight mb-10 text-white/90">
-				Interested in transforming the way you plan your day, discovering how 24Flow automates your
-				schedule, or simply understanding how our platform helps you stay organized and in control?
-			</h2>
-
-			<p class="text-sm text-brand-accent-two mb-2">Contact the team at:</p>
-			<a
-				href="mailto:support@24flow.ai"
-				class="text-lg underline underline-offset-4 decoration-white hover:opacity-80 transition"
-			>
-				support@24flow.ai ↗
-			</a>
+			<div>
+				<p class="text-xs font-bold uppercase tracking-widest text-slate-500">Account</p>
+				<ul class="mt-4 space-y-3">
+					<li>
+						<a
+							href="/auth"
+							data-sveltekit-preload-data="false"
+							class="text-slate-300 transition-colors hover:text-white">Log in</a
+						>
+					</li>
+					<li>
+						<a
+							href="/auth"
+							data-sveltekit-preload-data="false"
+							class="text-slate-300 transition-colors hover:text-white">Create account</a
+						>
+					</li>
+				</ul>
+			</div>
 		</div>
 
-		<div class="flex flex-col gap-3 text-right pt-10 md:pt-0">
-			<button
-				type="button"
-				class="hover:text-gray-300 transition cursor-pointer bg-transparent text-left"
-				onclick={() => handleNavClick('home')}
-			>
-				Home
-			</button>
-
-			<a class="hover:text-gray-300 transition cursor-pointer" href="/dashboard">Get Started</a>
-
-			<button
-				type="button"
-				class="hover:text-gray-300 transition cursor-pointer bg-transparent text-left"
-				onclick={() => handleNavClick('features')}
-			>
-				Features
-			</button>
-
-			<button
-				type="button"
-				class="hover:text-gray-300 transition cursor-pointer bg-transparent text-left"
-				onclick={() => handleNavClick('footer')}
-			>
-				Contact
-			</button>
-		</div>
-	</div>
-
-	<div class="w-full flex justify-center mt-24 mb-14">
-		<h1
-			class="footer-logo text-[65px] md:text-[150px] font-monoton tracking-tight text-white/90 select-none"
+		<p
+			class="mt-16 select-none text-center font-robson text-[22vw] leading-none tracking-tight text-white/[0.06] md:text-[12rem]"
+			aria-hidden="true"
 		>
-			24Flow
-		</h1>
-	</div>
+			24FLOW
+		</p>
 
-	<div class="flex flex-col md:flex-row justify-between items-center text-sm text-[#8b8b9c]">
-		<p>© 2025 24Flow. All rights reserved.</p>
-
-		<div class="flex gap-6 pt-4 md:pt-0">
-			<button
-				type="button"
-				aria-label="LinkedIn"
-				class="hover:text-white transition cursor-pointer bg-transparent">LinkedIn</button
-			>
-			<button
-				type="button"
-				aria-label="Facebook"
-				class="hover:text-white transition cursor-pointer bg-transparent">Facebook</button
-			>
-			<button
-				type="button"
-				aria-label="Twitter"
-				class="hover:text-white transition cursor-pointer bg-transparent">Twitter</button
-			>
+		<div
+			class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-8 text-sm text-slate-500 md:flex-row"
+		>
+			<p>© {year} 24Flow. All rights reserved.</p>
+			<p class="font-display-mono text-xs uppercase tracking-widest">Own your 24h.</p>
 		</div>
 	</div>
 </footer>
-
-<style>
-	@import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
-
-	.font-monoton {
-		font-family: 'Monoton', sans-serif;
-	}
-</style>

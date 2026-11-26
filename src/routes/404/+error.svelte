@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ImageOff, ArrowLeft, Bug } from 'lucide-svelte';
 	// State for any dynamic error information
 	let serverId = $state('US-EAST-1A // v2.4.0');
 	let path = $state('/var/www/html/PAGEr/PAGE_id_null');
@@ -15,10 +16,6 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" />
 	<link
 		href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;700&display=swap"
-		rel="stylesheet"
-	/>
-	<link
-		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
 		rel="stylesheet"
 	/>
 </svelte:head>
@@ -81,11 +78,7 @@
 						<div
 							class="absolute inset-0 flex items-center justify-center flex-col p-8 text-center bg-slate-900/40 backdrop-blur-sm"
 						>
-							<span
-								class="material-symbols-outlined text-[80px] md:text-[120px] text-[#1973f0] animate-pulse"
-							>
-								broken_image
-							</span>
+							<ImageOff class="h-20 w-20 md:h-28 md:w-28 text-[#1973f0] animate-pulse" strokeWidth={1.5} />
 							<p class="mt-4 font-mono text-xs text-[#1973f0]/80 uppercase tracking-widest">
 								{path}
 							</p>
@@ -129,18 +122,16 @@
 									data-sveltekit-preload-data="false"
 									class="flex-1 min-w-[160px] flex items-center justify-center h-14 px-6 bg-[#1973f0] text-white text-base font-bold uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#fff] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#fff] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all group"
 								>
-									<span
-										class="material-symbols-outlined mr-2 group-hover:-translate-x-1 transition-transform"
-										>arrow_back</span
-									>
+									<ArrowLeft size={20} class="mr-2 group-hover:-translate-x-1 transition-transform" />
 									Return Home
 								</a>
-								<button
+								<a
+					href="mailto:support@24flow.ai?subject=Broken%20link%20on%2024Flow"
 									class="flex-1 min-w-[160px] flex items-center justify-center h-14 px-6 bg-transparent text-white text-base font-bold uppercase tracking-wider border-2 border-slate-500 hover:bg-slate-800 hover:border-white transition-colors"
 								>
-									<span class="material-symbols-outlined mr-2 text-[#1973f0]">bug_report</span>
+									<Bug size={20} class="mr-2 text-[#1973f0]" />
 									Report Bug
-								</button>
+								</a>
 							</div>
 						</div>
 					</div>
