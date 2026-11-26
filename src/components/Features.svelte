@@ -56,14 +56,14 @@
 	];
 </script>
 
-<section id="features" class="py-20 md:py-28">
+<section id="features" class="py-16 md:py-28">
 	<div class="mx-auto max-w-7xl px-4 sm:px-6">
-		<div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+		<div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
 			<div class="max-w-2xl">
 				<p class="font-display-mono text-xs uppercase tracking-widest text-[#78c2ed]">
 					// Features
 				</p>
-				<h2 class="mt-3 font-robson text-5xl leading-none tracking-tight md:text-6xl">
+				<h2 class="mt-3 font-robson text-[13vw] leading-none tracking-tight sm:text-5xl md:text-6xl">
 					Time management,<br /><span class="text-[#1973f0]">next level</span>
 				</h2>
 			</div>
@@ -73,39 +73,41 @@
 			</p>
 		</div>
 
-		<div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+		<div class="mt-10 grid gap-4 sm:mt-14 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
 			{#each features as f}
 				<article
-					class="group flex flex-col border-2 border-slate-700 bg-[#151f2e] p-7 transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:border-white"
+					class="group flex gap-4 border-2 border-slate-700 bg-[#151f2e] p-5 sm:flex-col sm:gap-0 sm:p-7 transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:border-white"
 					style="--accent:{f.accent}"
 				>
 					<div
-						class="flex h-12 w-12 items-center justify-center border-2"
+						class="flex h-11 w-11 shrink-0 items-center justify-center border-2 sm:h-12 sm:w-12"
 						style="border-color:{f.accent}; color:{f.accent}"
 					>
 						<f.icon size={24} />
 					</div>
-					<h3 class="mt-6 text-xl font-bold uppercase leading-tight">{f.title}</h3>
-					<p class="mt-3 leading-relaxed text-slate-400">{f.description}</p>
+					<div>
+						<h3 class="text-base font-bold uppercase leading-tight sm:mt-6 sm:text-xl">{f.title}</h3>
+						<p class="mt-1.5 text-sm leading-relaxed text-slate-400 sm:mt-3 sm:text-base">{f.description}</p>
+					</div>
 				</article>
 			{/each}
 		</div>
 
 		<!-- CTA -->
 		<div
-			class="mt-24 grid items-center gap-10 border-2 border-white bg-[#1973f0] p-8 shadow-[10px_10px_0_0_#fff] md:grid-cols-[1.4fr_1fr] md:p-12"
+			class="mt-16 mr-2 grid items-center gap-10 border-2 border-white bg-[#1973f0] p-6 shadow-[6px_6px_0_0_#fff] sm:mr-0 sm:mt-24 sm:p-8 sm:shadow-[10px_10px_0_0_#fff] md:grid-cols-[1.4fr_1fr] md:p-12"
 		>
 			<div>
-				<h2 class="font-robson text-4xl leading-none tracking-tight sm:text-5xl md:text-6xl">
+				<h2 class="font-robson text-[11vw] leading-none tracking-tight sm:text-5xl md:text-6xl">
 					Ready to take back your day?
 				</h2>
-				<p class="mt-5 max-w-lg text-lg text-blue-50">
+				<p class="mt-4 max-w-lg text-base text-blue-50 sm:mt-5 sm:text-lg">
 					Create a free account and have your first 24-hour plan in under a minute.
 				</p>
 				<a
 					href="/auth"
 					data-sveltekit-preload-data="false"
-					class="mt-8 inline-flex h-14 items-center gap-2 border-2 border-[#0b111c] bg-white px-8 font-bold uppercase tracking-wider text-[#0b111c] shadow-[5px_5px_0_0_#0b111c] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[2px_2px_0_0_#0b111c]"
+					class="mt-7 flex h-14 w-full items-center justify-center gap-2 whitespace-nowrap border-2 border-[#0b111c] bg-white px-6 text-sm font-bold sm:mt-8 sm:inline-flex sm:w-auto sm:px-8 sm:text-base uppercase tracking-wider text-[#0b111c] shadow-[5px_5px_0_0_#0b111c] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[2px_2px_0_0_#0b111c]"
 				>
 					Get started free <ArrowRight size={18} />
 				</a>

@@ -33,34 +33,34 @@
 	const fmt = (h: number) => (h === 0 || h === 24 ? '12AM' : h === 12 ? '12PM' : h < 12 ? `${h}AM` : `${h - 12}PM`);
 </script>
 
-<section id="how-it-works" class="border-b-2 border-slate-800 bg-[#0e1624] py-20 md:py-28">
+<section id="how-it-works" class="border-b-2 border-slate-800 bg-[#0e1624] py-16 md:py-28">
 	<div class="mx-auto max-w-7xl px-4 sm:px-6">
 		<div class="max-w-2xl">
 			<p class="font-display-mono text-xs uppercase tracking-widest text-[#78c2ed]">
 				// How it works
 			</p>
-			<h2 class="mt-3 font-robson text-5xl leading-none tracking-tight md:text-6xl">
+			<h2 class="mt-3 font-robson text-[13vw] leading-none tracking-tight sm:text-5xl md:text-6xl">
 				Own your <span class="text-[#1973f0]">24h</span>
 			</h2>
-			<p class="mt-5 text-lg text-slate-300">
+			<p class="mt-4 text-base text-slate-300 sm:mt-5 sm:text-lg">
 				See your entire day clearly and take control — every hour accounted for, nothing forgotten.
 			</p>
 		</div>
 
 		<!-- 24h timeline -->
-		<div class="mt-14 border-2 border-slate-700 bg-[#151f2e] p-5 shadow-[8px_8px_0_0_#1973f0] sm:p-8">
+		<div class="mt-10 mr-2 border-2 border-slate-700 bg-[#151f2e] p-4 shadow-[6px_6px_0_0_#1973f0] sm:mr-0 sm:mt-14 sm:p-8 sm:shadow-[8px_8px_0_0_#1973f0]">
 			<div class="mb-4 flex items-center justify-between">
-				<p class="font-bold uppercase tracking-wider">A day in 24Flow</p>
-				<p class="font-display-mono text-xs text-slate-400">24 / 24 hrs planned</p>
+				<p class="text-sm font-bold uppercase tracking-wider sm:text-base">A day in 24Flow</p>
+				<p class="hidden font-display-mono text-xs text-slate-400 sm:block">24 / 24 hrs planned</p>
 			</div>
-			<div class="relative h-14 w-full overflow-hidden border-2 border-slate-600 bg-[#0b111c]">
+			<div class="relative h-10 w-full overflow-hidden sm:h-14 border-2 border-slate-600 bg-[#0b111c]">
 				{#each blocks as b}
 					<div
 						class="absolute top-0 flex h-full items-center justify-center overflow-hidden border-r-2 border-[#0b111c] text-[10px] font-bold uppercase text-[#0b111c] sm:text-xs"
 						style="left:{(b.start / 24) * 100}%; width:{(b.len / 24) * 100}%; background:{b.color}; {b.color === '#334155' ? 'color:#cbd5e1' : ''}"
 						title="{b.label}: {fmt(b.start)} – {fmt(b.start + b.len)}"
 					>
-						<span class="hidden truncate px-1 sm:inline">{b.label}</span>
+						{#if b.len >= 2}<span class="hidden truncate px-1 sm:inline">{b.label}</span>{/if}
 					</div>
 				{/each}
 			</div>
@@ -72,7 +72,7 @@
 					>
 				{/each}
 			</div>
-			<ul class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-300 sm:hidden">
+			<ul class="mt-5 grid grid-cols-3 gap-x-3 gap-y-2 text-xs text-slate-300 sm:hidden">
 				{#each blocks.slice(0, 6) as b}
 					<li class="flex items-center gap-2">
 						<span class="inline-block h-3 w-3" style="background:{b.color}"></span>{b.label}
@@ -82,20 +82,23 @@
 		</div>
 
 		<!-- Steps -->
-		<ol class="mt-14 grid gap-6 md:grid-cols-3">
+		<ol class="mt-10 grid gap-4 sm:mt-14 lg:grid-cols-3 lg:gap-6">
 			{#each steps as step, i}
-				<li class="relative border-2 border-slate-700 bg-[#151f2e] p-7">
+				<li class="relative flex gap-4 border-2 border-slate-700 bg-[#151f2e] p-5 lg:block lg:p-7">
 					<span
-						class="absolute right-5 top-4 font-robson text-5xl text-slate-700"
+						class="absolute right-5 top-4 hidden font-robson text-5xl text-slate-700 lg:block"
 						aria-hidden="true">0{i + 1}</span
 					>
 					<div
-						class="flex h-12 w-12 items-center justify-center border-2 border-[#1973f0] text-[#1973f0]"
+						class="flex h-11 w-11 shrink-0 items-center justify-center border-2 border-[#1973f0] text-[#1973f0] lg:h-12 lg:w-12"
 					>
 						<step.icon size={24} />
 					</div>
-					<h3 class="mt-6 text-xl font-bold uppercase">{step.title}</h3>
-					<p class="mt-3 leading-relaxed text-slate-400">{step.text}</p>
+					<div>
+						<p class="mb-1 font-display-mono text-[11px] uppercase tracking-widest text-slate-500 lg:hidden">Step 0{i + 1}</p>
+						<h3 class="text-lg font-bold uppercase lg:mt-6 lg:text-xl">{step.title}</h3>
+						<p class="mt-1.5 text-sm leading-relaxed text-slate-400 lg:mt-3 lg:text-base">{step.text}</p>
+					</div>
 				</li>
 			{/each}
 		</ol>
